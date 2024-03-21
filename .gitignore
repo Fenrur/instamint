@@ -310,3 +310,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+### dotenv template
+.env
+
