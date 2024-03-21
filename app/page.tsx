@@ -14,7 +14,6 @@ export default function Home() {
         Click me
       </Button>
       <Label>{count}</Label>
-      <Label>{env.DATABASE_URL}</Label>
     </main>
   );
 }
