@@ -4,6 +4,8 @@ import {z} from 'zod'
 export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url(),
+    GMAIL_EMAIL: z.string().email(),
+    GMAIL_PASS: z.string(),
   },
   client: {
     NEXT_PUBLIC_PUBLISHABLE_KEY: z.string().min(1),
