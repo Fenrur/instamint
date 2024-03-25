@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:16
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=instamint
+      - POSTGRES_USER=instamint
+      - POSTGRES_DB=instamint

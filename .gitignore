@@ -314,3 +314,5 @@ Temporary Items
 .env
 
 pnpm-lock.yaml
+
+db_data
