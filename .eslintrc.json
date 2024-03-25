@@ -74,14 +74,6 @@
     ],
     "max-classes-per-file": ["error", { "ignoreExpressions": true }],
     "max-depth": ["error", 3],
-    "max-lines": [
-      "error",
-      { "max": 150, "skipBlankLines": true, "skipComments": true }
-    ],
-    "max-lines-per-function": [
-      "warn",
-      { "max": 50, "skipBlankLines": true, "skipComments": true }
-    ],
     "max-nested-callbacks": ["error", 3],
     "max-params": ["error", 3],
     "multiline-comment-style": ["error", "separate-lines"],
