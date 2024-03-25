@@ -39,7 +39,6 @@
     "no-unreachable-loop": "error",
     "no-unused-private-class-members": "error",
     "require-atomic-updates": "error",
-    "arrow-body-style": ["error", "as-needed"],
     "camelcase": [
       "error",
       {
