@@ -25,7 +25,6 @@ type FormFieldContextValue<
 const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue
 )
-
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
@@ -38,14 +37,13 @@ const FormField = <
     </FormFieldContext.Provider>
   )
 }
-
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext)
   const itemContext = React.useContext(FormItemContext)
   const { getFieldState, formState } = useFormContext()
-
   const fieldState = getFieldState(fieldContext.name, formState)
 
+  /* eslint-disable @typescript-eslint/no-unnecessary-condition */
   if (!fieldContext) {
     throw new Error("useFormField should be used within <FormField>")
   }
@@ -69,7 +67,6 @@ type FormItemContextValue = {
 const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue
 )
-
 const FormItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -83,7 +80,6 @@ const FormItem = React.forwardRef<
   )
 })
 FormItem.displayName = "FormItem"
-
 const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
@@ -100,7 +96,6 @@ const FormLabel = React.forwardRef<
   )
 })
 FormLabel.displayName = "FormLabel"
-
 const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
   React.ComponentPropsWithoutRef<typeof Slot>
@@ -113,16 +108,16 @@ const FormControl = React.forwardRef<
       id={formItemId}
       aria-describedby={
         !error
-          ? `${formDescriptionId}`
+          ? formDescriptionId
           : `${formDescriptionId} ${formMessageId}`
       }
+      /* eslint-disable-next-line no-implicit-coercion */
       aria-invalid={!!error}
       {...props}
     />
   )
 })
 FormControl.displayName = "FormControl"
-
 const FormDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
@@ -139,7 +134,6 @@ const FormDescription = React.forwardRef<
   )
 })
 FormDescription.displayName = "FormDescription"
-
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
