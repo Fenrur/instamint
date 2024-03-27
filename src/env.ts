@@ -7,6 +7,8 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
     GMAIL_EMAIL: z.string().email(),
     GMAIL_PASS: z.string(),
+    NEXT_AUTH_SECRET: z.string(),
+    SECURE_AUTH_COOKIES: z.string()
   },
   client: {
     NEXT_PUBLIC_PUBLISHABLE_KEY: z.string().min(1),
