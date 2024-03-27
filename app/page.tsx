@@ -2,7 +2,8 @@
 
 import {Button} from "@/components/ui/button"
 import {Label} from "@/components/ui/label"
-import {useState} from "react"
+import {useEffect, useState} from "react"
+import {useSession} from "@/auth/session"
 
 export default function Home() {
   const [count, setCount] = useState(0)
@@ -10,12 +11,20 @@ export default function Home() {
     setCount(prevState => prevState + 1)
   }
 
+  const {status, data} = useSession()
+
+  useEffect(() => {
+    data?.uid
+    console.log(data)
+  }, [data])
+
   return (
     <main>
       <Button onClick={handleClick}>
         Click me
       </Button>
       <Label>{count}</Label>
+      <div>{status}</div>
     </main>
   )
 }
