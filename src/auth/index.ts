@@ -1,11 +1,16 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import {findUserByEmail} from "@/db/db-service"
+import {findUserByEmail, resetTwoFactorAuthentification} from "@/db/db-service"
 import {isPasswordValid} from "@/utils/password"
 import { env } from "@/env"
 import {Session} from "@/auth/types"
 // @ts-ignore
 import {NextAuthRequest} from "next-auth/lib"
+import {db} from "@/db/db-client"
+import {user as userSchema} from "@/db/schema"
+import {symmetricDecrypt} from "@/utils/crypto"
+import {authenticator} from "otplib"
+import {z} from "zod"
 
 export const { handlers, auth, signIn, signOut} = NextAuth({
   providers: [
@@ -15,17 +20,40 @@ export const { handlers, auth, signIn, signOut} = NextAuth({
       credentials: {
         email: {label: "Email", type: "text"},
         password: {label: "Password", type: "password"},
+        twoFactorAuthentification: {label: "2Fa", type: "text"}
       },
       async authorize(credentials, req) {
         const user = await findUserByEmail(credentials.email as string)
         if (!user) {
-          return null
+          throw new Error("User not found")
         }
 
         const isValid = await isPasswordValid(credentials.password as string, user.hashedPassword)
 
         if (!isValid) {
-          return null
+          throw new Error("Invalid password")
+        }
+
+        if (user.twoFactorEnabled) {
+          if (credentials.twoFactorAuthentification === null || credentials.twoFactorAuthentification === undefined) {
+            throw new Error("Two factor authentification required")
+          }
+
+          if (user.twoFactorSecret === null) {
+            await resetTwoFactorAuthentification(user.id)
+            return {uid: user.uid, email: user.email}
+          }
+
+          const secret = symmetricDecrypt(user.twoFactorSecret, env.TOTP_ENCRYPTION_KEY);
+          if (secret.length !== 32) {
+            console.error(`Two factor secret decryption failed. Expected key with length 32 but got ${secret.length}`);
+            throw new Error("Internal Server Error")
+          }
+
+          const isValidToken = authenticator.check(String(credentials.twoFactorAuthentification), secret);
+          if (!isValidToken) {
+            throw new Error("Invalid two factor authentification")
+          }
         }
 
         return {uid: user.uid, email: user.email}
@@ -85,7 +113,7 @@ type JWTUser = {
 }
 
 export function getSession(req: NextAuthRequest) {
-  if (req.auth === null) return null
+  if (req.auth === null || req.auth === undefined) return null
   try {
     return Session.parse(req.auth)
   } catch (e) {
