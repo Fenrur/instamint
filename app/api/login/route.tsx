@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
   }
 
   const emailDb = await findUserByEmail(email)
-  console.log("emailDb", emailDb)
   if (emailDb === undefined) {
     req.nextUrl.pathname = "/login"
     return NextResponse.redirect(req.nextUrl)
