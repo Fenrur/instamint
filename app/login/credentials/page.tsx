@@ -7,17 +7,59 @@ import {useRouter, useSearchParams} from "next/navigation"
 import {z} from "zod"
 import {CheckIcon, ThickArrowRightIcon} from "@radix-ui/react-icons"
 import Link from "next/link"
-import {Separator} from "@/components/ui/separator"
 import {Badge} from "@/components/ui/badge"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
-import React from "react"
-import {verifyUserPassword} from "@/repository"
-import {HttpErrorCode} from "@/http/http-error-code"
-import {signIn} from "@/auth"
+import React, {useEffect, useState} from "react"
+import {useLogin} from "@/store"
+import {useTwoFactorAuthenticatorUserType, useVerifyUserPasswordByEmail} from "@/repository/hooks"
+import {ThreeDots} from "react-loader-spinner"
+import {signIn} from "next-auth/react"
 
-export default function YoCredentialsPage() {
+function useVerifyPasswordAndGetTwoFactorAuthenticatorType() {
+  const {verifyUserPassword, isFetchingVerification, errorVerification} = useVerifyUserPasswordByEmail()
+  const {twoFactorAuthenticatorUserType, isFetchingTwoFactor, errorTwoFactor} = useTwoFactorAuthenticatorUserType()
+
+  const [isFetching, setIsFetching] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (isFetchingVerification || isFetchingTwoFactor) {
+      setIsFetching(true)
+    } else {
+      setIsFetching(false)
+    }
+  }, [isFetchingVerification, isFetchingTwoFactor])
+
+  useEffect(() => {
+    if (errorVerification || errorTwoFactor) {
+      setError(errorVerification || errorTwoFactor)
+    }
+  }, [errorVerification, errorTwoFactor])
+
+  return {
+    trigger: async (req: { email: string, password: string }) => {
+      const [verify, twoFactorType] = await Promise.all([verifyUserPassword(req), twoFactorAuthenticatorUserType(req)])
+
+      if (verify === "email_not_found" || twoFactorType === "email_not_found") {
+        return "email_not_found"
+      }
+
+      if (verify === "password_invalid" || twoFactorType === "password_invalid") {
+        return "password_invalid"
+      }
+
+      return twoFactorType
+    },
+    isFetching,
+    error
+  }
+}
+
+export default function PasswordCredentialsPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const {trigger, isFetching, error} = useVerifyPasswordAndGetTwoFactorAuthenticatorType()
+  const {setCredentials} = useLogin()
 
   const email = searchParams.get("email")
 
@@ -29,71 +71,81 @@ export default function YoCredentialsPage() {
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const password = formData.get("password")
-    if (!password) return
+    const passwordFormData = formData.get("password")
+    if (!passwordFormData) return
+    const password = String(passwordFormData)
 
-    const result = await verifyUserPassword({email, password: String(password)})
-    switch (result) {
-      case "password_invalid":
-        alert("Password is invalid")
-        break
-      case "email_not_found":
-        alert("Email not found")
-        break
-      case "password_valid":
-        const formData = new FormData()
-        formData.set("email", email)
-        formData.set("password", password)
-        // await signIn("credentials", formData)
-        break
+    const result = await trigger({email, password})
+    if (result === "email_not_found") {
+
+    } else if (result === "password_invalid") {
+
+    } else {
+      if (result.type === "totp") {
+        setCredentials({
+          email,
+          password
+        })
+        router.push("/login/totp")
+      } else {
+        signIn("credentials", {
+          email,
+          password
+        })
+      }
     }
   }
 
+  useEffect(() => {
+    if (error) {
+      console.log(error)
+    }
+  }, [error])
+
   return (
-    <div className="w-screen h-screen lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
-      <div className="hidden bg-muted lg:block">
-
-      </div>
-      <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[350px] gap-6">
-          <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold">Login</h1>
-            <p className="text-balance text-muted-foreground">
-              Enter your password below to login to your account
-            </p>
+    <>
+      <form onSubmit={handleFormSubmit}>
+        <div className="grid gap-4">
+          <div className="flex items-center gap-4 mb-5">
+            <Avatar>
+              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn"/>
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            <Badge className="h-5" variant="outline">{email}</Badge>
           </div>
-          <form onSubmit={handleFormSubmit}>
-            <div className="grid gap-4">
-              <div className="flex items-center gap-4 mb-5">
-                <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <Badge className="h-5" variant="outline">{email}</Badge>
-              </div>
 
-              <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  name="password"
-                  id="password"
-                  type="password"
-                  required
+          <div className="grid gap-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              name="password"
+              id="password"
+              type="password"
+              required
+            />
+          </div>
+          <Button disabled={isFetching} type="submit" className="w-full">
+            Login
+            {
+              isFetching ? <div className="ml-1">
+                <ThreeDots
+                  visible={true}
+                  color="white"
+                  width="12"
+                  height="12"
+                  ariaLabel="three-dots-loading"
+                  wrapperStyle={{}}
+                  wrapperClass=""
                 />
-              </div>
-              <Button type="submit" className="w-full">
-                Login
-                <CheckIcon className="ml-1"/>
-              </Button>
-            </div>
-          </form>
-          <div className="text-center text-sm flex flex-col gap-2">
-            <Link href="/forgot-password" className="underline">
-              Forgot my password?{" "}
-            </Link>
-          </div>
+              </div> : <CheckIcon className="ml-1"/>
+            }
+          </Button>
         </div>
+      </form>
+      <div className="text-center text-sm flex flex-col gap-2">
+        <Link href="/forgot-password" className="underline">
+          Forgot my password?{" "}
+        </Link>
       </div>
-    </div>
+    </>
   )
 }
