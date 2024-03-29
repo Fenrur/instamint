@@ -2,15 +2,16 @@ import {NextRequest, NextResponse} from "next/server"
 import {createUser, findUserByEmail} from "@/db/db-service"
 import {z} from "zod"
 import {randomUUID} from "node:crypto"
+import {password} from "@/utils/regex"
 
 const Body = z.object({
   email: z.string().email(),
   password: z
     .string()
-    // .regex(
-    //   /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
-    //   "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-    // ),
+    .regex(
+      password,
+      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+    ),
 })
 
 export const POST = async (request: NextRequest) => {
