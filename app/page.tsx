@@ -15,7 +15,6 @@ export default function Home() {
 
   useEffect(() => {
     data?.uid
-    console.log(data)
   }, [data])
 
   return (
