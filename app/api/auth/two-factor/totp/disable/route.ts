@@ -1,20 +1,26 @@
 import {NextRequest, NextResponse} from "next/server"
 import {auth, getSession} from "@/auth"
 import {
+  invalidContentTypeProblem,
   invalidRequestBodyProblem, invalidTwoFactorCodeProblem,
   notAuthenticatedProblem,
   passwordIsInvalidProblem,
   problem, twoFactorNotEnabledProblem, twoFactorSetupRequiredProblem,
   uidNotFoundProblem
-} from "@/http/http-problem"
-import {HttpErrorCode} from "@/http/http-error-code"
+} from "@/http/problem"
+import {ErrorCode} from "@/http/error-code"
 import {disableTwoFactorAuthentification, verifyUserPasswordAndTotpCode} from "@/db/db-service"
 import {TwoFactorAuthenticatorDisableRequest} from "@/http/rest/types"
 import {verifyUserPassword} from "@/repository"
 // @ts-ignore
 import {NextAuthRequest} from "next-auth/lib"
+import {isContentType} from "@/http/content-type"
 
 export const POST = auth(async (req: NextAuthRequest) => {
+  if (!isContentType(req, "json")) {
+    return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
+  }
+
   const session = getSession(req)
   if (!session) {
     return problem(notAuthenticatedProblem)

@@ -1,10 +1,21 @@
 import {NextRequest, NextResponse} from "next/server"
 import {VerifyPasswordRequest} from "@/http/rest/types"
 import {verifyUserPasswordByEmail} from "@/db/db-service"
-import {HttpErrorCode} from "@/http/http-error-code"
-import {emailNotFoundProblem, invalidRequestBodyProblem, passwordIsInvalidProblem, problem} from "@/http/http-problem"
+import {ErrorCode} from "@/http/error-code"
+import {
+  emailNotFoundProblem,
+  invalidContentTypeProblem,
+  invalidRequestBodyProblem,
+  passwordIsInvalidProblem,
+  problem
+} from "@/http/problem"
+import {isContentType} from "@/http/content-type"
 
 export async function POST(req: NextRequest) {
+  if (!isContentType(req, "json")) {
+    return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
+  }
+
   const body = await req.json()
 
   let parsedBody

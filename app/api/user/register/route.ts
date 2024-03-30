@@ -3,6 +3,8 @@ import {createUser, findUserByEmail} from "@/db/db-service"
 import {z} from "zod"
 import {randomUUID} from "node:crypto"
 import {password} from "@/utils/regex"
+import {isContentType} from "@/http/content-type"
+import {invalidContentTypeProblem, problem} from "@/http/problem"
 
 const Body = z.object({
   email: z.string().email(),
@@ -14,8 +16,12 @@ const Body = z.object({
     ),
 })
 
-export const POST = async (request: NextRequest) => {
-  const body = await request.json()
+export const POST = async (req: NextRequest) => {
+  if (!isContentType(req, "json")) {
+    return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
+  }
+
+  const body = await req.json()
 
   let parsedBody;
   try {

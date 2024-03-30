@@ -1,11 +1,22 @@
 import {NextRequest, NextResponse} from "next/server"
 import {TwoFactorAuthenticatorTypeRequest, TwoFactorAuthenticatorTypeResponse} from "@/http/rest/types"
-import {emailNotFoundProblem, invalidRequestBodyProblem, passwordIsInvalidProblem, problem} from "@/http/http-problem"
-import {HttpErrorCode} from "@/http/http-error-code"
+import {
+  emailNotFoundProblem,
+  invalidContentTypeProblem,
+  invalidRequestBodyProblem,
+  passwordIsInvalidProblem,
+  problem
+} from "@/http/problem"
+import {ErrorCode} from "@/http/error-code"
 import {findUserByEmail} from "@/db/db-service"
 import {isPasswordValid} from "@/utils/password"
+import {isContentType} from "@/http/content-type"
 
 export async function POST(req: NextRequest) {
+  if (!isContentType(req, "json")) {
+    return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
+  }
+
   const body = await req.json()
 
   let parsedBody;

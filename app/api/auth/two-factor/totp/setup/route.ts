@@ -1,19 +1,25 @@
 import {auth, getSession} from "@/auth"
 import {NextResponse} from "next/server"
 import {
+  invalidContentTypeProblem,
   invalidRequestBodyProblem,
   notAuthenticatedProblem,
   passwordIsInvalidProblem,
   problem, twoFactorAlreadyEnabledProblem, uidNotFoundProblem
-} from "@/http/http-problem"
-import {authenticator} from "otplib"
+} from "@/http/problem"
 import qrcode from 'qrcode';
 import {setupTwoFactorAuthentification} from "@/db/db-service"
 import {TwoFactorAuthenticatorSetupRequest, TwoFactorAuthenticatorSetupResponse} from "@/http/rest/types"
 // @ts-ignore
 import {NextAuthRequest} from "next-auth/lib"
+import {isContentType} from "@/http/content-type"
+import {authenticator} from "@/two-factor/otp"
 
 export const POST = auth(async (req: NextAuthRequest) => {
+  if (!isContentType(req, "json")) {
+    return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
+  }
+
   const session = getSession(req)
   if (!session) {
     return problem(notAuthenticatedProblem)
@@ -27,7 +33,7 @@ export const POST = auth(async (req: NextAuthRequest) => {
     return problem({...invalidRequestBodyProblem, detail: e.errors})
   }
 
-  const secret = authenticator.generateSecret(20)
+  const secret = authenticator().generateSecret(20)
   const result = await setupTwoFactorAuthentification(session.uid, parsedBody.password, secret)
 
   switch (result) {
@@ -38,7 +44,7 @@ export const POST = auth(async (req: NextAuthRequest) => {
     case "two_factor_already_enabled":
       return problem(twoFactorAlreadyEnabledProblem)
     case "setup_complete":
-      const keyUri = authenticator.keyuri(session.uid, 'Instamint', secret)
+      const keyUri = authenticator().keyuri(session.uid, 'Instamint', secret)
       const dataUri = await qrcode.toDataURL(keyUri)
 
       const response: TwoFactorAuthenticatorSetupResponse = {
