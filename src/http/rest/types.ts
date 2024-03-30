@@ -1,4 +1,10 @@
 import {z} from "zod"
+import {zfd} from "zod-form-data"
+
+export const LoginCredentials = zfd.formData({
+  email: zfd.text(z.string().email())
+})
+export type LoginCredentials = z.infer<typeof LoginCredentials>
 
 export const VerifyPasswordRequest = z.object({
   email: z.string().email("VerifyPasswordRequest.email must be an email."),
