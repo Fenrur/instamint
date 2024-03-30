@@ -1,25 +1,31 @@
 import {NextRequest, NextResponse} from "next/server"
 import {findUserByEmail} from "@/db/db-service"
+import {invalidContentTypeProblem, problem} from "@/http/problem"
+import {LoginCredentials} from "@/http/rest/types"
+import {isContentType} from "@/http/content-type"
 
 export async function POST(req: NextRequest) {
-  if (req.headers.get("content-type") !== "application/x-www-form-urlencoded") {
-    return NextResponse.json({error: "Invalid content type"}, {status: 400})
+  if (!isContentType(req, "form")) {
+    return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/x-www-form-urlencoded"})
   }
 
   const formData = await req.formData()
-  const email = String(formData.get("email"))
-  if (!email) {
-    return NextResponse.json({error: "Email is required"}, {status: 400})
+  let parsedFormData
+  try {
+    parsedFormData = LoginCredentials.parse(formData)
+  } catch (e: any) {
+    req.nextUrl.pathname = "/login"
+    return NextResponse.redirect(req.nextUrl)
   }
 
-  const emailDb = await findUserByEmail(email)
-  if (emailDb === undefined) {
+  const emailDb = await findUserByEmail(parsedFormData.email)
+  if (!emailDb) {
     req.nextUrl.pathname = "/login"
     return NextResponse.redirect(req.nextUrl)
   }
 
   req.nextUrl.pathname = "/login/credentials"
-  req.nextUrl.searchParams.set("email", email)
+  req.nextUrl.searchParams.set("email", parsedFormData.email)
 
   return NextResponse.redirect(req.nextUrl)
 }
