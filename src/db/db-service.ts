@@ -4,7 +4,7 @@ import {user} from "@/db/schema"
 import {UUID} from "crypto"
 import {symmetricDecrypt, symmetricEncrypt} from "@/utils/crypto"
 import {env} from "@/env"
-import {authenticator} from "otplib"
+import {authenticator} from "@/two-factor/otp"
 
 export function findUserByEmail(email: string) {
   return db.query.user.findFirst({
@@ -117,7 +117,7 @@ export async function verifyUserPasswordAndTotpCode(uid: string, password: strin
   }
 
   const secret = symmetricDecrypt(user.twoFactorSecret, env.TOTP_ENCRYPTION_KEY)
-  const isValidToken = authenticator.check(totpCode, secret)
+  const isValidToken = authenticator().check(totpCode, secret)
 
   return isValidToken ? "valid" : "invalid_totp_code"
 }
@@ -142,7 +142,7 @@ export async function verifyUserTotpCode(email: string, password: string, totpCo
   }
 
   const secret = symmetricDecrypt(user.twoFactorSecret, env.TOTP_ENCRYPTION_KEY)
-  const isValidToken = authenticator.check(totpCode, secret)
+  const isValidToken = authenticator().check(totpCode, secret)
 
   return isValidToken ? "valid" : "invalid_totp_code"
 }

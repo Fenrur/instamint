@@ -14,6 +14,10 @@ import {z} from "zod"
 import {useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
+import {useVerifyTwoFactorAuthenticatorTotpCode} from "@/repository/hooks"
+import {toast} from "sonner"
+import {LoadingDots} from "@/components/ui/loading-dots"
+import {signIn} from "next-auth/react"
 
 const FormSchema = z.object({
   pin: z.string().min(6, {
@@ -24,12 +28,19 @@ const FormSchema = z.object({
 export default function TotpPage() {
   const {credentials} = useLogin()
   const router = useRouter()
+  const {verifyTwoFactorAuthenticatorTotpCode, isFetchingVerification, errorVerification} = useVerifyTwoFactorAuthenticatorTotpCode()
 
   useEffect(() => {
     if (!credentials) {
       router.push("/login")
     }
   }, [credentials])
+
+  useEffect(() => {
+    if (errorVerification) {
+      toast.error("Error verifying your one-time password", {description: "Please try again..."})
+    }
+  }, [errorVerification])
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -39,7 +50,37 @@ export default function TotpPage() {
   })
 
   const handleFormSubmit = async (data: z.infer<typeof FormSchema>) => {
+    if (! credentials) return
 
+    const result = await verifyTwoFactorAuthenticatorTotpCode({
+      email: credentials.email,
+      password: credentials.password,
+      totpCode: data.pin
+    })
+
+    switch (result) {
+      case "code_valid":
+        signIn("credentials", {
+          email: credentials.email,
+          password: credentials.password,
+          twoFactorAuthentification: data.pin
+        })
+      case "email_not_found":
+        router.push("/login")
+        break
+      case "password_invalid":
+        router.push("/login")
+        break
+      case "two_factor_not_enabled":
+        router.push("/login")
+        break
+      case "two_factor_setup_required":
+        router.push("/login")
+        break
+      case "invalid_totp_code":
+        toast.error("Invalid one-time password", {description: "Please try again..."})
+        break
+    }
   }
 
   return (
@@ -81,9 +122,13 @@ export default function TotpPage() {
               )}
             />
 
-            <Button type="submit" className="w-full">
+            <Button disabled={isFetchingVerification} type="submit" className="w-full">
               Validate
-              <CheckIcon className="ml-1"/>
+              {
+                isFetchingVerification ? <div className="ml-1">
+                  <LoadingDots size={12}/>
+                </div> : <CheckIcon className="ml-1"/>
+              }
             </Button>
 
           </form>

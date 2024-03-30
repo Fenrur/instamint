@@ -6,11 +6,8 @@ import { env } from "@/env"
 import {Session} from "@/auth/types"
 // @ts-ignore
 import {NextAuthRequest} from "next-auth/lib"
-import {db} from "@/db/db-client"
-import {user as userSchema} from "@/db/schema"
 import {symmetricDecrypt} from "@/utils/crypto"
-import {authenticator} from "otplib"
-import {z} from "zod"
+import {authenticator} from "@/two-factor/otp"
 
 export const { handlers, auth, signIn, signOut} = NextAuth({
   providers: [
@@ -50,7 +47,7 @@ export const { handlers, auth, signIn, signOut} = NextAuth({
             throw new Error("Internal Server Error")
           }
 
-          const isValidToken = authenticator.check(String(credentials.twoFactorAuthentification), secret);
+          const isValidToken = authenticator().check(String(credentials.twoFactorAuthentification), secret);
           if (!isValidToken) {
             throw new Error("Invalid two factor authentification")
           }

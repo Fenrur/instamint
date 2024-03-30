@@ -14,6 +14,8 @@ import {useLogin} from "@/store"
 import {useTwoFactorAuthenticatorUserType, useVerifyUserPasswordByEmail} from "@/repository/hooks"
 import {ThreeDots} from "react-loader-spinner"
 import {signIn} from "next-auth/react"
+import {toast} from "sonner"
+import {LoadingDots} from "@/components/ui/loading-dots"
 
 function useVerifyPasswordAndGetTwoFactorAuthenticatorType() {
   const {verifyUserPassword, isFetchingVerification, errorVerification} = useVerifyUserPasswordByEmail()
@@ -68,6 +70,12 @@ export default function PasswordCredentialsPage() {
     return
   }
 
+  useEffect(() => {
+    if (error) {
+      toast.error("Error verifying your password", {description: "Please try again..."})
+    }
+  }, [error])
+
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
@@ -77,9 +85,9 @@ export default function PasswordCredentialsPage() {
 
     const result = await trigger({email, password})
     if (result === "email_not_found") {
-
+      router.push("/login")
     } else if (result === "password_invalid") {
-
+      toast.error("Invalid password", {description: "Please try again..."})
     } else {
       if (result.type === "totp") {
         setCredentials({
@@ -127,15 +135,7 @@ export default function PasswordCredentialsPage() {
             Login
             {
               isFetching ? <div className="ml-1">
-                <ThreeDots
-                  visible={true}
-                  color="white"
-                  width="12"
-                  height="12"
-                  ariaLabel="three-dots-loading"
-                  wrapperStyle={{}}
-                  wrapperClass=""
-                />
+                <LoadingDots size={12}/>
               </div> : <CheckIcon className="ml-1"/>
             }
           </Button>
