@@ -26,7 +26,7 @@ const FormSchema = z.object({
 })
 
 export default function TotpPage() {
-  const {credentials} = useLogin()
+  const {credentials, resetCredentials} = useLogin()
   const router = useRouter()
   const {verifyTwoFactorAuthenticatorTotpCode, isFetchingVerification, errorVerification} = useVerifyTwoFactorAuthenticatorTotpCode()
 
@@ -60,6 +60,7 @@ export default function TotpPage() {
 
     switch (result) {
       case "code_valid":
+        resetCredentials()
         signIn("credentials", {
           email: credentials.email,
           password: credentials.password,

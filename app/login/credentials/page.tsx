@@ -61,7 +61,7 @@ export default function PasswordCredentialsPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const {trigger, isFetching, error} = useVerifyPasswordAndGetTwoFactorAuthenticatorType()
-  const {setCredentials} = useLogin()
+  const {setCredentials, resetCredentials} = useLogin()
 
   const email = searchParams.get("email")
 
@@ -96,6 +96,7 @@ export default function PasswordCredentialsPage() {
         })
         router.push("/login/totp")
       } else {
+        resetCredentials()
         signIn("credentials", {
           email,
           password
