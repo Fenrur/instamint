@@ -54,7 +54,7 @@ CREATE TABLE "User"
   "phoneNumber"      VARCHAR(20)    NULL,
   languageType       "LanguageType" NOT NULL        DEFAULT 'en',
   "role"             "UserRole"     NOT NULL        DEFAULT 'user',
-  "profile"          INTEGER        NOT NULL
+  "profileId"          INTEGER        NOT NULL
     CONSTRAINT "userProfileFk"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
