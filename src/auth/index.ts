@@ -97,11 +97,11 @@ export const { handlers, auth, signIn, signOut} = NextAuth({
     csrfToken: {
       name: "instamint.csrf-token"
     }
+  },
+  pages: {
+    signIn: "/login",
+    newUser: "/signup",
   }
-  // pages: {
-  //   signIn: "/login",
-  //   newUser: "/signup",
-  // }
 })
 
 type JWTUser = {

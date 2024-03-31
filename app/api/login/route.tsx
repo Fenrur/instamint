@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
 
   req.nextUrl.pathname = "/login/credentials"
   req.nextUrl.searchParams.set("email", parsedFormData.email)
+  req.nextUrl.searchParams.set("step", "password")
 
   return NextResponse.redirect(req.nextUrl)
 }
