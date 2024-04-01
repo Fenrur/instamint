@@ -69,7 +69,7 @@ CREATE TABLE "User"
 CREATE TABLE "TeaBag"
 (
   "id"      SERIAL  NOT NULL PRIMARY KEY,
-  "profile" INTEGER NOT NULL
+  "profileId" INTEGER NOT NULL
     CONSTRAINT "teaBagProfileFk"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE
