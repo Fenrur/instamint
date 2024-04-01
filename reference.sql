@@ -127,7 +127,7 @@ CREATE TABLE "Comment"
     CONSTRAINT "commentUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "commentedAt"    TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "commentedAt"    TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL DEFAULT now(),
   "commentary"     VARCHAR(1000)                  NOT NULL,
   "replyCommentId" INTEGER                        NULL
     CONSTRAINT "replyCommentFk"
