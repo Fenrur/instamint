@@ -320,14 +320,15 @@ CREATE TABLE "PasswordReset"
 
 CREATE TABLE "RequestFollow"
 (
-  "requesterUserId" INTEGER NOT NULL
+  "requesterUserId" INTEGER                        NOT NULL
     CONSTRAINT "requesterUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "requestedUserId" INTEGER NOT NULL
+  "requestedUserId" INTEGER                        NOT NULL
     CONSTRAINT "requestedUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "isIgnored"       BOOLEAN NOT NULL DEFAULT FALSE,
+  "requestAt"       TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "isIgnored"       BOOLEAN                        NOT NULL DEFAULT FALSE,
   PRIMARY KEY ("requesterUserId", "requestedUserId")
 );
