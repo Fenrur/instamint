@@ -293,14 +293,15 @@ CREATE TABLE "PrivateMessage"
 
 CREATE TABLE "Follow"
 (
-  "followerUserId" INTEGER NOT NULL
+  "followerUserId" INTEGER                        NOT NULL
     CONSTRAINT "followerUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "followedUserId" INTEGER NOT NULL
+  "followedUserId" INTEGER                        NOT NULL
     CONSTRAINT "followedUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
+  "followAt"       TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
   PRIMARY KEY ("followerUserId", "followedUserId")
 );
 
