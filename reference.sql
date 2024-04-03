@@ -224,7 +224,10 @@ CREATE TABLE "DraftNft"
 (
   "id"          SERIAL          NOT NULL PRIMARY KEY,
   "description" TEXT            NULL,
-  "ownerId"     INTEGER         NOT NULL,
+  "ownerId"     INTEGER         NOT NULL
+    CONSTRAINT "draftNftOwnerFk"
+      REFERENCES "User" ("id")
+      ON DELETE CASCADE,
   "hashtags"    VARCHAR(255)[5] NOT NULL CHECK (check_hashtags("hashtags")),
   "location"    TEXT            NOT NULL
 );
