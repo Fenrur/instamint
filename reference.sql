@@ -145,7 +145,7 @@ CREATE TABLE "ReportComment"
     CONSTRAINT "reportedCommentFk"
       REFERENCES "Comment" ("id")
       ON DELETE CASCADE,
-  "reason"            VARCHAR(1000)                   NULL,
+  "reason"            VARCHAR(1000)                  NULL,
   "reportAt"          TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
   PRIMARY KEY ("reporterUserId", "reportedCommentId")
 );
@@ -160,7 +160,7 @@ CREATE TABLE "ReportNft"
     CONSTRAINT "reportedNftFk"
       REFERENCES "Nft" ("id")
       ON DELETE CASCADE,
-  "reason"         VARCHAR(1000)                   NULL,
+  "reason"         VARCHAR(1000)                  NULL,
   "reportAt"       TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
   PRIMARY KEY ("reporterUserId", "reportedNftId")
 );
@@ -207,17 +207,17 @@ CREATE TABLE "ViewProfile"
 
 CREATE TABLE "ScheduleDeletionUser"
 (
-  "id"          SERIAL                         NOT NULL PRIMARY KEY,
-  "userId"      INTEGER                        NOT NULL UNIQUE
+  "id"         SERIAL                         NOT NULL PRIMARY KEY,
+  "userId"     INTEGER                        NOT NULL UNIQUE
     CONSTRAINT "scheduledDeletionUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "detectionAt" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
-  "byUserId"    INTEGER                        NOT NULL
+  "scheduleAt" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "byUserId"   INTEGER                        NOT NULL
     CONSTRAINT "scheduledDeletionByUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "reason"      VARCHAR(1000)                  NULL
+  "reason"     VARCHAR(1000)                  NULL
 );
 
 CREATE TABLE "DraftNft"
