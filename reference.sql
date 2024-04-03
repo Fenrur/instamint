@@ -152,11 +152,11 @@ CREATE TABLE "ReportComment"
 
 CREATE TABLE "ReportNft"
 (
-  "reporterUserId" BIGINT                         NOT NULL
+  "reporterUserId" INTEGER                        NOT NULL
     CONSTRAINT "reporterUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "reportedNftId"  BIGINT                         NOT NULL
+  "reportedNftId"  INTEGER                        NOT NULL
     CONSTRAINT "reportedNftFk"
       REFERENCES "Nft" ("id")
       ON DELETE CASCADE,
@@ -167,11 +167,11 @@ CREATE TABLE "ReportNft"
 
 CREATE TABLE "ReportUser"
 (
-  "reporterUserId" BIGINT                      NOT NULL
+  "reporterUserId" INTEGER                     NOT NULL
     CONSTRAINT "reporterUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "reportedUserId" BIGINT                      NOT NULL
+  "reportedUserId" INTEGER                     NOT NULL
     CONSTRAINT "reportedUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
@@ -224,7 +224,7 @@ CREATE TABLE "DraftNft"
 (
   "id"          SERIAL          NOT NULL PRIMARY KEY,
   "description" VARCHAR(255)    NULL,
-  "ownerId"     BIGINT          NOT NULL,
+  "ownerId"     INTEGER         NOT NULL,
   "hashtags"    VARCHAR(255)[5] NOT NULL CHECK (check_hashtags("hashtags")),
   "location"    TEXT            NOT NULL
 );
