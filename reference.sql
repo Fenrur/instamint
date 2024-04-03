@@ -223,7 +223,7 @@ CREATE TABLE "ScheduleDeletionUser"
 CREATE TABLE "DraftNft"
 (
   "id"          SERIAL          NOT NULL PRIMARY KEY,
-  "description" VARCHAR(255)    NULL,
+  "description" TEXT            NULL,
   "ownerId"     INTEGER         NOT NULL,
   "hashtags"    VARCHAR(255)[5] NOT NULL CHECK (check_hashtags("hashtags")),
   "location"    TEXT            NOT NULL
