@@ -32,7 +32,7 @@ CREATE TABLE "Profile"
 (
   "id"             SERIAL                         NOT NULL PRIMARY KEY,
   "username"       VARCHAR(16)                    NOT NULL UNIQUE CHECK ("username" ~* '^[a-zA-Z0-9_]{3,16}$'),
-  "createdAt"      TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL DEFAULT now(),
+  "createdAt"      TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
   "bio"            VARCHAR(255)                   NOT NULL DEFAULT '',
   "link"           VARCHAR(255)                   NOT NULL CHECK ( "link" ~* '^https?://(www\.)?[\w-]+\.[\w-]+(/\S*)?$'),
   "avatarUrl"      VARCHAR(255)                   NOT NULL CHECK ( "avatarUrl" ~* '^https?://(www\.)?[\w-]+\.[\w-]+(/\S*)?$'),
@@ -44,21 +44,21 @@ CREATE TABLE "Profile"
 
 CREATE TABLE "User"
 (
-  "id"               SERIAL         NOT NULL PRIMARY KEY,
-  "email"            VARCHAR(255)   NOT NULL UNIQUE CHECK ( "email" ~* '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'),
-  "uid"              UUID           NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
-  "hashedPassword"   VARCHAR(255)   NOT NULL,
-  "isActivated"      BOOLEAN        NOT NULL        DEFAULT FALSE,
-  "twoFactorEnabled" BOOLEAN        NOT NULL        DEFAULT FALSE,
-  "twoFactorSecret"  VARCHAR(255)   NULL,
-  "phoneNumber"      VARCHAR(20)    NULL,
-  languageType       "LanguageType" NOT NULL        DEFAULT 'en',
-  "role"             "UserRole"     NOT NULL        DEFAULT 'user',
-  "profileId"          INTEGER        NOT NULL
+  "id"                       SERIAL               NOT NULL PRIMARY KEY,
+  "email"                    VARCHAR(255)         NOT NULL UNIQUE CHECK ( "email" ~* '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'),
+  "uid"                      UUID                 NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+  "hashedPassword"           VARCHAR(255)         NOT NULL,
+  "isActivated"              BOOLEAN              NOT NULL        DEFAULT FALSE,
+  "twoFactorEnabled"         BOOLEAN              NOT NULL        DEFAULT FALSE,
+  "twoFactorSecret"          VARCHAR(255)         NULL,
+  "phoneNumber"              VARCHAR(20)          NULL,
+  languageType               "LanguageType"       NOT NULL        DEFAULT 'en',
+  "role"                     "UserRole"           NOT NULL        DEFAULT 'user',
+  "profileId"                INTEGER              NOT NULL
     CONSTRAINT "userProfileFk"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "enabledNotificationTypes" "NotificationType"[] NOT NULL DEFAULT ARRAY [
+  "enabledNotificationTypes" "NotificationType"[] NOT NULL        DEFAULT ARRAY [
     'replies_comments'::"NotificationType",
     'thread_comment'::"NotificationType",
     'mint'::"NotificationType",
@@ -68,7 +68,7 @@ CREATE TABLE "User"
 
 CREATE TABLE "TeaBag"
 (
-  "id"      SERIAL  NOT NULL PRIMARY KEY,
+  "id"        SERIAL  NOT NULL PRIMARY KEY,
   "profileId" INTEGER NOT NULL
     CONSTRAINT "teaBagProfileFk"
       REFERENCES "Profile" ("id")
@@ -127,7 +127,7 @@ CREATE TABLE "Comment"
     CONSTRAINT "commentUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "commentedAt"    TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL DEFAULT now(),
+  "commentedAt"    TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
   "commentary"     VARCHAR(1000)                  NOT NULL,
   "replyCommentId" INTEGER                        NULL
     CONSTRAINT "replyCommentFk"
@@ -309,7 +309,7 @@ CREATE TABLE "PasswordReset"
     CONSTRAINT "passwordResetUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "createdAt" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL        DEFAULT now(),
+  "createdAt" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
   "expireAt"  TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
   "active"    BOOLEAN                        NOT NULL
 );
