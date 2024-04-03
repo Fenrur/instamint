@@ -145,7 +145,7 @@ CREATE TABLE "ReportComment"
     CONSTRAINT "reportedCommentFk"
       REFERENCES "Comment" ("id")
       ON DELETE CASCADE,
-  "reason"            VARCHAR(300)                   NULL,
+  "reason"            VARCHAR(1000)                   NULL,
   "reportAt"          TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
   PRIMARY KEY ("reporterUserId", "reportedCommentId")
 );
@@ -160,7 +160,7 @@ CREATE TABLE "ReportNft"
     CONSTRAINT "reportedNftFk"
       REFERENCES "Nft" ("id")
       ON DELETE CASCADE,
-  "reason"         VARCHAR(300)                   NULL,
+  "reason"         VARCHAR(1000)                   NULL,
   "reportAt"       TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
   PRIMARY KEY ("reporterUserId", "reportedNftId")
 );
