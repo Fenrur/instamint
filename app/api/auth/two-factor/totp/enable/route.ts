@@ -1,4 +1,4 @@
-import {NextRequest, NextResponse} from "next/server"
+import {NextResponse} from "next/server"
 import {auth, getSession} from "@/auth"
 import {
   invalidContentTypeProblem,
@@ -7,9 +7,8 @@ import {
   twoFactorSetupRequiredProblem,
   uidNotFoundProblem
 } from "@/http/problem"
-import {ErrorCode} from "@/http/error-code"
 import {enableTwoFactorAuthentification, findUserByUid} from "@/db/db-service"
-// @ts-ignore
+// @ts-expect-error TODO fix library not found
 import {NextAuthRequest} from "next-auth/lib"
 import {isContentType} from "@/http/content-type"
 
@@ -19,11 +18,13 @@ export const POST = auth(async (req: NextAuthRequest) => {
   }
 
   const session = getSession(req)
+
   if (!session) {
     return problem(notAuthenticatedProblem)
   }
 
   const user = await findUserByUid(session.uid)
+
   if (!user) {
     return problem({...uidNotFoundProblem, detail: `User with UID ${session.uid}`})
   }

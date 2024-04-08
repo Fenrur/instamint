@@ -10,23 +10,28 @@ export async function POST(req: NextRequest) {
   }
 
   const formData = await req.formData()
-  let parsedFormData
+  let parsedFormData = null
+  const url = req.nextUrl.clone()
+
   try {
     parsedFormData = LoginCredentials.parse(formData)
   } catch (e: any) {
-    req.nextUrl.pathname = "/login"
-    return NextResponse.redirect(req.nextUrl)
+    url.pathname = "/login"
+
+    return NextResponse.redirect(url)
   }
 
   const emailDb = await findUserByEmail(parsedFormData.email)
+
   if (!emailDb) {
-    req.nextUrl.pathname = "/login"
-    return NextResponse.redirect(req.nextUrl)
+    url.pathname = "/login"
+
+    return NextResponse.redirect(url)
   }
 
-  req.nextUrl.pathname = "/login/credentials"
-  req.nextUrl.searchParams.set("email", parsedFormData.email)
-  req.nextUrl.searchParams.set("step", "password")
+  url.pathname = "/login/credentials"
+  url.searchParams.set("email", parsedFormData.email)
+  url.searchParams.set("step", "password")
 
-  return NextResponse.redirect(req.nextUrl)
+  return NextResponse.redirect(url)
 }

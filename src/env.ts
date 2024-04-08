@@ -9,7 +9,8 @@ export const env = createEnv({
     GMAIL_PASS: z.string(),
     NEXT_AUTH_SECRET: z.string(),
     SECURE_AUTH_COOKIES: z.string(),
-    TOTP_ENCRYPTION_KEY: z.string()
+    TOTP_ENCRYPTION_KEY: z.string(),
+    TRUST_HOST: z.string(),
   },
   client: {
     NEXT_PUBLIC_PUBLISHABLE_KEY: z.string().min(1),

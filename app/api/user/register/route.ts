@@ -23,25 +23,26 @@ export const POST = async (req: NextRequest) => {
 
   const body = await req.json()
 
-  let parsedBody;
+  let parsedBody = null
+
   try {
     parsedBody = Body.parse(body)
   } catch (e: any) {
-    return NextResponse.json({ message: e.errors }, { status: 400 });
+    return NextResponse.json({ message: e.errors }, { status: 400 })
   }
 
   const user = await findUserByEmail(parsedBody.email)
 
   if (user) {
-    return NextResponse.json({ message: "Email is already in use" }, { status: 400 });
+    return NextResponse.json({ message: "Email is already in use" }, { status: 400 })
   }
 
   const uid = randomUUID()
   const createdUser = await createUser(uid, parsedBody.email, parsedBody.password)
 
   if (!createdUser) {
-    return NextResponse.json({ message: "Failed to create user" }, { status: 500 });
+    return NextResponse.json({ message: "Failed to create user" }, { status: 500 })
   }
 
-  return NextResponse.json({ message: "User created successfully", data: {uid, email: parsedBody.email} }, { status: 200 });
-};
+  return NextResponse.json({ message: "User created successfully", data: {uid, email: parsedBody.email} }, { status: 200 })
+}

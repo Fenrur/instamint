@@ -1,7 +1,8 @@
 import {
   TwoFactorAuthenticatorTypeRequest,
   TwoFactorAuthenticatorTypeResponse,
-  VerifyPasswordRequest, VerifyTotpCodeRequest
+  VerifyPasswordRequest,
+  VerifyTotpCodeRequest
 } from "@/http/rest/types"
 import {getErrorCodeFromProblem} from "@/http/problem"
 import {ErrorCode} from "@/http/error-code"
@@ -17,18 +18,19 @@ export async function verifyUserPassword(req: VerifyPasswordRequest) {
 
   if (res.status === 200) {
     return "password_valid"
-  } else {
-    const body = await res.json()
-    const errorCode = getErrorCodeFromProblem(body)
-    switch (errorCode) {
-      case ErrorCode.EMAIL_NOT_FOUNT:
-        return "email_not_found"
-      case ErrorCode.PASSWORD_IS_INVALID:
-        return "password_invalid"
-    }
-
-    throw new Error(`Undefined error code from server ${errorCode}`)
   }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.EMAIL_NOT_FOUNT:
+      return "email_not_found"
+
+    case ErrorCode.PASSWORD_IS_INVALID:
+      return "password_invalid"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
 }
 
 export async function twoFactorAuthenticatorUserType(req: TwoFactorAuthenticatorTypeRequest) {
@@ -41,20 +43,20 @@ export async function twoFactorAuthenticatorUserType(req: TwoFactorAuthenticator
   })
 
   if (res.status === 200) {
-    const body = await res.json()
-    return TwoFactorAuthenticatorTypeResponse.parse(body)
-  } else {
-    const body = await res.json()
-    const errorCode = getErrorCodeFromProblem(body)
-    switch (errorCode) {
-      case ErrorCode.EMAIL_NOT_FOUNT:
-        return "email_not_found"
-      case ErrorCode.PASSWORD_IS_INVALID:
-        return "password_invalid"
-    }
-
-    throw new Error(`Undefined error code from server ${errorCode}`)
+    return TwoFactorAuthenticatorTypeResponse.parse(await res.json())
   }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.EMAIL_NOT_FOUNT:
+      return "email_not_found"
+
+    case ErrorCode.PASSWORD_IS_INVALID:
+      return "password_invalid"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
 }
 
 export async function verifyTwoFactorAuthenticatorTotpCode(req: VerifyTotpCodeRequest) {
@@ -68,22 +70,27 @@ export async function verifyTwoFactorAuthenticatorTotpCode(req: VerifyTotpCodeRe
 
   if (res.status === 200) {
     return "code_valid"
-  } else {
-    const body = await res.json()
-    const errorCode = getErrorCodeFromProblem(body)
-    switch (errorCode) {
-      case ErrorCode.EMAIL_NOT_FOUNT:
-        return "email_not_found"
-      case ErrorCode.PASSWORD_IS_INVALID:
-        return "password_invalid"
-      case ErrorCode.TWO_FACTOR_NOT_ENABLED:
-        return "two_factor_not_enabled"
-      case ErrorCode.TWO_FACTOR_SETUP_REQUIRED:
-        return "two_factor_setup_required"
-      case ErrorCode.INVALID_TWO_FACTOR_CODE:
-        return "invalid_totp_code"
-    }
-
-    throw new Error(`Undefined error code from server ${errorCode}`)
   }
+
+  const body = await res.json()
+  const errorCode = getErrorCodeFromProblem(body)
+
+  switch (errorCode) {
+    case ErrorCode.EMAIL_NOT_FOUNT:
+      return "email_not_found"
+
+    case ErrorCode.PASSWORD_IS_INVALID:
+      return "password_invalid"
+
+    case ErrorCode.TWO_FACTOR_NOT_ENABLED:
+      return "two_factor_not_enabled"
+
+    case ErrorCode.TWO_FACTOR_SETUP_REQUIRED:
+      return "two_factor_setup_required"
+
+    case ErrorCode.INVALID_TWO_FACTOR_CODE:
+      return "invalid_totp_code"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
 }

@@ -4,14 +4,12 @@ import {
   verifyUserPassword
 } from "@/repository/index"
 import useSWRMutation from "swr/mutation"
-import {useLogin} from "@/store"
 import {TwoFactorAuthenticatorTypeRequest, VerifyPasswordRequest, VerifyTotpCodeRequest} from "@/http/rest/types"
 
 export function useVerifyUserPasswordByEmail() {
   const verifyUserPasswordFetcher = (_: any, {arg}: {
     arg: VerifyPasswordRequest
   }) => verifyUserPassword(arg)
-
   const { trigger, data, error, isMutating } = useSWRMutation("/api/auth/verify/password", verifyUserPasswordFetcher)
 
   return {
@@ -26,7 +24,6 @@ export function useTwoFactorAuthenticatorUserType() {
   const twoFactorAuthenticatorUserTypeFetcher = (_: any, {arg}: {
     arg: TwoFactorAuthenticatorTypeRequest
   }) => twoFactorAuthenticatorUserType(arg)
-
   const { trigger, data, error, isMutating } = useSWRMutation("/api/auth/two-factor", twoFactorAuthenticatorUserTypeFetcher)
 
   return {
@@ -41,7 +38,6 @@ export function useVerifyTwoFactorAuthenticatorTotpCode() {
   const verifyTwoFactorAuthenticatorTotpCodeFetcher = (_: any, {arg}: {
     arg: VerifyTotpCodeRequest
   }) => verifyTwoFactorAuthenticatorTotpCode(arg)
-
   const { trigger, data, error, isMutating } = useSWRMutation("/api/auth/verify/two-factor/totp", verifyTwoFactorAuthenticatorTotpCodeFetcher)
 
   return {

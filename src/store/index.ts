@@ -17,8 +17,8 @@ export const useLogin = create<LoginState>()(
     persist(
       (set) => ({
         credentials: null,
-        setCredentials: (by) => set({credentials: by}),
-        resetCredentials: () => set({credentials: null})
+        setCredentials: (by) => { set({credentials: by}) },
+        resetCredentials: () => { set({credentials: null}) }
       }),
       {
         name: "login-storage",

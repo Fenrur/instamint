@@ -15,7 +15,7 @@ export default function Email() {
 
   return (<CodeBlock
     code={code}
-    lineNumbers // add this so that there are line numbers beside each code line
+    lineNumbers
     theme={dracula}
     language="javascript"
   />)

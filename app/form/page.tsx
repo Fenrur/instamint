@@ -7,5 +7,5 @@ export default function Contact() {
       <input type="email" id="email" name="email" required />
       <button type="submit">Envoyer</button>
     </form>
-  );
+  )
 }

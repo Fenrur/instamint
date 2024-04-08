@@ -34,7 +34,7 @@ export default function TotpPage() {
     if (!credentials) {
       router.push("/login")
     }
-  }, [credentials])
+  }, [credentials, router])
 
   useEffect(() => {
     if (errorVerification) {
@@ -48,9 +48,8 @@ export default function TotpPage() {
       pin: "",
     },
   })
-
   const handleFormSubmit = async (data: z.infer<typeof FormSchema>) => {
-    if (! credentials) return
+    if (! credentials) {return}
 
     const result = await verifyTwoFactorAuthenticatorTotpCode({
       email: credentials.email,
@@ -61,25 +60,37 @@ export default function TotpPage() {
     switch (result) {
       case "code_valid":
         resetCredentials()
-        signIn("credentials", {
+        await signIn("credentials", {
           email: credentials.email,
           password: credentials.password,
           twoFactorAuthentification: data.pin
         })
+
+        break
+
       case "email_not_found":
         router.push("/login")
+
         break
+
       case "password_invalid":
         router.push("/login")
+
         break
+
       case "two_factor_not_enabled":
         router.push("/login")
+
         break
+
       case "two_factor_setup_required":
         router.push("/login")
+
         break
+
       case "invalid_totp_code":
         toast.error("Invalid one-time password", {description: "Please try again..."})
+
         break
     }
   }

@@ -7,7 +7,6 @@ import {
   passwordIsInvalidProblem,
   problem
 } from "@/http/problem"
-import {ErrorCode} from "@/http/error-code"
 import {findUserByEmail} from "@/db/db-service"
 import {isPasswordValid} from "@/utils/password"
 import {isContentType} from "@/http/content-type"
@@ -19,7 +18,8 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json()
 
-  let parsedBody;
+  let parsedBody = null
+
   try {
     parsedBody = TwoFactorAuthenticatorTypeRequest.parse(body)
   } catch (e: any) {
@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
   }
 
   const user = await findUserByEmail(parsedBody.email)
+
   if (!user) {
     return problem(emailNotFoundProblem)
   }

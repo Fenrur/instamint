@@ -20,38 +20,44 @@ export function findUserByUid(uid: string) {
 
 export async function createUser(uid: UUID, email: string, password: string) {
   const hashedPassword = await hashPassword(password)
-  return db.insert(user).values({email, hashedPassword, uid})
+
+
+return db.insert(user).values({email, hashedPassword, uid})
 }
 
 type VerifyUserPasswordResult = "valid" | "invalid" | "email_not_found";
 
 export async function verifyUserPasswordByEmail(email: string, password: string): Promise<VerifyUserPasswordResult> {
   const user = await findUserByEmail(email)
+
   if (!user) {
     return "email_not_found"
   }
 
   if (await isPasswordValid(password, user.hashedPassword)) {
     return "valid"
-  } else {
-    return "invalid"
   }
+
+
+return "invalid"
 }
 
 export async function verifyUserPasswordByUid(uid: string, password: string) {
   const user = await findUserByUid(uid)
+
   if (!user) {
     return "uid_not_found"
   }
 
   if (await isPasswordValid(password, user.hashedPassword)) {
     return "valid"
-  } else {
-    return "invalid"
   }
+
+
+return "invalid"
 }
 
-export async function resetTwoFactorAuthentification(id: number) {
+export function resetTwoFactorAuthentification(id: number) {
   return db.update(user).set({
     id,
     twoFactorEnabled: false,
@@ -59,21 +65,21 @@ export async function resetTwoFactorAuthentification(id: number) {
   })
 }
 
-export async function enableTwoFactorAuthentification(uid: string) {
+export function enableTwoFactorAuthentification(uid: string) {
   return db.update(user).set({
     uid,
     twoFactorEnabled: true
   })
 }
 
-export async function disableTwoFactorAuthentification(uid: string) {
+export function disableTwoFactorAuthentification(uid: string) {
   return db.update(user).set({
     uid,
     twoFactorEnabled: false
   })
 }
 
-export async function setTwoFactorSecret(uid: string, secret: string) {
+export function setTwoFactorSecret(uid: string, secret: string) {
   return db.update(user).set({
     uid,
     twoFactorSecret: symmetricEncrypt(secret, env.TOTP_ENCRYPTION_KEY)
@@ -82,6 +88,7 @@ export async function setTwoFactorSecret(uid: string, secret: string) {
 
 export async function setupTwoFactorAuthentification(uid: string, password: string, secret: string) {
   const user = await findUserByUid(uid)
+
   if (!user) {
     return "uid_not_found"
   }
@@ -95,11 +102,14 @@ export async function setupTwoFactorAuthentification(uid: string, password: stri
   }
 
   await setTwoFactorSecret(uid, secret)
-  return "setup_complete"
+
+
+return "setup_complete"
 }
 
 export async function verifyUserPasswordAndTotpCode(uid: string, password: string, totpCode: string) {
   const user = await findUserByUid(uid)
+
   if (!user) {
     return "uid_not_found"
   }
@@ -125,6 +135,7 @@ export async function verifyUserPasswordAndTotpCode(uid: string, password: strin
 
 export async function verifyUserTotpCode(email: string, password: string, totpCode: string) {
   const user = await findUserByEmail(email)
+
   if (!user) {
     return "email_not_found"
   }

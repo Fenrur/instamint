@@ -1,7 +1,6 @@
 import {NextRequest, NextResponse} from "next/server"
 import {VerifyPasswordRequest} from "@/http/rest/types"
 import {verifyUserPasswordByEmail} from "@/db/db-service"
-import {ErrorCode} from "@/http/error-code"
 import {
   emailNotFoundProblem,
   invalidContentTypeProblem,
@@ -18,7 +17,8 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json()
 
-  let parsedBody
+  let parsedBody = null
+
   try {
     parsedBody = VerifyPasswordRequest.parse(body)
   } catch (e: any) {
@@ -30,8 +30,10 @@ export async function POST(req: NextRequest) {
   switch (result) {
     case "valid":
       return NextResponse.json({message: "valid"})
+
     case "invalid":
       return problem(passwordIsInvalidProblem)
+
     case "email_not_found":
       return problem(emailNotFoundProblem)
   }

@@ -2,14 +2,14 @@ import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import {findUserByEmail, resetTwoFactorAuthentification} from "@/db/db-service"
 import {isPasswordValid} from "@/utils/password"
-import { env } from "@/env"
+import {env} from "@/env"
 import {Session} from "@/auth/types"
-// @ts-ignore
+// @ts-expect-error TODO fix library not found
 import {NextAuthRequest} from "next-auth/lib"
 import {symmetricDecrypt} from "@/utils/crypto"
 import {authenticator} from "@/two-factor/otp"
 
-export const { handlers, auth, signIn, signOut} = NextAuth({
+export const {handlers, auth, signIn, signOut} = NextAuth({
   providers: [
     CredentialsProvider({
       id: "credentials",
@@ -19,8 +19,9 @@ export const { handlers, auth, signIn, signOut} = NextAuth({
         password: {label: "Password", type: "password"},
         twoFactorAuthentification: {label: "2Fa", type: "text"}
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const user = await findUserByEmail(credentials.email as string)
+
         if (!user) {
           throw new Error("User not found")
         }
@@ -38,16 +39,18 @@ export const { handlers, auth, signIn, signOut} = NextAuth({
 
           if (user.twoFactorSecret === null) {
             await resetTwoFactorAuthentification(user.id)
+
             return {uid: user.uid, email: user.email}
           }
 
-          const secret = symmetricDecrypt(user.twoFactorSecret, env.TOTP_ENCRYPTION_KEY);
+          const secret = symmetricDecrypt(user.twoFactorSecret, env.TOTP_ENCRYPTION_KEY)
+
           if (secret.length !== 32) {
-            console.error(`Two factor secret decryption failed. Expected key with length 32 but got ${secret.length}`);
             throw new Error("Internal Server Error")
           }
 
-          const isValidToken = authenticator().check(String(credentials.twoFactorAuthentification), secret);
+          const isValidToken = authenticator().check(String(credentials.twoFactorAuthentification), secret)
+
           if (!isValidToken) {
             throw new Error("Invalid two factor authentification")
           }
@@ -65,7 +68,7 @@ export const { handlers, auth, signIn, signOut} = NextAuth({
     strategy: "jwt"
   },
   callbacks: {
-    async redirect({ url, baseUrl }) {
+    async redirect() {
       return "/"
     },
     async jwt({token, user}) {
@@ -73,17 +76,18 @@ export const { handlers, auth, signIn, signOut} = NextAuth({
         const jwtUser = user as JWTUser
         token.uid = jwtUser.uid
       }
+
       return token
     },
     async session({session, token}) {
       if (token.uid) {
-        // @ts-ignore
-        session.uid = token.uid;
-        // @ts-ignore
+        // @ts-expect-error checked statement
+        session.uid = token.uid
+        // @ts-expect-error checked statement
         session.user = null
       }
 
-      return session;
+      return session
     }
   },
   useSecureCookies: env.SECURE_AUTH_COOKIES === "true",
@@ -101,7 +105,8 @@ export const { handlers, auth, signIn, signOut} = NextAuth({
   pages: {
     signIn: "/login",
     newUser: "/signup",
-  }
+  },
+  trustHost: true
 })
 
 type JWTUser = {
@@ -110,8 +115,12 @@ type JWTUser = {
 }
 
 export function getSession(req: NextAuthRequest) {
-  if (req.auth === null || req.auth === undefined) return null
+  if (!req || !req.auth) {
+    return null
+  }
+
   try {
+    // @typescript-eslint/no-unsafe-member-access verified
     return Session.parse(req.auth)
   } catch (e) {
     return null

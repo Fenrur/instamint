@@ -5,14 +5,13 @@ import {Input} from "@/components/ui/input"
 import {Button} from "@/components/ui/button"
 import {useRouter, useSearchParams} from "next/navigation"
 import {z} from "zod"
-import {CheckIcon, ThickArrowRightIcon} from "@radix-ui/react-icons"
+import {CheckIcon} from "@radix-ui/react-icons"
 import Link from "next/link"
 import {Badge} from "@/components/ui/badge"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
-import React, {useEffect, useState} from "react"
+import React, {Suspense, useEffect, useState} from "react"
 import {useLogin} from "@/store"
 import {useTwoFactorAuthenticatorUserType, useVerifyUserPasswordByEmail} from "@/repository/hooks"
-import {ThreeDots} from "react-loader-spinner"
 import {signIn} from "next-auth/react"
 import {toast} from "sonner"
 import {LoadingDots} from "@/components/ui/loading-dots"
@@ -20,9 +19,8 @@ import {LoadingDots} from "@/components/ui/loading-dots"
 function useVerifyPasswordAndGetTwoFactorAuthenticatorType() {
   const {verifyUserPassword, isFetchingVerification, errorVerification} = useVerifyUserPasswordByEmail()
   const {twoFactorAuthenticatorUserType, isFetchingTwoFactor, errorTwoFactor} = useTwoFactorAuthenticatorUserType()
-
   const [isFetching, setIsFetching] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<any | null>(null)
 
   useEffect(() => {
     if (isFetchingVerification || isFetchingTwoFactor) {
@@ -57,18 +55,11 @@ function useVerifyPasswordAndGetTwoFactorAuthenticatorType() {
   }
 }
 
-export default function PasswordCredentialsPage() {
+function ContentPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const {trigger, isFetching, error} = useVerifyPasswordAndGetTwoFactorAuthenticatorType()
   const {setCredentials, resetCredentials} = useLogin()
-
-  const email = searchParams.get("email")
-
-  if (!email || !z.string().email().safeParse(email).success) {
-    router.push("/login")
-    return
-  }
 
   useEffect(() => {
     if (error) {
@@ -78,38 +69,55 @@ export default function PasswordCredentialsPage() {
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    const email = searchParams.get("email")
+
+    if (!email) {
+      return
+    }
+
     const formData = new FormData(e.currentTarget)
     const passwordFormData = formData.get("password")
-    if (!passwordFormData) return
-    const password = String(passwordFormData)
 
+    if (!passwordFormData) {
+      return
+    }
+
+    const password = String(passwordFormData)
     const result = await trigger({email, password})
+
     if (result === "email_not_found") {
       router.push("/login")
     } else if (result === "password_invalid") {
       toast.error("Invalid password", {description: "Please try again..."})
+    } else if (result.type === "totp") {
+      setCredentials({
+        email,
+        password
+      })
+      router.push("/login/totp")
     } else {
-      if (result.type === "totp") {
-        setCredentials({
-          email,
-          password
-        })
-        router.push("/login/totp")
-      } else {
-        resetCredentials()
-        signIn("credentials", {
-          email,
-          password
-        })
-      }
+      resetCredentials()
+      await signIn("credentials", {
+        email,
+        password
+      })
     }
   }
 
   useEffect(() => {
     if (error) {
-      console.log(error)
+      toast.error("Error verifying your password", {description: "Please try again..."})
     }
   }, [error])
+
+  useEffect(() => {
+    const email = searchParams.get("email")
+
+    if (!email || !z.string().email().safeParse(email).success) {
+      router.push("/login")
+    }
+  }, [searchParams, router])
 
   return (
     <>
@@ -120,7 +128,7 @@ export default function PasswordCredentialsPage() {
               <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn"/>
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
-            <Badge className="h-5" variant="outline">{email}</Badge>
+            <Badge className="h-5" variant="outline">{searchParams.get("email")}</Badge>
           </div>
 
           <div className="grid gap-2">
@@ -148,5 +156,13 @@ export default function PasswordCredentialsPage() {
         </Link>
       </div>
     </>
+  )
+}
+
+export default function PasswordCredentialsPage() {
+  return (
+    <Suspense>
+      <ContentPage/>
+    </Suspense>
   )
 }
