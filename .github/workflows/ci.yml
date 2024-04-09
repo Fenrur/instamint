@@ -11,7 +11,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build
-        run: next build
+        run: npm run build
 
   lint:
     runs-on: ubuntu-latest
@@ -22,4 +22,4 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Lint
-        run: next lint
+        run: npm run lint
