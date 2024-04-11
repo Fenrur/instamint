@@ -23,3 +23,20 @@ jobs:
         run: npm install
       - name: Lint
         run: npm run lint
+
+#TODO add Jest and playwright
+
+#  test:
+#    runs-on: ubuntu-latest
+
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#      - name: Install dependencies
+#        run: npm install
+#      - name: Unit tests
+#        run: npm run test
+#      - name: Install Playwright Browsers
+#        run: npx playwright install --with-deps
+#      - name: Run Playwright tests
+#        run: npx playwright test
