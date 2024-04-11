@@ -1,9 +1,9 @@
 import {
   boolean,
-  doublePrecision, foreignKey,
+  doublePrecision,
   integer,
   pgEnum,
-  pgTable, primaryKey,
+  pgTable,
   serial,
   text,
   timestamp,
@@ -27,14 +27,14 @@ export const NotificationType = pgEnum("NotificationType", ["replies_comments", 
 export const Profile = pgTable("Profile", {
   id: serial("id").notNull().primaryKey(),
   username: varchar("username", {length: 16}).notNull().unique(),
-  createdAt: timestamp("createdAt", {withTimezone: false}).notNull(),
+  createdAt: timestamp("createdAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
   bio: varchar("bio", {length: 255}).notNull().default(""),
-  link: varchar("link", {length: 255}).notNull(),
+  link: varchar("link", {length: 255}),
   avatarUrl: varchar("avatarUrl", {length: 255}).notNull(),
   canBeSearched: boolean("canBeSearched").notNull().default(true),
   visibilityType: ProfileVisibilityType("visibilityType").notNull().default("public"),
   location: text("location"),
-  displayName: varchar("displayName", {length: 25}).notNull()
+  displayName: varchar("displayName", {length: 40}).notNull()
 })
 
 export const User = pgTable("User", {
@@ -57,8 +57,16 @@ export const userRelations = relations(User, ({ one, many }) => ({
   nfts: many(Nft),
   mints: many(Mint),
   comments: many(Comment),
-  reportingComments: many(ReportComment),
-  reportingNfts: many(ReportNft),
+  reportedComments: many(ReportComment),
+  reportedNfts: many(ReportNft),
+  reportedUsers: many(ReportUser),
+  teaBags: many(TeaBag),
+  viewedProfiles: many(TeaBag),
+  scheduledDeletion: many(ScheduleDeletionUser),
+  drafts: many(DraftNft),
+  whitelists: many(Whitelist),
+  whitelistUsers: many(WhitelistUser),
+  privateMessages: many(PrivateMessage)
 }))
 
 export const TeaBag = pgTable("TeaBag", {
@@ -74,10 +82,12 @@ export const Nft = pgTable("Nft", {
   id: serial("id").notNull().primaryKey(),
   ownerUserId: integer("ownerUserId").notNull().references(() => User.id, {onDelete: "cascade"}),
   showOnProfileId: integer("showOnProfileId").notNull().references(() => Profile.id, {onDelete: "cascade"}),
-  description: text("description").notNull(),
-  location: text("location").notNull(),
+  title: varchar("title", {length: 255}).notNull(),
+  description: text("description").notNull().default(""),
+  location: text("location"),
   price: doublePrecision("price").notNull(),
   currencyType: CurrencyType("currencyType").notNull(),
+  contentUrl: varchar("contentUrl", {length: 255}).notNull(),
 })
 
 export const nftRelations = relations(Nft, ({ one, many }) => ({
@@ -92,7 +102,7 @@ export const nftRelations = relations(Nft, ({ one, many }) => ({
 export const Mint = pgTable("Mint", {
   nftId: integer("nftId").notNull().references(() => Nft.id, {onDelete: "cascade"}).primaryKey(),
   userId: integer("userId").notNull().references(() => User.id, {onDelete: "cascade"}).primaryKey(),
-  mintAt: timestamp("mintAt", {withTimezone: false}).notNull(),
+  mintAt: timestamp("mintAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
 })
 
 export const mintRelations = relations(Mint, ({ one }) => ({
@@ -113,7 +123,7 @@ export const Comment = pgTable("Comment", {
   id: serial("id").notNull().primaryKey(),
   nftId: integer("nftId").notNull().references(() => Nft.id, {onDelete: "cascade"}),
   userId: integer("userId").notNull().references(() => User.id, {onDelete: "cascade"}),
-  commentedAt: timestamp("commentedAt", {withTimezone: false}).notNull(),
+  commentedAt: timestamp("commentedAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
   commentary: varchar("commentary", {length: 1000}).notNull(),
   replyCommentId: integer("replyCommentId")
 })
@@ -128,7 +138,7 @@ export const ReportComment = pgTable("ReportComment", {
   reporterUserId: integer("reporterUserId").notNull().references(() => User.id, {onDelete: "cascade"}).primaryKey(),
   reportedCommentId: integer("reportedCommentId").notNull().references(() => Comment.id, {onDelete: "cascade"}).primaryKey(),
   reason: varchar("reason", {length: 1000}),
-  reportAt: timestamp("reportAt", {withTimezone: false}).notNull(),
+  reportAt: timestamp("reportAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
 })
 
 export const reportCommentRelations = relations(ReportComment, ({ one }) => ({
@@ -140,7 +150,7 @@ export const ReportNft = pgTable("ReportNft", {
   reporterUserId: integer("reporterUserId").notNull().references(() => User.id, {onDelete: "cascade"}).primaryKey(),
   reportedNftId: integer("reportedNftId").notNull().references(() => Nft.id, {onDelete: "cascade"}).primaryKey(),
   reason: varchar("reason", {length: 1000}),
-  reportAt: timestamp("reportAt", {withTimezone: false}).notNull(),
+  reportAt: timestamp("reportAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
 })
 
 export const reportNftRelations = relations(ReportNft, ({ one }) => ({
@@ -152,7 +162,7 @@ export const ReportUser = pgTable("ReportUser", {
   reporterUserId: integer("reporterUserId").notNull().references(() => User.id, {onDelete: "cascade"}).primaryKey(),
   reportedUserId: integer("reportedUserId").notNull().references(() => User.id, {onDelete: "cascade"}).primaryKey(),
   reason: varchar("reason", {length: 1000}),
-  reportAt: timestamp("reportAt", {withTimezone: false}).notNull(),
+  reportAt: timestamp("reportAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
 })
 
 export const reportUserRelations = relations(ReportUser, ({ one }) => ({
@@ -162,8 +172,8 @@ export const reportUserRelations = relations(ReportUser, ({ one }) => ({
 
 export const Whitelist = pgTable("Whitelist", {
   id: serial("id").notNull().primaryKey(),
-  startAt: timestamp("startAt", {withTimezone: false}).notNull(),
-  endAt: timestamp("endAt", {withTimezone: false}).notNull(),
+  startAt: timestamp("startAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
+  endAt: timestamp("endAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
   teaBagId: integer("teaBagId").notNull().references(() => TeaBag.id, {onDelete: "cascade"}),
 })
 
@@ -175,7 +185,7 @@ export const ViewProfile = pgTable("ViewProfile", {
   id: serial("id").notNull().primaryKey(),
   viewerUserId: integer("viewerUserId").notNull().references(() => User.id, {onDelete: "cascade"}),
   viewedProfileId: integer("viewedProfileId").notNull().references(() => Profile.id, {onDelete: "cascade"}),
-  viewAt: timestamp("viewAt", {withTimezone: false}).notNull(),
+  viewAt: timestamp("viewAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
 })
 
 export const viewProfileRelations = relations(ViewProfile, ({ one }) => ({
@@ -186,7 +196,7 @@ export const viewProfileRelations = relations(ViewProfile, ({ one }) => ({
 export const ScheduleDeletionUser = pgTable("ScheduleDeletionUser", {
   id: serial("id").notNull().primaryKey(),
   userId: integer("userId").notNull().unique().references(() => User.id, {onDelete: "cascade"}),
-  scheduleAt: timestamp("scheduleAt", {withTimezone: false}).notNull(),
+  scheduleAt: timestamp("scheduleAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
   byUserId: integer("byUserId").notNull().references(() => User.id, {onDelete: "cascade"}),
   reason: varchar("reason", {length: 1000})
 })
@@ -222,7 +232,7 @@ export const ViewNft = pgTable("ViewNft", {
   id: serial("id").notNull().primaryKey(),
   userId: integer("userId").notNull().references(() => User.id, {onDelete: "cascade"}),
   nftId: integer("nftId").notNull().references(() => Nft.id, {onDelete: "cascade"}),
-  viewAt: timestamp("viewAt", {withTimezone: false}).notNull(),
+  viewAt: timestamp("viewAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
 })
 
 export const viewNftRelations = relations(ViewNft, ({ one }) => ({
@@ -257,7 +267,7 @@ export const privateMessageRelations = relations(PrivateMessage, ({ one }) => ({
 export const Follow = pgTable("Follow", {
   followerUserId: integer("followerUserId").notNull().references(() => User.id, {onDelete: "cascade"}).primaryKey(),
   followedUserId: integer("followedUserId").notNull().references(() => User.id, {onDelete: "cascade"}).primaryKey(),
-  followAt: timestamp("followAt", {withTimezone: false}).notNull(),
+  followAt: timestamp("followAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
 })
 
 export const followRelations = relations(Follow, ({ one }) => ({
@@ -269,8 +279,8 @@ export const PasswordReset = pgTable("PasswordReset", {
   id: serial("id").notNull().primaryKey(),
   resetId: uuid("resetId").notNull().unique().defaultRandom(),
   userId: integer("userId").notNull().references(() => User.id, {onDelete: "cascade"}),
-  createdAt: timestamp("createdAt", {withTimezone: false}).notNull(),
-  expireAt: timestamp("expireAt", {withTimezone: false}).notNull(),
+  createdAt: timestamp("createdAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
+  expireAt: timestamp("expireAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
   active: boolean("active").notNull(),
 })
 
@@ -281,7 +291,7 @@ export const passwordResetRelations = relations(PasswordReset, ({ one }) => ({
 export const RequestFollow = pgTable("RequestFollow", {
   requesterUserId: integer("requesterUserId").notNull().references(() => User.id, {onDelete: "cascade"}).primaryKey(),
   requestedUserId: integer("requestedUserId").notNull().references(() => User.id, {onDelete: "cascade"}).primaryKey(),
-  requestAt: timestamp("requestAt", {withTimezone: false}).notNull(),
+  requestAt: timestamp("requestAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
   isIgnored: boolean("isIgnored").notNull().default(false),
 })
 

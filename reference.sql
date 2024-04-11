@@ -16,6 +16,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TABLE IF EXISTS "Profile", "User", "TeaBag", "Nft", "Mint", "HashtagNft", "Comment", "ReportComment", "ReportNft", "ReportUser", "Whitelist", "ViewProfile", "ScheduleDeletionUser", "DraftNft", "WhitelistUser", "ViewNft", "UserTeaBag", "PrivateMessage", "Follow", "PasswordReset", "RequestFollow";
+DROP TYPE IF EXISTS "LanguageType", "UserRole", "ProfileVisibilityType", "CurrencyType", "UserTeaBagRole", "NotificationType";
+
 CREATE TYPE "LanguageType" AS ENUM ('en', 'fr', 'es');
 
 CREATE TYPE "UserRole" AS ENUM ('user', 'admin');
@@ -31,28 +34,35 @@ CREATE TYPE "NotificationType" AS ENUM ('replies_comments', 'thread_comment', 'm
 CREATE TABLE "Profile"
 (
   "id"             SERIAL                         NOT NULL PRIMARY KEY,
-  "username"       VARCHAR(16)                    NOT NULL UNIQUE CHECK ("username" ~* '^[a-zA-Z0-9_]{3,16}$'),
-  "createdAt"      TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "username"       VARCHAR(18)                    NOT NULL UNIQUE CHECK ("username" ~* '^[a-zA-Z0-9_]{3,18}$'),
+  "createdAt"      TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   "bio"            VARCHAR(255)                   NOT NULL DEFAULT '',
-  "link"           VARCHAR(255)                   NOT NULL CHECK ( "link" ~* '^https?://(www\.)?[\w-]+\.[\w-]+(/\S*)?$'),
-  "avatarUrl"      VARCHAR(255)                   NOT NULL CHECK ( "avatarUrl" ~* '^https?://(www\.)?[\w-]+\.[\w-]+(/\S*)?$'),
+  "link"           VARCHAR(255)                   NULL
+--     CHECK ( "link" ~* '^(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*))$')
+  ,
+  "avatarUrl"      VARCHAR(255)                   NOT NULL
+--     CHECK ( "avatarUrl" ~* '^(http(s):\/\/.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$')
+  ,
   "canBeSearched"  BOOLEAN                        NOT NULL DEFAULT TRUE,
   "visibilityType" "ProfileVisibilityType"        NOT NULL DEFAULT 'public',
   "location"       TEXT                           NULL,
-  "displayName"    VARCHAR(25)                    NOT NULL
+  "displayName"    VARCHAR(40)                    NOT NULL
+--     CHECK ( "displayName" ~* '^.{3,26}$')
 );
 
 CREATE TABLE "User"
 (
   "id"                       SERIAL               NOT NULL PRIMARY KEY,
-  "email"                    VARCHAR(255)         NOT NULL UNIQUE CHECK ( "email" ~* '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'),
+  "email"                    VARCHAR(255)         NOT NULL UNIQUE
+--     CHECK ( "email" ~* '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+  ,
   "uid"                      UUID                 NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
   "hashedPassword"           VARCHAR(255)         NOT NULL,
   "isActivated"              BOOLEAN              NOT NULL        DEFAULT FALSE,
   "twoFactorEnabled"         BOOLEAN              NOT NULL        DEFAULT FALSE,
   "twoFactorSecret"          VARCHAR(255)         NULL,
   "phoneNumber"              VARCHAR(20)          NULL,
-  languageType               "LanguageType"       NOT NULL        DEFAULT 'en',
+  "languageType"             "LanguageType"       NOT NULL        DEFAULT 'en',
   "role"                     "UserRole"           NOT NULL        DEFAULT 'user',
   "profileId"                INTEGER              NOT NULL
     CONSTRAINT "userProfileFk"
@@ -86,10 +96,12 @@ CREATE TABLE "Nft"
     CONSTRAINT "nftShowOnProfileFk"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "description"     TEXT             NOT NULL,
-  "location"        TEXT             NOT NULL,
+  "title"           VARCHAR(255)     NOT NULL,
+  "description"     TEXT             NOT NULL DEFAULT '',
+  "location"        TEXT             NULL,
   "price"           DOUBLE PRECISION NOT NULL,
-  "currencyType"    "CurrencyType"   NOT NULL
+  "currencyType"    "CurrencyType"   NOT NULL,
+  "contentUrl"      VARCHAR(255)     NOT NULL
 );
 
 CREATE TABLE "Mint"
@@ -102,7 +114,7 @@ CREATE TABLE "Mint"
     CONSTRAINT "mintUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "mintAt" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "mintAt" TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   PRIMARY KEY ("nftId", "userId")
 );
 
@@ -127,7 +139,7 @@ CREATE TABLE "Comment"
     CONSTRAINT "commentUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "commentedAt"    TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "commentedAt"    TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   "commentary"     VARCHAR(1000)                  NOT NULL,
   "replyCommentId" INTEGER                        NULL
     CONSTRAINT "replyCommentFk"
@@ -146,7 +158,7 @@ CREATE TABLE "ReportComment"
       REFERENCES "Comment" ("id")
       ON DELETE CASCADE,
   "reason"            VARCHAR(1000)                  NULL,
-  "reportAt"          TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "reportAt"          TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   PRIMARY KEY ("reporterUserId", "reportedCommentId")
 );
 
@@ -161,7 +173,7 @@ CREATE TABLE "ReportNft"
       REFERENCES "Nft" ("id")
       ON DELETE CASCADE,
   "reason"         VARCHAR(1000)                  NULL,
-  "reportAt"       TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "reportAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   PRIMARY KEY ("reporterUserId", "reportedNftId")
 );
 
@@ -176,15 +188,15 @@ CREATE TABLE "ReportUser"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
   "reason"         VARCHAR(1000)               NULL,
-  "reportAt"       TIMESTAMP(0) WITH TIME ZONE NOT NULL,
+  "reportAt"       TIMESTAMP(3) WITH TIME ZONE NOT NULL,
   PRIMARY KEY ("reporterUserId", "reportedUserId")
 );
 
 CREATE TABLE "Whitelist"
 (
   "id"       SERIAL                         NOT NULL PRIMARY KEY,
-  "startAt"  TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
-  "endAt"    TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "startAt"  TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+  "endAt"    TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   "teaBagId" INTEGER                        NOT NULL
     CONSTRAINT "whitelistTeaBagFk"
       REFERENCES "TeaBag" ("id")
@@ -202,7 +214,7 @@ CREATE TABLE "ViewProfile"
     CONSTRAINT "viewedProfileFk"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "viewAt"          TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL
+  "viewAt"          TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL
 );
 
 CREATE TABLE "ScheduleDeletionUser"
@@ -212,7 +224,7 @@ CREATE TABLE "ScheduleDeletionUser"
     CONSTRAINT "scheduledDeletionUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "scheduleAt" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "scheduleAt" TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   "byUserId"   INTEGER                        NOT NULL
     CONSTRAINT "scheduledDeletionByUserFk"
       REFERENCES "User" ("id")
@@ -256,7 +268,7 @@ CREATE TABLE "ViewNft"
     CONSTRAINT "viewNftNftFk"
       REFERENCES "Nft" ("id")
       ON DELETE CASCADE,
-  "viewAt" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL
+  "viewAt" TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL
 );
 
 CREATE TABLE "UserTeaBag"
@@ -301,7 +313,7 @@ CREATE TABLE "Follow"
     CONSTRAINT "followedUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "followAt"       TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "followAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   PRIMARY KEY ("followerUserId", "followedUserId")
 );
 
@@ -313,8 +325,8 @@ CREATE TABLE "PasswordReset"
     CONSTRAINT "passwordResetUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "createdAt" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
-  "expireAt"  TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "createdAt" TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+  "expireAt"  TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   "active"    BOOLEAN                        NOT NULL
 );
 
@@ -328,7 +340,7 @@ CREATE TABLE "RequestFollow"
     CONSTRAINT "requestedUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "requestAt"       TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+  "requestAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   "isIgnored"       BOOLEAN                        NOT NULL DEFAULT FALSE,
   PRIMARY KEY ("requesterUserId", "requestedUserId")
 );
