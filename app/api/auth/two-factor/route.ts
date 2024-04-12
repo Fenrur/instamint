@@ -10,6 +10,7 @@ import {
 import {findUserByEmail} from "@/db/db-service"
 import {isPasswordValid} from "@/utils/password"
 import {isContentType} from "@/http/content-type"
+import { env } from "@/env"
 
 export async function POST(req: NextRequest) {
   if (!isContentType(req, "json")) {
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
     return problem(emailNotFoundProblem)
   }
 
-  if (!await isPasswordValid(parsedBody.password, user.hashedPassword)) {
+  if (!await isPasswordValid(parsedBody.password, user.hashedPassword, env.PEPPER_PASSWORD_SECRET)) {
     return problem(passwordIsInvalidProblem)
   }
 

@@ -26,7 +26,7 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
           throw new Error("User not found")
         }
 
-        const isValid = await isPasswordValid(credentials.password as string, user.hashedPassword)
+        const isValid = await isPasswordValid(credentials.password as string, user.hashedPassword, env.PEPPER_PASSWORD_SECRET)
 
         if (!isValid) {
           throw new Error("Invalid password")

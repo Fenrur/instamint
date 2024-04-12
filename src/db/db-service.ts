@@ -19,7 +19,7 @@ export function findUserByUid(uid: string) {
 }
 
 export async function createUser(uid: UUID, email: string, password: string) {
-  const hashedPassword = await hashPassword(password)
+  const hashedPassword = await hashPassword(password, env.PEPPER_PASSWORD_SECRET)
 
 
 return db.insert(user).values({email, hashedPassword, uid})
@@ -34,7 +34,7 @@ export async function verifyUserPasswordByEmail(email: string, password: string)
     return "email_not_found"
   }
 
-  if (await isPasswordValid(password, user.hashedPassword)) {
+  if (await isPasswordValid(password, user.hashedPassword, env.PEPPER_PASSWORD_SECRET)) {
     return "valid"
   }
 
@@ -49,7 +49,7 @@ export async function verifyUserPasswordByUid(uid: string, password: string) {
     return "uid_not_found"
   }
 
-  if (await isPasswordValid(password, user.hashedPassword)) {
+  if (await isPasswordValid(password, user.hashedPassword, env.PEPPER_PASSWORD_SECRET)) {
     return "valid"
   }
 
@@ -97,7 +97,7 @@ export async function setupTwoFactorAuthentification(uid: string, password: stri
     return "two_factor_already_enabled"
   }
 
-  if (!await isPasswordValid(password, user.hashedPassword)) {
+  if (!await isPasswordValid(password, user.hashedPassword, env.PEPPER_PASSWORD_SECRET)) {
     return "invalid_password"
   }
 
@@ -114,7 +114,7 @@ export async function verifyUserPasswordAndTotpCode(uid: string, password: strin
     return "uid_not_found"
   }
 
-  if (!await isPasswordValid(password, user.hashedPassword)) {
+  if (!await isPasswordValid(password, user.hashedPassword, env.PEPPER_PASSWORD_SECRET)) {
     return "invalid_password"
   }
 
@@ -140,7 +140,7 @@ export async function verifyUserTotpCode(email: string, password: string, totpCo
     return "email_not_found"
   }
 
-  if (!await isPasswordValid(password, user.hashedPassword)) {
+  if (!await isPasswordValid(password, user.hashedPassword, env.PEPPER_PASSWORD_SECRET)) {
     return "invalid_password"
   }
 
