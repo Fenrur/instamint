@@ -1,28 +1,55 @@
 import {db} from "@/db/db-client"
 import {hashPassword, isPasswordValid} from "@/utils/password"
-import {user} from "@/db/schema"
-import {UUID} from "crypto"
+import {Profile, User} from "@/db/schema"
 import {symmetricDecrypt, symmetricEncrypt} from "@/utils/crypto"
 import {env} from "@/env"
 import {authenticator} from "@/two-factor/otp"
+import {DateTime} from "luxon"
+import {generateUsername} from "@/utils/username"
 
 export function findUserByEmail(email: string) {
-  return db.query.user.findFirst({
-    where: (user, { eq }) => (eq(user.email, email)),
+  return db.query.User.findFirst({
+    where: (user, {eq}) => (eq(user.email, email)),
   })
 }
 
 export function findUserByUid(uid: string) {
-  return db.query.user.findFirst({
-    where: (user, { eq }) => (eq(user.uid, uid)),
+  return db.query.User.findFirst({
+    where: (user, {eq}) => (eq(user.uid, uid)),
   })
 }
 
-export async function createUser(uid: UUID, email: string, password: string) {
+export async function createUser(email: string, password: string) {
+  const createdAt = DateTime.now().toSQL({includeZone: false, includeOffset: false})
+  const username = generateUsername()
   const hashedPassword = await hashPassword(password)
+  const avatarUrl = `https://api.dicebear.com/8.x/pixel-art/svg?seed=${username}`
 
+  return db.transaction(async (db) => {
+    const resultProfile = await db.insert(Profile).values({
+      username,
+      createdAt,
+      avatarUrl,
+      displayName: username,
+      link: "https://www.google.com/"
+    }).returning({id: Profile.id})
 
-return db.insert(user).values({email, hashedPassword, uid})
+    const profileId = resultProfile[0].id
+
+    console.log("profileId", profileId)
+    console.log("email", email)
+    console.log("hashedPassword", hashedPassword)
+
+    const resultUser = await db.insert(User).values({
+      email,
+      hashedPassword,
+      profileId
+    }).returning({uid: User.uid})
+
+    console.log(resultUser[0].uid)
+
+    return resultUser[0].uid
+  })
 }
 
 type VerifyUserPasswordResult = "valid" | "invalid" | "email_not_found";
@@ -39,7 +66,7 @@ export async function verifyUserPasswordByEmail(email: string, password: string)
   }
 
 
-return "invalid"
+  return "invalid"
 }
 
 export async function verifyUserPasswordByUid(uid: string, password: string) {
@@ -53,12 +80,11 @@ export async function verifyUserPasswordByUid(uid: string, password: string) {
     return "valid"
   }
 
-
-return "invalid"
+  return "invalid"
 }
 
 export function resetTwoFactorAuthentification(id: number) {
-  return db.update(user).set({
+  return db.update(User).set({
     id,
     twoFactorEnabled: false,
     twoFactorSecret: null
@@ -66,21 +92,21 @@ export function resetTwoFactorAuthentification(id: number) {
 }
 
 export function enableTwoFactorAuthentification(uid: string) {
-  return db.update(user).set({
+  return db.update(User).set({
     uid,
     twoFactorEnabled: true
   })
 }
 
 export function disableTwoFactorAuthentification(uid: string) {
-  return db.update(user).set({
+  return db.update(User).set({
     uid,
     twoFactorEnabled: false
   })
 }
 
 export function setTwoFactorSecret(uid: string, secret: string) {
-  return db.update(user).set({
+  return db.update(User).set({
     uid,
     twoFactorSecret: symmetricEncrypt(secret, env.TOTP_ENCRYPTION_KEY)
   })
@@ -104,7 +130,7 @@ export async function setupTwoFactorAuthentification(uid: string, password: stri
   await setTwoFactorSecret(uid, secret)
 
 
-return "setup_complete"
+  return "setup_complete"
 }
 
 export async function verifyUserPasswordAndTotpCode(uid: string, password: string, totpCode: string) {
