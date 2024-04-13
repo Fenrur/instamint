@@ -3,9 +3,9 @@ name: unit tests
 on: [push, pull_request]
 jobs:
 
-#TODO add Jest and playwright
+  test:
 
-#  test:
+#TODO add Jest
 #    runs-on: ubuntu-latest
 
 #    steps:

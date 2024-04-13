@@ -1,9 +1,12 @@
+aname: End to end tests
+
 on: [push, pull_request]
 jobs:
 
-#TODO add Jest and playwright
 
-#  test:
+
+  test:
+#TODO add playwright
 #    runs-on: ubuntu-latest
 
 #    steps:
