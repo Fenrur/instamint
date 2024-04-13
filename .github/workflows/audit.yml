@@ -1,0 +1,15 @@
+name: Audit vulnerabilities
+
+on: [push, pull_request]
+jobs:
+
+  vulnerabilities:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm install
+      - name: Audit code
+        run: npm audit
