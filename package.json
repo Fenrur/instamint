@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "tests:unit": "jest --selectProjects unit",
+    "tests:integration": "jest --selectProjects integration",
+    "tests:e2e": "jest --selectProjects e2e"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^1.5.0",
@@ -62,6 +65,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.43.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -78,5 +82,29 @@
     "prettier": "^3.2.5",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
+  },
+  "jest": {
+    "projects": [
+      {
+        "displayName": "unit",
+        "testMatch": [
+          "tests/unit"
+        ]
+      },
+      {
+        "displayName": "integration",
+        "testEnvironment": "node",
+        "testMatch": [
+          "tests/integration"
+        ]
+      },
+      {
+        "displayName": "e2e",
+        "preset": "jest-playwright-preset",
+        "testMatch": [
+          "tests/e2e"
+        ]
+      }
+    ]
   }
 }
