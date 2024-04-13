@@ -1,12 +1,10 @@
-aname: End to end tests
-
-on: [push, pull_request]
-jobs:
-
-
-
-  test:
 #TODO add playwright
+#name: End to end tests
+
+#on: [push, pull_request]
+#jobs:
+#  test:
+
 #    runs-on: ubuntu-latest
 
 #    steps:
