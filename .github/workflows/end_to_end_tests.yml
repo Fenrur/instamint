@@ -1,0 +1,18 @@
+#TODO add playwright
+#name: End to end tests
+
+#on: [push, pull_request]
+#jobs:
+#  test:
+
+#    runs-on: ubuntu-latest
+
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#      - name: Install dependencies
+#        run: npm install
+#      - name: Install Playwright Browsers
+#        run: npx playwright install --with-deps
+#      - name: Run Playwright tests
+#        run: npx playwright test

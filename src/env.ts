@@ -5,6 +5,13 @@ import {z} from "zod"
 export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url(),
+    GMAIL_EMAIL: z.string().email(),
+    GMAIL_PASS: z.string(),
+    NEXT_AUTH_SECRET: z.string(),
+    SECURE_AUTH_COOKIES: z.string(),
+    TOTP_ENCRYPTION_KEY: z.string(),
+    TRUST_HOST: z.string(),
+    PEPPER_PASSWORD_SECRET: z.string(),
   },
   client: {
     NEXT_PUBLIC_PUBLISHABLE_KEY: z.string().min(1),
