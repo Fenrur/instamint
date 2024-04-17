@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "knex": "knex --esm"
+    "knex": "knex --esm",
     "email-dev": "email dev -d ./src/mail/templates"
   },
   "dependencies": {
