@@ -11,6 +11,7 @@ export const env = createEnv({
     SECURE_AUTH_COOKIES: z.string(),
     TOTP_ENCRYPTION_KEY: z.string(),
     TRUST_HOST: z.string(),
+    PEPPER_PASSWORD_SECRET: z.string(),
   },
   client: {
     NEXT_PUBLIC_PUBLISHABLE_KEY: z.string().min(1),
