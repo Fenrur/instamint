@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "email-dev": "email dev -d ./src/mail/templates",
     "tests:unit": "jest --selectProjects unit",
     "tests:integration": "jest --selectProjects integration",
     "tests:e2e": "jest --selectProjects e2e"
