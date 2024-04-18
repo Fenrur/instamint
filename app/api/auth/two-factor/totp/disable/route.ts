@@ -56,7 +56,6 @@ export const POST = auth(async (req: NextAuthRequest) => {
     case "valid":
       await disableTwoFactorAuthentification(session.uid)
 
-
-return NextResponse.json({message: "Two-factor authentication has been disabled"})
+    return NextResponse.json({message: "Two-factor authentication has been disabled"})
   }
 })
