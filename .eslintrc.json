@@ -164,7 +164,6 @@
     "prefer-spread": "error",
     "prefer-template": "error",
     "radix": "error",
-    "require-unicode-regexp": "error",
     "symbol-description": "error",
     "yoda": "error",
     "line-comment-position": ["error", { "position": "above" }],
