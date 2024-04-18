@@ -316,3 +316,7 @@ Temporary Items
 pnpm-lock.yaml
 
 db_data
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
