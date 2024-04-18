@@ -8,7 +8,7 @@ DECLARE
 BEGIN
   FOREACH hashtag IN ARRAY hashtags
     LOOP
-      IF NOT (hashtag ~* '^#[a-zA-Z0-9_]{3,255}$') THEN
+      IF NOT (hashtag ~* '^[a-zA-Z0-9_]{3,255}$') THEN
         RETURN false;
       END IF;
     END LOOP;

@@ -65,42 +65,42 @@ VALUES (11, 'big_hugs', '2024-01-11 00:00:00',
 
 INSERT INTO "User" ("id", "email", "hashedPassword", "isActivated", "twoFactorEnabled", "languageType", "role", "profileId",
                     "enabledNotificationTypes")
-VALUES (1, 'instaminttest+1@outlook.com', '$2a$12$w9sNymBUUbTNS8noPFjAweNbfXJn4IVRtqGyj2jrmAe6F.Ek5aR7.', TRUE, FALSE,
+VALUES (1, 'instaminttest+1@outlook.com', '$2a$12$Bf9MwurTqi3LD3H30AFkh.rY1WyKIxc0AtunJ.n.UTHcUqL.tglQ2', TRUE, FALSE,
         'en',
         'user', 1, '{"replies_comments", "mint"}'),
 -- PASSWORD: V5[tSp+k354/=}:J/u
-       (2, 'instaminttest+2@outlook.com', '$2a$12$gLV.KwGrxkicA3RyuyFsjOl.xBLt3gFfXWbDUQnPljwXTq.X8tgG2', TRUE, FALSE,
+       (2, 'instaminttest+2@outlook.com', '$2a$12$/YwWOZZc1y8rTYA94rpDcunAhfLfWrTWhplDkbwrtEZn2gJNIn0iS', TRUE, FALSE,
         'fr',
         'user', 2, '{"replies_comments", "mint"}'),
 -- PASSWORD: ?#95,>7jYnJymy},]E
-       (3, 'instaminttest+3@outlook.com', '$2a$12$se2eiljsFIT0KKuNq2cCJeNt4mh78yvdIf1zhkUy01IQvtbLFnisG', TRUE, TRUE, 'es',
+       (3, 'instaminttest+3@outlook.com', '$2a$12$QTuf2MHYcInaNW17FjNDp..dGbIQeDL3PgAygqhkX3ydnoWsZz6pa', TRUE, TRUE, 'es',
         'user', 3,
--- PASSWORD: 20Dl[FC4IAq%[rl\J8
+-- PASSWORD: 20Dl[FC4IAq%[rlJ8
         '{"follow", "follow_request_accepted"}'),
-       (4, 'instaminttest+4@outlook.com', '$2a$12$8Sbh0/10ujcqToIhdCk8rOH83LvFYpFoTCINJW1m0rb9d5NpR1frq', TRUE, FALSE,
+       (4, 'instaminttest+4@outlook.com', '$2a$12$ExiNWlDcwj.pdjgnBM6ef.dzWAtGTGxkFdYXS2r.a9viCqgX5FfPq', TRUE, FALSE,
         'en',
         'admin', 4, '{"replies_comments"}'),
--- PASSWORD: p5e5g?J,tL*Jcx1*h[
-       (5, 'instaminttest+5@outlook.com', '$2a$12$dYBEuTLvH.oeurkcTfaxs.THF7tFzw3SjeRfjn6Apk6ptoRjtyYIe', TRUE, TRUE, 'fr',
+-- PASSWORD: p5e5g?J,tL*Jcx1*h
+       (5, 'instaminttest+5@outlook.com', '$2a$12$d7lps1wrB513ZV..mITj6eir673bx9lnQGYQap5R6ybEF8Kj4RdBe', TRUE, TRUE, 'fr',
         'user', 5, '{"thread_comment", "follow"}'),
 -- PASSWORD: )vs:7'8K2E<B.l9_+x
-       (6, 'instaminttest+6@outlook.com', '$2a$12$HCItsBs6gnSwPiweCfHu0uQX00Qz06.yT8KTRGwNlmOtk99Jjzbhm', TRUE, FALSE,
+       (6, 'instaminttest+6@outlook.com', '$2a$12$o6ReinZRV7KacsqzLZY1ReRTeeSgBNPK5FXvfU9sf3xC/E0ZZ/o1m', TRUE, FALSE,
         'es',
         'user', 6, '{"mint"}'),
--- PASSWORD: 6V0£8V<Z^8s:Z\Hs£d
-       (7, 'instaminttest+7@outlook.com', '$2a$12$CNixFkbp.pd6Zr9oBPGPx.WvVMZsWNGKH0lMNPdgE3dqDxov1dCCi', TRUE, TRUE, 'en',
+-- PASSWORD: 6V0£8V<Z^8s:ZHs£d
+       (7, 'instaminttest+7@outlook.com', '$2a$12$FOa7LTDCunzeqoHZ3AJX0eCDC4lEHyWpONUPFCHfh0KpKF8KCUcwa', TRUE, TRUE, 'en',
         'user', 7,
 -- PASSWORD: 7hOms98+3,#_=(R9k4
         '{"replies_comments", "thread_comment"}'),
-       (8, 'instaminttest+8@outlook.com', '$2a$12$QvtIf8qy4y/u4eie2w8bFO/.35juoxIc9TrX61IF330ycETcJIIF.', TRUE, FALSE,
+       (8, 'instaminttest+8@outlook.com', '$2a$12$pYiKl2hBAZe7DyolszV.R.CLXSB/pgTFB9cGp./iW0BjKAFVvOZ16', TRUE, FALSE,
         'fr',
         'user', 8,
 -- PASSWORD: 74,:az3%vD+IH3jHDU
         '{"replies_comments", "follow_request_accepted"}'),
-       (9, 'instaminttest+9@outlook.com', '$2a$12$YYq6g6ai5XKxLCjpVgaHjeaFq1OjB5K1HqXOWuLqVF1MOIctGJBmm', TRUE, TRUE, 'es',
+       (9, 'instaminttest+9@outlook.com', '$2a$12$P5SaaFjl50Y0KCkm8oKO.O/c9WxWnOoljpNuiPguRxj7.lyBklf2K', TRUE, TRUE, 'es',
         'user', 9, '{"thread_comment", "follow"}'),
 -- PASSWORD: h8G6?87*£+7ae6srvp
-       (10, 'instaminttest+10@outlook.com', '$2a$12$ybPHd.rWsbXL4FLjcanCg.tp7Lt5u/CVHzK3HiHFAfLgOPycgJb1S', TRUE, FALSE, 'en',
+       (10, 'instaminttest+10@outlook.com', '$2a$12$WaJEHN1B3uWc2UQ4Z80zHuDFj9YuTmzMCcZ/Z8Cm1X5Otf8j.oU9y', TRUE, FALSE, 'en',
         'user', 10, '{"replies_comments", "thread_comment", "mint", "follow", "follow_request_accepted"}');
 -- PASSWORD: +b.4e8&OqP7CBso6?g
 
@@ -147,16 +147,16 @@ VALUES (1, 1, '2024-01-01 01:00:00'),
        (10, 10, '2024-01-10 10:00:00');
 
 INSERT INTO "HashtagNft" ("hashtag", "nftId")
-VALUES ('#cool', 1),
-       ('#art', 2),
-       ('#crypto', 3),
-       ('#collectible', 4),
-       ('#digital', 5),
-       ('#unique', 6),
-       ('#blockchain', 7),
-       ('#cryptoart', 8),
-       ('#nftcommunity', 9),
-       ('#nftcollector', 10);
+VALUES ('cool', 1),
+       ('art', 2),
+       ('crypto', 3),
+       ('collectible', 4),
+       ('digital', 5),
+       ('unique', 6),
+       ('blockchain', 7),
+       ('cryptoart', 8),
+       ('nftcommunity', 9),
+       ('nftcollector', 10);
 
 INSERT INTO "Comment" ("nftId", "userId", "commentedAt", "commentary", "replyCommentId")
 VALUES (1, 2, '2024-01-01 12:00:00', 'Amazing piece!', NULL),
