@@ -33,7 +33,6 @@ export async function createUser(email: string, password: string) {
       displayName: username,
       link: "https://www.google.com/"
     }).returning({id: Profile.id})
-
     const profileId = resultProfile[0].id
     const resultUser = await db.insert(User).values({
       email,
