@@ -1,10 +1,20 @@
 name: Build
 
-on: [push]
+on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      DATABASE_URL: "postgresql://instamint:instamint@localhost:5432/instamint"
+      GMAIL_EMAIL: "instamint.noreply@gmail.com"
+      GMAIL_PASS: "a"
+      NEXT_PUBLIC_PUBLISHABLE_KEY: "a"
+      PEPPER_PASSWORD_SECRET: "a"
+      NEXT_PUBLIC_TEST_DATA: "a"
+      NEXT_AUTH_SECRET: "a"
+      SECURE_AUTH_COOKIES: "false"
+      TOTP_ENCRYPTION_KEY: "a"
+      TRUST_HOST: "false"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
