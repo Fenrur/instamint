@@ -10,7 +10,7 @@ Use `npm run build` to build the app and start working with it
 
 ### Configuration of .env file
 
-Create a .env.db file and fill it with those variables :
+Create a .env file and fill it with those variables :
 
 ```
 DB_PORT = <port of the db (5432 by default)>
