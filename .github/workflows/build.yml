@@ -10,5 +10,18 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: npm install
+      - name: create env file
+        run: |
+          touch .env
+          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+          echo GMAIL_EMAIL=${{ secrets.GMAIL_EMAIL }} >> .env
+          echo GMAIL_PASS=${{ secrets.GMAIL_PASS }} >> .env
+          echo NEXT_PUBLIC_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_PUBLISHABLE_KEY }} >> .env
+          echo PEPPER_PASSWORD_SECRET=${{ secrets.PEPPER_PASSWORD_SECRET }} >> .env
+          echo NEXT_PUBLIC_TEST_DATA=${{ secrets.NEXT_PUBLIC_TEST_DATA }} >> .env
+          echo NEXT_AUTH_SECRET=${{ secrets.NEXT_AUTH_SECRET }} >> .env
+          echo SECURE_AUTH_COOKIES=${{ secrets.SECURE_AUTH_COOKIES }} >> .env
+          echo TOTP_ENCRYPTION_KEY=${{ secrets.TOTP_ENCRYPTION_KEY }} >> .env
+          echo TRUST_HOST=${{ secrets.TRUST_HOST }} >> .env
       - name: Build
         run: npm run build
