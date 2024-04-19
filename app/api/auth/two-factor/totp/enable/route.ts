@@ -3,7 +3,7 @@ import {auth, getSession} from "@/auth"
 import {
   invalidContentTypeProblem,
   notAuthenticatedProblem,
-  problem,
+  problem, twoFactorAlreadyEnabledProblem,
   twoFactorSetupRequiredProblem,
   uidNotFoundProblem
 } from "@/http/problem"
@@ -13,8 +13,8 @@ import {NextAuthRequest} from "next-auth/lib"
 import {isContentType} from "@/http/content-type"
 
 export const POST = auth(async (req: NextAuthRequest) => {
-  if (!isContentType(req, "json")) {
-    return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
+  if (!isContentType(req, "no_body")) {
+    return problem({...invalidContentTypeProblem, detail: "Expected no body in the request"})
   }
 
   const session = getSession(req)
@@ -31,6 +31,10 @@ export const POST = auth(async (req: NextAuthRequest) => {
 
   if (!user.twoFactorSecret) {
     return problem({...twoFactorSetupRequiredProblem, detail: "TOTP secret is not defined"})
+  }
+
+  if (user.twoFactorEnabled) {
+    return problem(twoFactorAlreadyEnabledProblem)
   }
 
   await enableTwoFactorAuthentification(session.uid)

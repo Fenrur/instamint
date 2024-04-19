@@ -1,10 +1,9 @@
 import {NextRequest, NextResponse} from "next/server"
 import {createUser, findUserByEmail} from "@/db/db-service"
 import {z} from "zod"
-import {randomUUID} from "node:crypto"
-import {password} from "@/utils/regex"
 import {isContentType} from "@/http/content-type"
 import {invalidContentTypeProblem, problem} from "@/http/problem"
+import {password} from "@/utils/regex"
 
 const Body = z.object({
   email: z.string().email(),
@@ -37,10 +36,9 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json({ message: "Email is already in use" }, { status: 400 })
   }
 
-  const uid = randomUUID()
-  const createdUser = await createUser(uid, parsedBody.email, parsedBody.password)
+  const uid = await createUser(parsedBody.email, parsedBody.password)
 
-  if (!createdUser) {
+  if (!uid) {
     return NextResponse.json({ message: "Failed to create user" }, { status: 500 })
   }
 
