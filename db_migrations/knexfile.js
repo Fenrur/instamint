@@ -1,6 +1,4 @@
-import dotenv from "dotenv"
-
-dotenv.config({ path: "../.env" })
+require("dotenv").config({ path: "../.env" })
 
 module.exports = {
   client: process.env.DB_CLIENT,

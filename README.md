@@ -14,7 +14,7 @@ Create a .env file and fill it with those variables :
 
 ```
 DB_PORT = <port of the db (5432 by default)>
-DB_CLIENT = <le client utilisé (pg)>
+DB_CLIENT = <client used (pg)>
 DB_HOST = <IP address (mostly localhost)>
 DB_CONNECTION_USER = <name of the db user>
 DB_PASSWORD = <password of the db user>
