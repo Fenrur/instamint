@@ -20,9 +20,5 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: npm install
-      - name: create env file
-        run: |
-          touch .env
-          echo DATABASE_URL=${{ secrets.WEBSITE_ENV }} > .env
       - name: Build
         run: npm run build
