@@ -13,21 +13,16 @@ Use `npm run build` to build the app and start working with it
 Create a .env file and fill it with those variables :
 
 ```
-DB_PORT = <port of the db (5432 by default)>
-DB_CLIENT = <client used (pg)>
-DB_HOST = <IP address (mostly localhost)>
-DB_CONNECTION_USER = <name of the db user>
-DB_PASSWORD = <password of the db user>
-DB_CONNECTION_DATABASE = <db name>
+DATABASE_URL = <url of the database>
 ```
 
 ## Initializing the database (PostgresQL)
 
 ### Migrations
-go to db directory
+go to the migration directory
 
 ```bash
-cd db
+cd ./src/db_migrations
 ```
 
 to apply migration and load the database, use

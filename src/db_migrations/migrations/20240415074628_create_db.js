@@ -1,5 +1,4 @@
 exports.up = async (knex) => {
-  await
   await knex.raw(`CREATE OR REPLACE FUNCTION check_hashtags(hashtags VARCHAR[])
   RETURNS BOOLEAN AS
   $$
