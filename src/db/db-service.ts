@@ -1,11 +1,30 @@
 import {db} from "@/db/db-client"
 import {hashPassword, isPasswordValid} from "@/utils/password"
-import {Profile, User} from "@/db/schema"
+import {EmailVerification, Profile, User} from "@/db/schema"
 import {symmetricDecrypt, symmetricEncrypt} from "@/utils/crypto"
 import {env} from "@/env"
 import {authenticator} from "@/two-factor/otp"
-import {DateTime} from "luxon"
+import {DateTime, Duration} from "luxon"
 import {generateUsername} from "@/utils/username"
+
+export async function existUsernameIgnoreCase(username: string) {
+  const result = await db.query.Profile.findFirst({
+    where: (profile, {ilike}) => (ilike(profile.username, username)),
+    columns: {
+      id: false,
+      createdAt: false,
+      avatarUrl: false,
+      link: false,
+      displayName: false,
+      bio: false,
+      location: false,
+      canBeSearched: false,
+      visibilityType: false,
+    }
+  })
+
+  return !!result;
+}
 
 export function findUserByEmail(email: string) {
   return db.query.User.findFirst({
@@ -19,8 +38,49 @@ export function findUserByUid(uid: string) {
   })
 }
 
-export async function createUser(email: string, password: string) {
-  const createdAt = DateTime.now().toSQL({includeZone: false, includeOffset: false})
+export function verifyEmailVerification(verificationId: string) {
+  return db.update(EmailVerification).set({
+    verificationId,
+    isVerified: true
+  })
+}
+
+export function findEmailVerificationByVerificationId(verificationId: string) {
+  return db.query.EmailVerification.findFirst({
+    where: (emailVerification, {eq}) => (eq(emailVerification.verificationId, verificationId))
+  })
+}
+
+export function findUnverifiedEmailAndInIntervalEmailVerifications(email: string, now: DateTime<true>) {
+  const nowSql = now.toSQL({includeZone: false, includeOffset: false})
+  return db.query.EmailVerification.findMany({
+    where: (emailVerification, {eq, and, gt}) => (
+      and(
+        eq(emailVerification.email, email),
+        eq(emailVerification.isVerified, false),
+        gt(emailVerification.expireAt, nowSql)
+      )
+    )
+  })
+}
+
+export async function createEmailVerification(email: string, createdAt: DateTime<true>) {
+  const expireAt = createdAt.plus(Duration.fromObject({hours: 2}))
+  const createAtSql = createdAt.toSQL({includeZone: false, includeOffset: false})
+  const expireAtSql = expireAt.toSQL({includeZone: false, includeOffset: false})
+
+  const result = await db.insert(EmailVerification).values({
+    email,
+    createdAt: createAtSql,
+    expireAt: expireAtSql,
+    isVerified: false
+  }).returning({verificationId: EmailVerification.verificationId})
+
+  return result[0].verificationId
+}
+
+export async function createUser(email: string, password: string, createdAt: DateTime<true>) {
+  const createdAtSql = createdAt.toSQL({includeZone: false, includeOffset: false})
   const username = generateUsername()
   const hashedPassword = await hashPassword(password, env.PEPPER_PASSWORD_SECRET)
   const avatarUrl = `https://api.dicebear.com/8.x/pixel-art/svg?seed=${username}`
@@ -28,7 +88,7 @@ export async function createUser(email: string, password: string) {
   return db.transaction(async (db) => {
     const resultProfile = await db.insert(Profile).values({
       username,
-      createdAt,
+      createdAt: createdAtSql,
       avatarUrl,
       displayName: username,
       link: "https://www.google.com/"
