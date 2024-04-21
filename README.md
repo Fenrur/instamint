@@ -36,6 +36,10 @@
     * [🏭 Production Server](#-production-server)
     * [🚀 Migrations](#-migrations)
   * [📊 Dataset](#-dataset)
+  * [Tests](#tests)
+    * [Unit Tests](#unit-tests)
+    * [Integration Tests](#integration-tests)
+    * [E2E Tests](#e2e-tests)
 <!-- TOC -->
 
 ## 📘 Preamble
