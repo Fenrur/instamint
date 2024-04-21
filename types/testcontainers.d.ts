@@ -1,6 +1,13 @@
 declare module 'testcontainers' {
-  interface GenericContainer {
+  export class GenericContainer {
+    constructor(image: string);
     withEnv(key: string, value: string): GenericContainer;
-    withCmd(cmd: string[]): GenericContainer;
+    withExposedPorts(...ports: number[]): GenericContainer;
+    start(): Promise<StartedTestContainer>;
+  }
+
+  export interface StartedTestContainer {
+    stop(): Promise<void>;
+    getMappedPort(port: number): number;
   }
 }

@@ -1,8 +1,8 @@
-import { GenericContainer, WaitStrategy } from 'testcontainers';
+import {GenericContainer, StartedTestContainer} from 'testcontainers'
+import axios from 'axios'
 
 describe('LoginPage Integration Test', () => {
-  let postgresContainer: any;
-  let appContainer: any;
+  let postgresContainer: StartedTestContainer
 
   beforeAll(async () => {
     postgresContainer = await new GenericContainer('postgres')
@@ -10,24 +10,22 @@ describe('LoginPage Integration Test', () => {
       .withEnv('POSTGRES_PASSWORD', 'password')
       .withEnv('POSTGRES_DB', 'testdb')
       .withExposedPorts(5432)
-      .withWaitStrategy(WaitStrategy.forLogMessage('database system is ready to accept connections'))
-      .start();
-
-    appContainer = await new GenericContainer('node')
-      .withExposedPorts(3000)
-      .withCmd(['npm', 'run', 'dev'])
-      .withBindMount('./', '/app')
-      .withWorkingDirectory('/app')
-      .withWaitStrategy(WaitStrategy.forLogMessage('ready - started server on'))
-      .start();
-  });
+      .start()
+  })
 
   afterAll(async () => {
-    if (appContainer) {
-      await appContainer.stop();
-    }
     if (postgresContainer) {
-      await postgresContainer.stop();
+      await postgresContainer.stop()
     }
-  });
-});
+  })
+
+  test('should authenticate user with valid credentials', async () => {
+    const response = await axios.post('http://localhost:3000/api/login', {
+      email: 'user@example.com',
+      password: 'password',
+    })
+
+    expect(response.status).toBe(200)
+    // Additional assertions...
+  })
+})
