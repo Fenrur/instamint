@@ -14,6 +14,8 @@ export async function up(knex) {
   RETURN true;
   END;
   $$ LANGUAGE plpgsql;`)
+  await knex.raw(`DROP TYPE IF EXISTS "LanguageType", "UserRole", "ProfileVisibilityType", "CurrencyType",
+   "UserTeaBagRole", "NotificationType";`)
   await knex.raw(`CREATE TYPE "NotificationType" AS ENUM ('replies_comments', 'thread_comment', 'mint', 'follow',
    'follow_request_accepted');`)
   await knex.schema
@@ -34,7 +36,7 @@ export async function up(knex) {
       table.increments("id")
       table.string("email").notNullable().unique()
       table.uuid("uid").notNullable().unique().defaultTo(knex.fn.uuid())
-      table.string("ashedPassword").notNullable()
+      table.string("hashedPassword").notNullable()
       table.boolean("isActivated").notNullable().defaultTo(false)
       table.boolean("twoFactorEnabled").notNullable().defaultTo(false)
       table.string("twoFactorSecret")
@@ -55,7 +57,7 @@ export async function up(knex) {
     'follow_request_accepted'::"NotificationType"]`)
     })
 
-    .createTable("Teabag", (table) => {
+    .createTable("TeaBag", (table) => {
       table.increments("id")
       table.integer("profileId").unsigned().notNullable()
       table
@@ -78,10 +80,12 @@ export async function up(knex) {
         .references("id")
         .inTable("Profile")
         .onDelete("CASCADE")
-      table.text("description").notNullable()
-      table.text("location").notNullable()
+      table.string("title").notNullable()
+      table.text("description").notNullable().defaultTo("")
+      table.text("location")
       table.double("price", "precision").notNullable()
       table.enu("currencyType", ["usd", "eur", "eth", "sol"]).notNullable()
+      table.string("contentUrl").notNullable()
     })
     .createTable("Mint", (table) => {
       table.increments("id")
@@ -101,7 +105,7 @@ export async function up(knex) {
     })
     .createTable("HashtagNft", (table) => {
       table.increments("id")
-      table.string("hashtag").notNullable().checkRegex("^#[a-zA-Z0-9_]{3,255}$")
+      table.string("hashtag").notNullable().checkRegex("^[a-zA-Z0-9_]{3,255}$")
       table.integer("nftId").unsigned().notNullable()
       table
         .foreign("nftId")
@@ -125,7 +129,7 @@ export async function up(knex) {
         .onDelete("CASCADE")
       table.timestamp("commentedAt", { useTz: false }, { precision: 3 }).notNullable()
       table.string("commentary", "1000").notNullable()
-      table.integer("replyCommentId").unsigned().notNullable()
+      table.integer("replyCommentId").unsigned()
       table
         .foreign("replyCommentId")
         .references("id")
@@ -187,11 +191,11 @@ export async function up(knex) {
       table.increments("id")
       table.timestamp("startAt", { useTz: false }, { precision: 3 }).notNullable()
       table.timestamp("endAt", { useTz: false }, { precision: 3 }).notNullable()
-      table.integer("teabagId").unsigned().notNullable()
+      table.integer("teaBagId").unsigned().notNullable()
       table
-        .foreign("teabagId")
+        .foreign("teaBagId")
         .references("id")
-        .inTable("Teabag")
+        .inTable("TeaBag")
         .onDelete("CASCADE")
     })
     .createTable("ViewProfile", (table) => {
@@ -270,7 +274,7 @@ export async function up(knex) {
         .onDelete("CASCADE")
       table.timestamp("viewAt", { useTz: false }, { precision: 3 }).notNullable()
     })
-    .createTable("UserTeabag", (table) => {
+    .createTable("UserTeaBag", (table) => {
       table.increments("id")
       table.integer("userId").unsigned().notNullable()
       table
@@ -278,11 +282,11 @@ export async function up(knex) {
         .references("id")
         .inTable("User")
         .onDelete("CASCADE")
-      table.integer("teabagId").unsigned().notNullable()
+      table.integer("teaBagId").unsigned().notNullable()
       table
-        .foreign("teabagId")
+        .foreign("teaBagId")
         .references("id")
-        .inTable("Teabag")
+        .inTable("TeaBag")
         .onDelete("CASCADE")
       table.enu("role", ["user", "admin"]).notNullable().defaultTo("user")
     })
@@ -362,7 +366,7 @@ export async function down(knex) {
     .dropTable("PasswordReset")
     .dropTable("Follow")
     .dropTable("PrivateMessage")
-    .dropTable("UserTeabag")
+    .dropTable("UserTeaBag")
     .dropTable("ViewNft")
     .dropTable("WhiteListUser")
     .dropTable("DraftNft")
@@ -376,7 +380,7 @@ export async function down(knex) {
     .dropTable("HashtagNft")
     .dropTable("Mint")
     .dropTable("Nft")
-    .dropTable("Teabag")
+    .dropTable("TeaBag")
     .dropTable("User")
     .dropTable("Profile")
 }
