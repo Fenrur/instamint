@@ -2,7 +2,7 @@ import {GenericContainer, StartedTestContainer} from 'testcontainers'
 import axios from 'axios'
 
 describe('LoginPage Integration Test', () => {
-  let postgresContainer: StartedTestContainer
+  let postgresContainer: any
 
   beforeAll(async () => {
     postgresContainer = await new GenericContainer('postgres')
@@ -22,10 +22,10 @@ describe('LoginPage Integration Test', () => {
   test('should authenticate user with valid credentials', async () => {
     const response = await axios.post('http://localhost:3000/api/login', {
       email: 'user@example.com',
-      password: 'password',
+      password: 'password'
     })
 
     expect(response.status).toBe(200)
-    // Additional assertions...
   })
 })
+

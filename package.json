@@ -77,6 +77,9 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.24.4",
+    "@babel/preset-react": "^7.24.1",
+    "@babel/preset-typescript": "^7.24.1",
     "@playwright/test": "^1.43.1",
     "@testing-library/react": "^15.0.2",
     "@types/bcryptjs": "^2.4.6",
@@ -127,18 +130,55 @@
         "testMatch": [
           "<rootDir>/tests/e2e/**/*.test.ts"
         ]
-      },
-      {
-        "compilerOptions": {
-          "types": [
-            "jest"
-          ],
-          "typeRoots": [
-            "./node_modules/@types",
-            "./types"
-          ]
-        }
       }
+    ],
+    "moduleDirectories": [],
+    "resetModules": false,
+    "globals": {},
+    "resetMocks": false,
+    "rootDir": "",
+    "preset": "",
+    "testURL": "about:blank",
+    "bail": false,
+    "modulePaths": [],
+    "notify": false,
+    "clearMocks": false,
+    "transform": {
+      "^.+\\.(ts|tsx)$": "babel-jest"
+    },
+    "setupFiles": [],
+    "browser": false,
+    "setupTestFrameworkScriptFile": "",
+    "cacheDirectory": "",
+    "moduleNameMapper": {},
+    "testPathIgnorePatterns": [],
+    "transformIgnorePatterns": [],
+    "modulePathIgnorePatterns": [],
+    "snapshotSerializers": [],
+    "timers": "real",
+    "roots": [],
+    "coverageDirectory": "",
+    "coverageThreshold": {},
+    "unmockedModulePathPatterns": [],
+    "verbose": false,
+    "testResultsProcessor": "",
+    "testRunner": "jasmine2",
+    "collectCoverage": false,
+    "testMatch": [],
+    "testEnvironment": "jsdom",
+    "automock": false,
+    "moduleFileExtensions": [],
+    "coverageReporters": [],
+    "coveragePathIgnorePatterns": [],
+    "collectCoverageFrom": [],
+    "setupFilesAfterEnv": [],
+    "testRegex": "(/__tests__/.*|(\.|/)(test|spec))\.jsx?$"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-typescript",
+      "@babel/preset-react"
     ]
   }
 }
