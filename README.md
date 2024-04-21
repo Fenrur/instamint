@@ -19,22 +19,17 @@ DATABASE_URL = <url of the database>
 ## Initializing the database (PostgresQL)
 
 ### Migrations
-go to the migration directory
-
-```bash
-cd ./src/db_migrations
-```
 
 to apply migration and load the database, use
 
 ```bash
-npx knex migrate:latest
+npm run migrate
 ```
 
 to remove the migration and the database content, use
 
 ```bash
-npx knex migrate:rollback
+npm run rollback
 ```
 
 First, run the development server:

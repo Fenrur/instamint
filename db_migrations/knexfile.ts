@@ -1,8 +1,8 @@
 import dotenv from "dotenv"
-dotenv.config({path: "../../.env"})
+dotenv.config({path: "../.env"})
 
 export default {
-  client: process.env.DB_CLIENT,
+  client: "pg",
   connection: process.env.DATABASE_URL,
   migrations: {
     directory: "./migrations",

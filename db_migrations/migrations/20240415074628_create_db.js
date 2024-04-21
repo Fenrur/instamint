@@ -1,4 +1,4 @@
-exports.up = async (knex) => {
+exports.up = async function (knex) {
   await knex.raw(`CREATE OR REPLACE FUNCTION check_hashtags(hashtags VARCHAR[])
   RETURNS BOOLEAN AS
   $$
@@ -348,7 +348,7 @@ exports.up = async (knex) => {
     })
 }
 
-exports.down  = async (knex) => {
+exports.down  = async function (knex) {
   await knex.schema
     .dropTable("RequestFollow")
     .dropTable("PasswordReset")
