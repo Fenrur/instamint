@@ -1,4 +1,4 @@
-exports.up = async function (knex) {
+export async function up(knex) {
   await knex.raw(`CREATE OR REPLACE FUNCTION check_hashtags(hashtags VARCHAR[])
   RETURNS BOOLEAN AS
   $$
@@ -7,26 +7,28 @@ exports.up = async function (knex) {
   BEGIN
   FOREACH hashtag IN ARRAY hashtags
     LOOP
-      IF NOT (hashtag ~* '^#[a-zA-Z0-9_]{3,255}$') THEN
+      IF NOT (hashtag ~* '^[a-zA-Z0-9_]{3,255}$') THEN
         RETURN false;
       END IF;
     END LOOP;
   RETURN true;
   END;
   $$ LANGUAGE plpgsql;`)
+  await knex.raw(`CREATE TYPE "NotificationType" AS ENUM ('replies_comments', 'thread_comment', 'mint', 'follow',
+   'follow_request_accepted');`)
   await knex.schema
 
     .createTable("Profile", (table) => {
       table.increments("id")
-      table.string("username", "18").unique().notNullable()
+      table.string("username", "18").unique().notNullable().checkRegex("^[a-zA-Z0-9_]{3,18}$")
       table.timestamp("createdAt", { useTz: false }, { precision: 3 }).notNullable()
       table.string("bio").notNullable().defaultTo("")
       table.string("link")
       table.string("avatarUrl").notNullable()
       table.boolean("canBeSearched").notNullable().defaultTo(true)
-      table.text("visibilityType").notNullable().defaultTo("public")
+      table.enu("visibilityType", ["public", "private"]).notNullable().defaultTo("public")
       table.text("location")
-      table.string("displayName", "26").notNullable()
+      table.string("displayName", "40").notNullable()
     })
     .createTable("User", (table) => {
       table.increments("id")
@@ -45,8 +47,14 @@ exports.up = async function (knex) {
         .references("id")
         .inTable("Profile")
         .onDelete("CASCADE")
-      table.text("enabledNotificationType")
+      table.specificType("enabledNotificationTypes", `"NotificationType"[] NOT NULL DEFAULT ARRAY [
+    'replies_comments'::"NotificationType",
+    'thread_comment'::"NotificationType",
+    'mint'::"NotificationType",
+    'follow'::"NotificationType",
+    'follow_request_accepted'::"NotificationType"]`)
     })
+
     .createTable("Teabag", (table) => {
       table.increments("id")
       table.integer("profileId").unsigned().notNullable()
@@ -93,7 +101,7 @@ exports.up = async function (knex) {
     })
     .createTable("HashtagNft", (table) => {
       table.increments("id")
-      table.string("hashtag").notNullable()
+      table.string("hashtag").notNullable().checkRegex("^#[a-zA-Z0-9_]{3,255}$")
       table.integer("nftId").unsigned().notNullable()
       table
         .foreign("nftId")
@@ -228,7 +236,7 @@ exports.up = async function (knex) {
         .references("id")
         .inTable("User")
         .onDelete("CASCADE")
-      table.string("hashtags").notNullable()
+      table.specificType("hashtags", "VARCHAR(255)[5] NOT NULL CHECK (check_hashtags(\"hashtags\"))")
       table.text("location").notNullable()
     })
     .createTable("WhiteListUser", (table) => {
@@ -348,7 +356,7 @@ exports.up = async function (knex) {
     })
 }
 
-exports.down  = async function (knex) {
+export async function down(knex) {
   await knex.schema
     .dropTable("RequestFollow")
     .dropTable("PasswordReset")
