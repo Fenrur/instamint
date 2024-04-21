@@ -7,6 +7,12 @@ export const LoginCredentials = zfd.formData({
 
 export type LoginCredentials = z.infer<typeof LoginCredentials>
 
+export const SignupCredentials = zfd.formData({
+  email: zfd.text(z.string().email())
+})
+
+export type SignupCredentials = z.infer<typeof SignupCredentials>
+
 export const VerifyPasswordRequest = z.object({
   email: z.string().email("VerifyPasswordRequest.email must be an email."),
   password: z.string()
