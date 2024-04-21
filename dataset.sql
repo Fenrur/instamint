@@ -29,7 +29,7 @@ VALUES (1, 'sane_blindness691', '2024-01-01 00:00:00', 'Just a bio', 'https://ww
        (10, 'confidential_tanka', '2024-01-10 00:00:00', 'Blockchain Enthusiast', NULL,
         'https://api.dicebear.com/8.x/pixel-art/svg?seed=confidential_tanka', TRUE, 'public', 'New York',
         'Blockchain Guy'),
-       (11, 'christ_david', '2024-01-10 00:00:00', 'Enjoy these as art, nothing more.', NULL,
+       (16, 'christ_david', '2024-01-10 00:00:00', 'Enjoy these as art, nothing more.', NULL,
         'https://api.dicebear.com/8.x/pixel-art/svg?seed=christ_david', TRUE, 'public', 'New York',
         'Christopher David');
 
