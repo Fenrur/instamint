@@ -2,11 +2,11 @@
 
 <!-- TOC -->
 * [Instamint](#instamint)
-  * [📘 Préambule](#-préambule)
-    * [📢 Présentation](#-présentation)
-    * [📚 Objectifs](#-objectifs)
-  * [Technologies](#technologies)
-    * [🛠️ Stack technique](#-stack-technique)
+  * [📘 Preamble](#-preamble)
+    * [📢 Presentation](#-presentation)
+    * [📚 Objectives](#-objectives)
+  * [🛠 Technologies](#-technologies)
+    * [🖥️ Technical Stack](#-technical-stack)
       * [TypeScript](#typescript)
       * [Next.js](#nextjs)
       * [Tailwind CSS](#tailwind-css)
@@ -15,147 +15,150 @@
       * [DrizzleORM](#drizzleorm)
       * [Auth.js](#authjs)
       * [Vercel](#vercel)
-  * [Initialisation](#initialisation)
-    * [Prérequis](#prérequis)
-    * [Variables d'environnement](#variables-denvironnement)
-      * [Configuration de la base de données](#configuration-de-la-base-de-données)
-      * [Configuration de l'envoi d'email](#configuration-de-lenvoi-demail)
-      * [Configuration du secret de hashage des mots de passe](#configuration-du-secret-de-hashage-des-mots-de-passe)
-        * [Génération du secret](#génération-du-secret)
-      * [Configuration du secret de chiffrement des tokens](#configuration-du-secret-de-chiffrement-des-tokens)
-        * [Génération du secret](#génération-du-secret-1)
-      * [Configuration de la sécurité des cookies](#configuration-de-la-sécurité-des-cookies)
-      * [Configuration de la clé de chiffrement TOTP](#configuration-de-la-clé-de-chiffrement-totp)
-        * [Génération de la clé](#génération-de-la-clé)
-      * [Configuration de l'URL de base](#configuration-de-lurl-de-base)
-      * [Configuration de l'email de contact](#configuration-de-lemail-de-contact)
-    * [Installation](#installation)
-  * [Démarrage](#démarrage)
-    * [Base de données](#base-de-données)
-    * [Serveur de développement](#serveur-de-développement)
-    * [Serveur de production](#serveur-de-production)
-    * [Migrations](#migrations)
+  * [🚀 Initialization](#-initialization)
+    * [🔑 Prerequisites](#-prerequisites)
+    * [⚙️ Environment Variables](#-environment-variables)
+      * [🗄️ Database Configuration](#-database-configuration)
+      * [📧 Email Sending Configuration](#-email-sending-configuration)
+      * [🔐 Password Hashing Secret Configuration](#-password-hashing-secret-configuration)
+        * [🔑 Generating the Secret](#-generating-the-secret)
+      * [🔒 Token Encryption Secret Configuration](#-token-encryption-secret-configuration)
+        * [🔑 Generating the Secret](#-generating-the-secret-1)
+      * [🍪 Cookie Security Configuration](#-cookie-security-configuration)
+      * [🔑 TOTP Encryption Key Configuration](#-totp-encryption-key-configuration)
+        * [🔑 Generating the Key](#-generating-the-key)
+      * [🌐 Base URL Configuration](#-base-url-configuration)
+      * [📧 Contact Email Configuration](#-contact-email-configuration)
+    * [📦 Installation](#-installation)
+  * [🎬 Startup](#-startup)
+    * [🗄️ Database](#-database)
+    * [🖥️ Development Server](#-development-server)
+    * [🏭 Production Server](#-production-server)
+    * [🚀 Migrations](#-migrations)
+  * [📊 Dataset](#-dataset)
 <!-- TOC -->
 
-## 📘 Préambule
+## 📘 Preamble
 
-### 📢 Présentation
+### 📢 Presentation
 
-Ce projet est réalisé dans un but pédagogique. Il a pour objectif de mettre en pratique les compétences acquises lors de notre formation de développeur à l'école Sup de Vinci.
+This project is undertaken for educational purposes. It aims to apply the skills learned during our developer training at Sup de Vinci.
 
-Il est encadré par notre formateur, [Avétis KAZARIAN](https://www.linkedin.com/in/avetisk/), et nous tenons à le remercier pour son accompagnement et ses précieux conseils.
+It is supervised by our instructor, [Avétis KAZARIAN](https://www.linkedin.com/in/avetisk/), to whom we are grateful for his guidance and valuable advice.
 
-### 📚 Objectifs
+### 📚 Objectives
 
-Le projet d’étude a pour but de créer une expérience professionnelle complète pour chaque alternant, couvrant l’ensemble des compétences clefs étudiées en cours par une mise en pratique concrète, en groupe, dans un environnement au plus proche de la réalité professionnelle, en implémentant les requis et contraintes d’une entreprise dans son cycle naturel de production en méthode agile. Il permet aux alternants de palier l’absence éventuelle de la mise en pratique de certaines compétences dans le cadre de leur entreprise, en leur apportant la possibilité de les mettre en application dans celui du projet d’étude, avec l’encadrement et le suivi nécessaire à leur assimilation, couvrant l’ensemble des sujets abordés sur l’année.
+The study project aims to create a complete professional experience for each apprentice, covering all the key skills studied in class through concrete practical application, in groups, in an environment as close to professional reality as possible, by implementing the requirements and constraints of a company in its natural production cycle using agile methods. It allows apprentices to compensate for the possible absence of practical application of some skills in their company by providing them the opportunity to apply them in the project study context, with the necessary supervision and follow-up for their assimilation, covering all the topics addressed over the year.
 
-L'accent n’est pas sur les compétences en programmation pure mais sur l’ensemble de processus allant de l’idée à la matière, c'est-à-dire de l’appel d’offre à la livraison finale. Il est en effet nécessaire d’inclure ici tous les aspects non-techniques et pourtant si nécessaires à la réalisation d’un projet de développement. Ainsi, les alternants seront contraints, comme dans le monde professionnel, d’utiliser leur compétence technique mais également l’ensemble de leurs soft skills pour l'entière réussite du projet, sans oublier d’apporter un regard critique sur l’impact de leurs choix sur l’environnement et leur durabilité.
+The focus is not only on pure programming skills but on the entire process from idea to product, that is, from the call for tenders to the final delivery. It is indeed necessary to include here all the non-technical aspects that are so essential to the development of a project. Thus, apprentices will be forced, as in the professional world, to use their technical skills as well as their soft skills for the complete success of the project, without neglecting to critically examine the impact of their choices on the environment and their sustainability.
 
-## Technologies
+## 🛠 Technologies
 
-### 🛠️ Stack technique
+### 🖥️ Technical Stack
 
 #### [TypeScript](https://www.typescriptlang.org/)
 
-TypeScript est un sur-ensemble de JavaScript qui ajoute des fonctionnalités de typage statique en option à ce langage. TypeScript est conçu pour le développement d'applications large échelle et transcompile en JavaScript.
+TypeScript is a superset of JavaScript that adds optional static typing features to the language. It is designed for developing large-scale applications and transcompiles to JavaScript.
 
-Ce choix a été fait pour plusieurs raisons :
-- Le typage statique permet de détecter des erreurs à la compilation plutôt qu'à l'exécution
-- Facilite la lecture du code
-- Mieux comprendre le code
-- Mieux maintenir le code
-- Mieux travailler en équipe
+This choice was made for several reasons:
+- Static typing helps detect errors during compilation rather than at runtime.
+- Enhances code readability.
+- Improves code understanding.
+- Better code maintenance.
+- Facilitates teamwork.
 
 #### [Next.js](https://nextjs.org/)
 
-Next.js est un framework web open-source de développement backend et front-end avec React. Il permet des fonctionnalités telles que le rendu côté serveur et la génération de sites statiques pour les sites web basés sur React.
+Next.js is an open-source web framework for backend and frontend development with React. It offers features such as server-side rendering and static site generation for React-based websites.
 
-Ce choix a été fait pour plusieurs raisons :
-- Créer une application dans un meme environnement pour le backend et le frontend
-- Générer des pages coté serveur pour les parties accessibles dites `publiques` et permettre un meilleur référencement
-- Choisir entre le rendu coté serveur et le rendu coté client
-- Internationalisation intégrée
-- Support TypeScript
-- Ecosystème riche
+This choice was made for several reasons:
+- Enables creating an application in the same environment for both backend and frontend.
+- Server-side rendering for public parts improves SEO.
+- Choice between server-side rendering and client-side rendering.
+- Built-in internationalization.
+- TypeScript support.
+- Rich ecosystem.
 
 #### [Tailwind CSS](https://tailwindcss.com/)
 
-Tailwind CSS est un framework CSS qui permet de créer des designs personnalisés sans jamais quitter le fichier HTML. Il est basé sur une approche de conception de composants et de classes utilitaires.
+Tailwind CSS is a CSS framework that allows for custom designs without ever leaving the HTML file. It is based on a component design approach and utility classes.
 
-Ce choix a été fait pour plusieurs raisons :
-- Facilite la création de composants
-- Facilite la maintenance du code
-- Facilite le travail en équipe
+This choice was made for several reasons:
+- Eases component creation.
+- Simplifies code maintenance.
+- Facilitates teamwork.
 
 #### [Shadcn](https://ui.shadcn.com/)
 
-Beautifully designed components, qui se base sur Tailwind CSS pour la stylisation des composants.
+Beautifully designed components, based on Tailwind CSS for component styling.
 
-Ce choix a été fait pour plusieurs raisons :
-- Large bibliothèque de composants
-- Facilite le changement de style dans nos besoins
+This choice was made for several reasons:
+- Extensive component library.
+- Facilitates style changes as needed.
 
 #### [PostgresSQL](https://www.postgresql.org/)
 
-PostgreSQL est une base de données relationnelle open-source et gratuite. Elle est reconnue pour sa fiabilité et sa robustesse.
+PostgreSQL is a free and open-source relational database known for its reliability and robustness.
 
-Ce choix a été fait pour plusieurs raisons :
-- Base de données relationnelle
-- Open-source et gratuite
-- Conformité ACID
-- Support des standards SQL
-- Performances et Fiabilité
-- Sécurité
-- Large de type de données comparé à d'autres bases de données
+This choice was made for several reasons:
+- Relational database.
+- Open-source and free.
+- ACID compliance.
+- SQL standards support.
+- Performance and reliability.
+- Security.
+- Wide range of data types compared to other databases.
 
 #### [DrizzleORM](https://orm.drizzle.team/)
 
-Drizzle est un ORM (Object-Relational Mapping) pour TypeScript. Il permet de manipuler les données de la base de données, en gardant la syntaxe SQL.
+Drizzle is an ORM (Object-Relational Mapping) for TypeScript. It allows for manipulating database data while maintaining SQL syntax.
 
-Drizzle is lightweight, performant, typesafe, non lactose, gluten-free, sober, and flexible by design.
+Drizzle is lightweight, performant, typesafe, non-lactose, gluten-free, sober, and flexible by design.
 
-Ce choix a été fait pour plusieurs raisons :
-- Facilite la manipulation des données
-- Syntaxe SQL
-- Typesafe
-- Performant
-- Flexible
-- Facilite les jointures
+This choice was made for several reasons:
+- Eases data manipulation.
+- SQL syntax.
+- Typesafe.
+- Performant.
+- Flexible.
+- Facilitates joins.
 
 #### [Auth.js](https://authjs.dev/)
 
-Auth.js est une bibliothèque d'authentification. Elle permet de gérer l'authentification des utilisateurs.
+Auth.js is an authentication library. It manages user authentication.
 
-Il peut utiliser plusieurs stratégies d'authentification, telles que les jetons JWT, les cookies, etc.
+It can use various authentication strategies, such as JWT tokens, cookies, etc.
 
-Aussi différents protocolles d'authentification, tels que OAuth2, OpenID Connect, etc.
+Also different authentication protocols, such as OAuth2, OpenID Connect, etc.
 
-Ce choix a été fait pour la principale raison suivante:
-- Facilite l'authentification
+This choice was made primarily for the following reason:
+- Facilitates authentication.
 
-Dans notre cas, nous utilisons la stratégie JWT, en utilisant les cookies. Avec une connection sans provider tiers.
+In our case, we use the JWT strategy, using cookies, without a third-party provider connection.
 
 #### [Vercel](https://vercel.com)
 
-Vercel est une plateforme de déploiement de sites web. Elle permet de déployer des applications Next.js, React, Angular, Vue, etc.
+Vercel is a web deployment platform. It allows deploying applications such as Next.js, React, Angular, Vue, etc.
 
-Vercel se connecte à notre dépôt GitHub et déclenche un déploiement à chaque push.
+Vercel connects to our GitHub repository and triggers a deployment on every push.
 
-Ce choix a été fait pour plusieurs raisons :
-- Facilite le déploiement
-- Facilite la gestion des environnements
-- Facilite la gestion des domaines
+This choice was made for several reasons:
+- Facilitates deployment.
+- Eases environment management.
+- Eases domain management.
 
-## Initialisation
+## 🚀 Initialization
 
-### Prérequis
+### 🔑 Prerequisites
 
-- Node.js (dans le path)
-- docker (dans le path)
+- Node.js (in the path)
+- Docker (in the path)
 
-### Variables d'environnement
+### ⚙️ Environment Variables
 
-Vous pouvez créer un fichier `.env` à la racine du projet pour définir les variables d'environnement. Ou vous pouvez les définir directement dans votre environnement.
+You can create a `.env` file at
+
+the root of the project to define the environment variables, or you can set them directly in your environment.
 
 ```dotenv
 DATABASE_URL=""
@@ -166,193 +169,216 @@ NEXT_AUTH_SECRET=""
 SECURE_AUTH_COOKIES=""
 TOTP_ENCRYPTION_KEY=""
 BASE_URL=""
-CONTACT_EMAIL=
+CONTACT_EMAIL=""
 ```
 
-#### Configuration de la base de données
+#### 🗄️ Database Configuration
 
-Exemple de configuration pour une base de données PostgreSQL:
+Example configuration for a PostgreSQL database:
 
 ```dotenv
 DATABASE_URL="postgresql://user:password@localhost:5432/database"
 ```
 
-Vous pouvez vous référer à la documentation de [PostgreSQL](https://www.postgresql.org/docs/current/libpq-connect.html) pour plus d'information sur le schema de l'URL de connexion.
+Refer to the [PostgreSQL](https://www.postgresql.org/docs/current/libpq-connect.html) documentation for more information on the connection URL schema.
 
-#### Configuration de l'envoi d'email
+#### 📧 Email Sending Configuration
 
-Exemple de configuration pour l'envoi d'email avec Gmail:
+Example configuration for sending email with Gmail:
 
 ```dotenv
 GMAIL_EMAIL="instamint.noreply@gmail.com"
 GMAIL_PASS="adqs refq geac oefg"
 ```
 
-`GMAIL_EMAIL` est l'adresse email de l'expéditeur.
-`GMAIL_PASS` est le mot de passe de l'application.
+`GMAIL_EMAIL` is the sender's email address.
+`GMAIL_PASS` is the application password.
 
-> 🚨 Pour des raisons de sécurité, il est recommandé de créer un mot de passe d'application pour l'envoi d'email.
+> 🚨 For security reasons, it is recommended to create an application password for email sending.
 
-Pour plus d'information, vous pouvez consulter la documentation de [Google](https://support.google.com/accounts/answer/185833?hl=en).
+For more information, you can consult the [Google](https://support.google.com/accounts/answer/185833?hl=en) documentation.
 
-#### Configuration du secret de hashage des mots de passe
+#### 🔐 Password Hashing Secret Configuration
 
-Exemple de configuration pour le secret de chiffrement des mots de passe:
+Example configuration for the password encryption secret:
 
 ```dotenv
 PEPPER_PASSWORD_SECRET="xbHTJXqZe2MzqjfBkNJUB2dk11eCut5K7IGOIQOEHvA="
 ```
 
-`PEPPER_PASSWORD_SECRET` a pour but de sécuriser les mots de passe qui sont stockés dans la base de données.
+`PEPPER_PASSWORD_SECRET` is intended to secure passwords that are stored in the database.
 
-##### Génération du secret
+##### 🔑 Generating the Secret
 
-Vous pouvez générer un secret avec la commande suivante:
+You can generate a secret with the following command:
 
 ```bash
 openssl rand -base64 32
 ```
 
-#### Configuration du secret de chiffrement des tokens
+#### 🔒 Token Encryption Secret Configuration
 
-Exemple de configuration pour le secret de chiffrement des tokens:
+Example configuration for the token encryption secret:
 
 ```dotenv
 NEXT_AUTH_SECRET="qfU8rXFxpv79amTEFKPTWLC9pF276wWDGqrHRZ+oOA8="
 ```
 
-`NEXT_AUTH_SECRET` a pour but de sécuriser les tokens qui sont stockés dans les cookies.
+`NEXT_AUTH_SECRET` is intended to secure the tokens stored in cookies.
 
-##### Génération du secret
+##### 🔑 Generating the Secret
 
-Vous pouvez générer un secret avec la commande suivante:
+You can generate a secret with the following command:
 
 ```bash
 openssl rand -base64 32
 ```
 
-#### Configuration de la sécurité des cookies
+#### 🍪 Cookie Security Configuration
 
-Exemple de configuration pour la sécurité des cookies:
+Example configuration for cookie security:
 
 ```dotenv
 SECURE_AUTH_COOKIES="true"
 ```
 
-`SECURE_AUTH_COOKIES` est un booléen qui permet de sécuriser les cookies.
+`SECURE_AUTH_COOKIES` is a boolean that secures cookies.
 
-Pour plus d'information, vous pouvez consulter la documentation de [MDN](https://developer.mozilla.org/en/docs/Web/HTTP/Cookies).
+For more information, you can consult the [MDN](https://developer.mozilla.org/en/docs/Web/HTTP/Cookies) documentation.
 
-En général, il est recommandé de mettre cette variable à `true` en production.
+Generally, it is recommended to set this variable to `true` in production.
 
-#### Configuration de la clé de chiffrement TOTP
+#### 🔑 TOTP Encryption Key Configuration
 
-Exemple de configuration pour la clé de chiffrement TOTP:
+Example configuration for the TOTP encryption key:
 
 ```dotenv
 TOTP_ENCRYPTION_KEY="u6Y7RMVib/s73+L8Jegn2QggNQZQbVYtiVPBDxPrztg="
 ```
 
-Il a pour but de sécuriser les tokens TOTP qui sont stockés en base de données.
+It secures the TOTP tokens stored in the database.
 
-##### Génération de la clé
+##### 🔑 Generating the Key
 
-Vous pouvez générer une clé avec la commande suivante:
+You can generate a key with the following command:
 
 ```bash
 openssl rand -base64 32
 ```
 
-#### Configuration de l'URL de base
+#### 🌐 Base URL Configuration
 
-Exemple de configuration pour l'URL de base:
+Example configuration for the base URL:
 
 ```dotenv
 BASE_URL="http://localhost:3000"
 ```
 
-`BASE_URL` est l'URL de base de l'application. Attention, il doit être en accord avec le serveur à son exécution.
+`BASE_URL` is the base URL of the application. Be careful, it must match the server at its execution.
 
-#### Configuration de l'email de contact
+#### 📧 Contact Email Configuration
 
-
-Exemple de configuration pour l'email de contact:
+Example configuration for the contact email:
 
 ```dotenv
 CONTACT_EMAIL="instamint.contact@gmail.com"
 ```
 
-`CONTACT_EMAIL` est l'adresse email de contact.
+`CONTACT_EMAIL` is the contact email address.
 
 
-### Installation
+### 📦 Installation
 
-- Cloner le dépôt
+- Clone the repository
 
-
-- Installer les dépendances
+- Install dependencies
 
 ```bash
 npm install
 ```
 
-## Démarrage
+## 🎬 Startup
 
-### Base de données
+### 🗄️ Database
 
-Démarrer la base de données:
+Start the database:
 
 ```bash
 docker-compose up -d
 ```
 
-Les valeurs peuvent être modifiées dans le fichier `docker-compose.yml`.
+Values can be modified in the [docker-compose.yaml](docker-compose.yaml) file.
 
-Les valeurs par défaut sont:
+Default values are:
 
 - `USER`: `instamint`
 - `PASSWORD`: `instamint`
 - `DATABASE`: `instamint`
 
-### Serveur de développement
+### 🖥️ Development Server
 
-Démarrer le serveur de développement:
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-### Serveur de production
+### 🏭 Production Server
 
-Démarrer le serveur de production:
+Start the production server:
 
 ```bash
 npm run build && npm start
 ```
 
-### Migrations
+### 🚀 Migrations
 
-Pour exécuter les migrations:
+To run migrations:
 
 ```bash
 npm run migrate
 ```
 
-Pour annuler les migrations:
+To rollback migrations:
 
 ```bash
 npm run rollback
 ```
 
-## Dataset
+## 📊 Dataset
 
-Le dataset est disponible dans le fichier `dataset.sql`.
+The dataset is available in the [dataset.sql](dataset.sql) file.
 
-> 🚨 Pour qu'il fonctionne vous devez avoir les memes valeurs pour les variables d'environnement.
+> 🚨 For it to work, you must have the same values for the environment variables.
 
-Voici les variables d'environnement utilisées pour le dataset:
+Here are the environment variables used for the dataset:
 
 ```dotenv
-PEPPER_PASSWORD_SECRET="GA5mG3yU8ulHsdRBc7OhbinYuyBd54RGLnxbQnswAgQ="
-TOTP_ENCRYPTION_KEY=QiFAlean+1ueZ7y/HmLgs7cLP52hdjJ4oipZQZK1olQ=
+PEPPER_PASSWORD_SECRET="GA5mG3yU8ulHsdRBc7OhbinYuyBd54
+```
+
+##  Tests
+
+### Unit Tests
+
+To run unit tests, use the following command:
+
+```bash
+npm run test:unit
+```
+
+### Integration Tests
+
+To run integration tests, use the following command:
+
+```bash
+npm run test:integration
+```
+
+### E2E Tests
+
+To run E2E tests, use the following command:
+
+```bash
+npm run test:e2e
 ```
