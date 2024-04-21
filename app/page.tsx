@@ -17,6 +17,9 @@ export default function Home() {
   const routingToLoginPage = () => {
     router.push("/login")
   }
+  const routingToSignupPage = () => {
+    router.push("/signup")
+  }
 
   return (
     <main>
@@ -25,6 +28,9 @@ export default function Home() {
           Click me
         </Button>
         <Label>{count}</Label>
+        <Button className="w-24" onClick={routingToSignupPage}>
+          Signup
+        </Button>
         <Button className="w-24" onClick={routingToLoginPage}>
           Login
         </Button>
