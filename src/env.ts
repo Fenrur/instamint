@@ -12,6 +12,8 @@ export const env = createEnv({
     TOTP_ENCRYPTION_KEY: z.string(),
     TRUST_HOST: z.string(),
     PEPPER_PASSWORD_SECRET: z.string(),
+    BASE_URL: z.string().url(),
+    CONTACT_EMAIL: z.string().email()
   },
   client: {
     NEXT_PUBLIC_PUBLISHABLE_KEY: z.string().min(1),
