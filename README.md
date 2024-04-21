@@ -36,6 +36,10 @@
     * [🏭 Production Server](#-production-server)
     * [🚀 Migrations](#-migrations)
   * [📊 Dataset](#-dataset)
+  * [Tests](#tests)
+    * [Unit Tests](#unit-tests)
+    * [Integration Tests](#integration-tests)
+    * [E2E Tests](#e2e-tests)
 <!-- TOC -->
 
 ## 📘 Preamble
@@ -354,8 +358,7 @@ The dataset is available in the [dataset.sql](dataset.sql) file.
 Here are the environment variables used for the dataset:
 
 ```dotenv
-PEPPER_PASSWORD_SECRET="GA5mG3yU8ulHsdRBc7OhbinYuyBd54RGLnxbQnswAgQ="
-TOTP_ENCRYPTION_KEY="QiFAlean+1ueZ7y/HmLgs7cLP52hdjJ4oipZQZK1olQ="
+PEPPER_PASSWORD_SECRET="GA5mG3yU8ulHsdRBc7OhbinYuyBd54
 ```
 
 ##  Tests
