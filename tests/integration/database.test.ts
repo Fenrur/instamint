@@ -30,6 +30,4 @@ describe('LoginPage Integration Test', () => {
       await postgresContainer.stop();
     }
   });
-
-  // ... Rest of your tests
 });
