@@ -37,6 +37,8 @@ export const twoFactorAlreadyEnabledProblem = {title: "Two-factor already enable
 
 export const invalidContentTypeProblem = {title: "Invalid content type", errorCode: ErrorCode.INVALID_CONTENT_TYPE, status: 400}
 
+export const invalidQueryParameterProblem = {title: "Invalid query parameter", errorCode: ErrorCode.INVALID_QUERY_PARAMETER, status: 400}
+
 const GetCode = z.object({
   errorCode: z.number().int().positive()
 })
