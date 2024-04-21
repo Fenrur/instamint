@@ -145,7 +145,7 @@ function ContentPage() {
             {
               isFetching ? <div className="ml-1">
                 <LoadingDots size={12}/>
-              </div> : <CheckIcon className="ml-1"/>
+              </div> : null
             }
           </Button>
         </div>

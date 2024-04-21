@@ -25,7 +25,6 @@ export default async function LoginPage() {
           </div>
           <Button type="submit" className="w-full">
             Login
-            <ThickArrowRightIcon className="ml-1"/>
           </Button>
         </div>
       </form>

@@ -4,6 +4,7 @@ import {z} from "zod"
 import {isContentType} from "@/http/content-type"
 import {invalidContentTypeProblem, problem} from "@/http/problem"
 import {password} from "@/utils/regex"
+import {DateTime} from "luxon"
 
 const Body = z.object({
   email: z.string().email(),
@@ -11,7 +12,7 @@ const Body = z.object({
     .string()
     .regex(
       password,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      "Password must contain at least one uppercase letter, one lowercase letter, one number and 8 characters long"
     ),
 })
 
@@ -20,6 +21,7 @@ export const POST = async (req: NextRequest) => {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
   }
 
+  const createdAt = DateTime.now()
   const body = await req.json()
 
   let parsedBody = null
@@ -36,7 +38,7 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json({ message: "Email is already in use" }, { status: 400 })
   }
 
-  const uid = await createUser(parsedBody.email, parsedBody.password)
+  const uid = await createUser(parsedBody.email, parsedBody.password, createdAt)
 
   if (!uid) {
     return NextResponse.json({ message: "Failed to create user" }, { status: 500 })
