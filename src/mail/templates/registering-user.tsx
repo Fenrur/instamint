@@ -1,6 +1,5 @@
 import {
   Body,
-  Button,
   Container,
   Head,
   Heading,
@@ -15,20 +14,22 @@ import {
 } from "@react-email/components"
 import * as React from "react"
 
-interface VerificationEmailProps {
+interface RegisteringUserProps {
   baseUrl: string;
   instamintImageUrl: string;
-  verificationLink: string;
+  profileLink: string;
   contactEmail: string;
+  username: string;
 }
 
-export const VerificationEmail = ({
-                                    baseUrl,
-                                    instamintImageUrl,
-                                    verificationLink,
-                                    contactEmail,
-                                  }: VerificationEmailProps) => {
-  const previewText = `Verify your mail on Instamint`
+export const RegisteringUser = ({
+                                  baseUrl,
+                                  instamintImageUrl,
+                                  profileLink,
+                                  contactEmail,
+                                  username
+                                }: RegisteringUserProps) => {
+  const previewText = `Congratulation you are registered on Instamint`
 
   return (
     <Html>
@@ -46,28 +47,14 @@ export const VerificationEmail = ({
               />
             </Section>
             <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
-              <strong>Verify your email on <Link href={baseUrl}
-                                                 className="text-green-400 underline">Instamint</Link></strong>
+              <strong>Congratulation you are registered on <Link href={baseUrl}
+                                                                 className="text-green-400 underline">Instamint</Link></strong> !
             </Heading>
-            <Section className="text-center mt-[32px] mb-[32px]">
-              <Button
-                className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
-                href={verificationLink}
-              >
-                Verify Email
-              </Button>
-            </Section>
             <Text className="text-black text-[14px] leading-[24px]">
-              or copy and paste this URL into your browser:{" "}
-              <Link href={verificationLink} className="text-blue-600 no-underline">
-                {verificationLink}
-              </Link>
+              Access to your profile <Link className="underline" href={profileLink}>@{username}</Link>
             </Text>
             <Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full"/>
             <Text className="text-[#666666] text-[12px] leading-[24px]">
-              This link will expire in <span className="text-black">2 hours</span>. If you didn't request this, you
-              can <span className="text-black">ignore this email</span>.
-              <br/>
               If you have any questions, please contact us at <Link className="text-blue-600"
                                                                     href={`mailto:${contactEmail}`}>{contactEmail}</Link>
             </Text>
@@ -78,11 +65,12 @@ export const VerificationEmail = ({
   )
 }
 
-VerificationEmail.PreviewProps = {
+RegisteringUser.PreviewProps = {
   baseUrl: "http://localhost:3000",
   instamintImageUrl: "https://image.noelshack.com/fichiers/2024/16/5/1713534366-instamint.png",
-  verificationLink: "http://localhost:3000/verify-email?uid=123",
-  contactEmail: "contact-instamint@gmail.com"
-} as VerificationEmailProps
+  profileLink: "http://localhost:3000/profile/fenrur",
+  contactEmail: "contact-instamint@gmail.com",
+  username: "fenrur",
+} as RegisteringUserProps
 
-export default VerificationEmail
+export default RegisteringUser

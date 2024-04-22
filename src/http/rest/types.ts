@@ -1,5 +1,6 @@
 import {z} from "zod"
 import {zfd} from "zod-form-data"
+import {passwordRegex, usernameRegex} from "@/utils/validator"
 
 export const LoginCredentials = zfd.formData({
   email: zfd.text(z.string().email())
@@ -65,3 +66,33 @@ export const TwoFactorAuthenticatorDisableRequest = z.object({
   password: z.string(),
   totpCode: z.string().min(6, "TwoFactorAuthenticatorDisableRequest.totp One-time password must be 6 digits.").max(6, "TwoFactorAuthenticatorDisableRequest.totp One-time password must be 6 digits.")
 })
+
+export const RegisterUserRequest = z.object({
+  password: z
+    .string()
+    .regex(
+      passwordRegex,
+      "Password must contain at least one uppercase letter, one lowercase letter, one number and 8 characters long"
+    ),
+  username: z
+    .string()
+    .regex(
+      usernameRegex,
+      "Username must contain only letters, numbers, underscores, and be between 3 and 18 characters long."
+    ),
+  emailVerificationId: z.string().uuid()
+})
+
+export type RegisterUserRequest = z.infer<typeof RegisterUserRequest>
+
+export const RegisterUserResponse = z.object({
+  uid: z.string(),
+})
+
+export type RegisterUserResponse = z.infer<typeof RegisterUserResponse>
+
+export const VerifyExistUsernameResponse = z.object({
+  exist: z.boolean()
+})
+
+export type VerifyExistUsernameResponse = z.infer<typeof VerifyExistUsernameResponse>

@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from "next/server"
-import {findEmailVerificationByVerificationId, verifyEmailVerification} from "@/db/db-service"
+import {findEmailVerificationByVerificationId} from "@/db/db-service"
 import {DateTime} from "luxon"
 
 export async function GET(req: NextRequest) {

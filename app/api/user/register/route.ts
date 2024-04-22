@@ -1,20 +1,20 @@
 import {NextRequest, NextResponse} from "next/server"
-import {createUser, findUserByEmail} from "@/db/db-service"
-import {z} from "zod"
+import {createUser} from "@/db/db-service"
 import {isContentType} from "@/http/content-type"
-import {invalidContentTypeProblem, problem} from "@/http/problem"
-import {password} from "@/utils/regex"
+import {
+  emailAlreadyUsedProblem,
+  emailVerificationAlreadyVerifiedProblem,
+  emailVerificationExpiredProblem,
+  emailVerificationNotFoundProblem,
+  invalidContentTypeProblem,
+  problem, usernameAlreadyUsedProblem
+} from "@/http/problem"
 import {DateTime} from "luxon"
-
-const Body = z.object({
-  email: z.string().email(),
-  password: z
-    .string()
-    .regex(
-      password,
-      "Password must contain at least one uppercase letter, one lowercase letter, one number and 8 characters long"
-    ),
-})
+import {RegisterUserRequest, RegisterUserResponse} from "@/http/rest/types"
+import {render} from "@react-email/render"
+import {env} from "@/env"
+import {transporter} from "@/mail/mailer"
+import {RegisteringUser} from "@/mail/templates/registering-user"
 
 export const POST = async (req: NextRequest) => {
   if (!isContentType(req, "json")) {
@@ -27,22 +27,47 @@ export const POST = async (req: NextRequest) => {
   let parsedBody = null
 
   try {
-    parsedBody = Body.parse(body)
+    parsedBody = RegisterUserRequest.parse(body)
   } catch (e: any) {
-    return NextResponse.json({ message: e.errors }, { status: 400 })
+    return NextResponse.json({message: e.errors}, {status: 400})
   }
 
-  const user = await findUserByEmail(parsedBody.email)
+  const result = await createUser(
+    parsedBody.password,
+    parsedBody.username,
+    parsedBody.emailVerificationId, createdAt
+  )
 
-  if (user) {
-    return NextResponse.json({ message: "Email is already in use" }, { status: 400 })
+  switch (result) {
+    case "email_verification_not_found":
+      return problem(emailVerificationNotFoundProblem)
+    case "email_verification_already_verified":
+      return problem(emailVerificationAlreadyVerifiedProblem)
+    case "email_verification_expired":
+      return problem(emailVerificationExpiredProblem)
+    case "email_already_used":
+      return problem(emailAlreadyUsedProblem)
+    case "username_already_used":
+      return problem(usernameAlreadyUsedProblem)
+    default:
+      const response: RegisterUserResponse = {
+        uid: result.uid
+      }
+
+      const emailHtml = render(RegisteringUser({
+        baseUrl: env.BASE_URL,
+        contactEmail: env.CONTACT_EMAIL,
+        instamintImageUrl: env.BASE_URL + "/instamint.svg",
+        username: parsedBody.username,
+        profileLink: env.BASE_URL + "/profile/" + parsedBody.username,
+      }))
+
+      transporter.sendMail({
+        to: result.email,
+        subject: "Registered on Instamint",
+        html: emailHtml,
+      })
+
+      return NextResponse.json(response, {status: 201})
   }
-
-  const uid = await createUser(parsedBody.email, parsedBody.password, createdAt)
-
-  if (!uid) {
-    return NextResponse.json({ message: "Failed to create user" }, { status: 500 })
-  }
-
-  return NextResponse.json({ message: "User created successfully", data: {uid, email: parsedBody.email} }, { status: 200 })
 }
