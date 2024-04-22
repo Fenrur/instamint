@@ -1,13 +1,15 @@
-"use client"
+export const dynamic = 'force-dynamic'
 
-import {useSearchParams} from "next/navigation"
+interface LoginPageProps {
+  searchParams: {
+    email?: string
+  }
+}
 
-export default function LoginPage() {
-  const searchParams = useSearchParams()
-
+export default async function LoginPage(props: LoginPageProps) {
   return (
     <>
-      <div className="text-sm">We have sent you a verification email at <b>{searchParams.get("email")}</b></div>
+      <div className="text-sm">We have sent you a verification email at <b>{props.searchParams.email}</b></div>
     </>
   )
 }

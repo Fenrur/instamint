@@ -1,5 +1,3 @@
-"use server"
-
 import Link from "next/link"
 
 import {Button} from "@/components/ui/button"
@@ -8,6 +6,8 @@ import {Label} from "@/components/ui/label"
 import {Separator} from "@/components/ui/separator"
 import {cn} from "@/lib/utils"
 import {useMemo} from "react"
+
+export const dynamic = 'force-dynamic'
 
 type SignupPageError = "email_verification_limit_exceeded" | "email_exists"
 

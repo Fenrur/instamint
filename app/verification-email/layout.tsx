@@ -1,5 +1,6 @@
-"use server"
 import React from "react"
+
+export const dynamic = 'force-dynamic'
 
 export default async function LayoutLoginPage({
   children
@@ -12,7 +13,6 @@ export default async function LayoutLoginPage({
       </div>
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
-
           {children}
         </div>
       </div>

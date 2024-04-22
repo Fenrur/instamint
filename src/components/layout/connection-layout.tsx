@@ -1,5 +1,6 @@
-"use server"
 import React from "react"
+
+export const dynamic = 'force-dynamic'
 
 export async function ConnectionLayout({
                                          children,
