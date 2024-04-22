@@ -6,6 +6,7 @@ import {env} from "@/env"
 import {authenticator} from "@/two-factor/otp"
 import {DateTime, Duration} from "luxon"
 import {generateUsername} from "@/utils/username"
+import {eq} from "drizzle-orm"
 
 export async function existUsernameIgnoreCase(username: string) {
   const result = await db.query.Profile.findFirst({
@@ -136,32 +137,40 @@ export async function verifyUserPasswordByUid(uid: string, password: string) {
 }
 
 export function resetTwoFactorAuthentification(id: number) {
-  return db.update(User).set({
-    id,
-    twoFactorEnabled: false,
-    twoFactorSecret: null
-  })
+  return db
+    .update(User)
+    .set({
+      twoFactorEnabled: false,
+      twoFactorSecret: null
+    })
+    .where(eq(User.id, id))
 }
 
 export function enableTwoFactorAuthentification(uid: string) {
-  return db.update(User).set({
-    uid,
-    twoFactorEnabled: true
-  })
+  return db
+    .update(User)
+    .set({
+      twoFactorEnabled: true
+    })
+    .where(eq(User.uid, uid))
 }
 
 export function disableTwoFactorAuthentification(uid: string) {
-  return db.update(User).set({
-    uid,
-    twoFactorEnabled: false
-  })
+  return db
+    .update(User)
+    .set({
+      twoFactorEnabled: false
+    })
+    .where(eq(User.uid, uid))
 }
 
-export function setTwoFactorSecret(uid: string, secret: string) {
-  return db.update(User).set({
-    uid,
-    twoFactorSecret: symmetricEncrypt(secret, env.TOTP_ENCRYPTION_KEY)
-  })
+export async function setTwoFactorSecret(uid: string, secret: string) {
+  return db
+    .update(User)
+    .set({
+      twoFactorSecret: symmetricEncrypt(secret, env.TOTP_ENCRYPTION_KEY)
+    })
+    .where(eq(User.uid, uid))
 }
 
 export async function setupTwoFactorAuthentification(uid: string, password: string, secret: string) {
