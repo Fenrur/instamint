@@ -39,6 +39,16 @@ export const invalidContentTypeProblem = {title: "Invalid content type", errorCo
 
 export const invalidQueryParameterProblem = {title: "Invalid query parameter", errorCode: ErrorCode.INVALID_QUERY_PARAMETER, status: 400}
 
+export const emailVerificationNotFoundProblem = {title: "Email verification not found", errorCode: ErrorCode.EMAIL_VERIFICATION_NOT_FOUND, status: 404}
+
+export const emailVerificationAlreadyVerifiedProblem = {title: "Email verification already verified", errorCode: ErrorCode.EMAIL_VERIFICATION_ALREADY_VERIFIED, status: 400}
+
+export const emailVerificationExpiredProblem = {title: "Email verification expired", errorCode: ErrorCode.EMAIL_VERIFICATION_EXPIRED, status: 400}
+
+export const emailAlreadyUsedProblem = {title: "Email is already in use", errorCode: ErrorCode.EMAIL_ALREADY_USED, status: 400}
+
+export const usernameAlreadyUsedProblem = {title: "Username is already in use", errorCode: ErrorCode.USERNAME_ALREADY_USED, status: 400}
+
 const GetCode = z.object({
   errorCode: z.number().int().positive()
 })
