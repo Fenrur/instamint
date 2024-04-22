@@ -26,15 +26,16 @@ function parseError(props: LoginPageProps): LoginPageError | null {
     }
   }
 
-  
+
 return null
 }
 
 export default async function LoginPage(props: LoginPageProps) {
   const error = parseError(props)
   const errorMessage = useMemo(() => {
-    if (error === "email_not_found") {
-      return "Email does not exist. Please try again."
+    switch (error) {
+      case "email_not_found":
+        return "Email does not exist. Please try again."
     }
   }, [error])
 

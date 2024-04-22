@@ -32,12 +32,12 @@ function parseError(props: SignupPageProps): SignupPageError | null {
 export default async function SignupPage(props: SignupPageProps) {
   const error = parseError(props)
   const errorMessage = useMemo(() => {
-    if (error === "email_verification_limit_exceeded") {
-      return "You have exceeded the limit of email verification requests. Please try again later."
-    }
+    switch (error) {
+      case "email_verification_limit_exceeded":
+        return "You have exceeded the limit of email verification requests. Please try again later."
 
-    if (error === "email_exists") {
-      return "Email already exists. Please try again."
+      case "email_exists":
+        return "Email already exists. Please try again."
     }
   }, [error])
 
