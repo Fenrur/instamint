@@ -2,7 +2,7 @@
 
 import {useSearchParams} from "next/navigation"
 
-export default async function LoginPage() {
+export default function LoginPage() {
   const searchParams = useSearchParams()
 
   return (

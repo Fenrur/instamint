@@ -11,7 +11,6 @@ import {
   VerifyPasswordRequest,
   VerifyTotpCodeRequest
 } from "@/http/rest/types"
-import useSWR from "swr"
 import {useRef} from "react"
 
 export function useVerifyUserPasswordByEmail() {
@@ -59,13 +58,13 @@ export function useVerifyTwoFactorAuthenticatorTotpCode() {
 export function useVerifyExistUsername() {
   const aborter = useRef<AbortController>()
   const abort = () => aborter.current?.abort()
-
   const verifyExistUsernameFetcher = (_: any, {arg}: {
     arg: {username: string}
   }) => {
     aborter.current = new AbortController()
     const signal = aborter.current?.signal
-    if (!signal) throw new Error("AbortController.signal is undefined")
+
+    if (!signal) {throw new Error("AbortController.signal is undefined")}
 
     return verifyExistUsername(signal, arg.username)
   }
@@ -84,7 +83,6 @@ export function useRegisterUser() {
   const registerUserFetcher = (_: any, {arg}: {
     arg: RegisterUserRequest
   }) => registerUser(arg)
-
   const { trigger, data, error, isMutating } = useSWRMutation("/api/user/register", registerUserFetcher)
 
   return {

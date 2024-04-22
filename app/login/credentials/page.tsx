@@ -5,7 +5,6 @@ import {Input} from "@/components/ui/input"
 import {Button} from "@/components/ui/button"
 import {useRouter, useSearchParams} from "next/navigation"
 import {z} from "zod"
-import {CheckIcon} from "@radix-ui/react-icons"
 import Link from "next/link"
 import {Badge} from "@/components/ui/badge"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
@@ -159,7 +158,7 @@ function ContentPage() {
   )
 }
 
-export default function PasswordCredentialsPage() {
+export default function PasswordCredentialsLoginPage() {
   return (
     <Suspense>
       <ContentPage/>

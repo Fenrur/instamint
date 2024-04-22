@@ -14,7 +14,7 @@ type Requirements = "length" | "valid_character" | "unique"
 const requirementsEnumSize = 3
 
 function isLength(username: string) {
-  return usernameMinimumLength && usernameMaximumLength <= 18
+  return usernameMinimumLength <= username.length && usernameMaximumLength >= username.length
 }
 
 function isValidCharacter(username: string) {
@@ -37,20 +37,21 @@ function ContentPage() {
     if (!init) {
       if (username) {
         const uRef = usernameRef.current
+
         if (uRef) {
           uRef.value = username
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           onUsernameChanged(username)
         }
       }
+
       setInit(true)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [init, setInit])
 
   async function onUsernameChanged(username: string) {
-    try {
-      abortVerification()
-    } catch (e) {
-    }
+    abortVerification()
 
     const length = isLength(username)
     const validCharacter = isValidCharacter(username)
@@ -58,18 +59,22 @@ function ContentPage() {
 
     if (length && validCharacter) {
       const result = await verifyExistUsername(username)
+
       if (result && result.exist !== undefined) {
         unique = !result.exist
       }
     }
 
     const newRequirements: Requirements[] = []
+
     if (length) {
       newRequirements.push("length")
     }
+
     if (validCharacter) {
       newRequirements.push("valid_character")
     }
+
     if (unique) {
       newRequirements.push("unique")
     }
@@ -80,14 +85,15 @@ function ContentPage() {
   const handleOnChangeUsername = async (e: React.ChangeEvent<HTMLInputElement>) => {
     await onUsernameChanged(e.target.value)
   }
-
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
     if (isFetchingVerification) {
       return
     }
 
-    const username = e.currentTarget.username.value
+    const username = String(e.currentTarget.username.value)
+
     setUsername(username)
     router.push("/signup/terms-and-conditions")
   }
@@ -129,7 +135,7 @@ function ContentPage() {
   )
 }
 
-export default function PasswordCredentialsPage() {
+export default function UsernameSignupPage() {
   return (
     <Suspense>
       <ContentPage/>

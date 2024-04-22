@@ -16,26 +16,33 @@ function ContentPage() {
   const router = useRouter()
   const [init, setInit] = useState(false)
   const [checked, setChecked] = useState(true)
-  const { vid, password, username, accept, setAccept, reset } = useSignup()
+  const {vid, password, username, accept, setAccept, reset} = useSignup()
   const {isFetchingRegister, registerUser, dataRegister} = useRegisterUser()
 
   useEffect(() => {
     if (!init) {
       if (!vid) {
         router.push("/signup/")
+
         return
       }
+
       if (!password) {
         router.push("/signup/password")
+
         return
       }
+
       if (!username) {
         router.push("/signup/username")
+
         return
       }
+
       setChecked(accept)
       setInit(true)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [init])
 
   useEffect(() => {
@@ -43,39 +50,52 @@ function ContentPage() {
       switch (dataRegister) {
         case "email_verification_not_found":
           toast.error("Email verification not found", {description: "Please signup from the beginning."})
+
           break
+
         case "email_verification_already_verified":
           toast.error("Email verification already verified", {description: "Please signup from the beginning."})
+
           break
+
         case "email_verification_expired":
           toast.error("Email verification expired", {description: "Please signup from the beginning."})
+
           break
+
         case "email_already_used":
           toast.error("Email already used", {description: "Please signup from the beginning."})
+
           break
+
         case "username_already_used":
           toast.error("Username already used", {description: "Please signup from the beginning."})
+
           break
+
         default:
           reset()
           router.push("/signup-completed")
+
           break
       }
     }
-  }, [dataRegister])
+  }, [dataRegister, reset, router])
 
   const handleOnAccept = (e: CheckedState) => {
     if (e === "indeterminate") {
       return
     }
+
     setChecked(e)
   }
-
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
     if (!checked) {
       return
     }
+
     setAccept(true)
 
     if (vid && username && password) {
@@ -172,7 +192,7 @@ function ContentPage() {
   )
 }
 
-export default function PasswordCredentialsPage() {
+export default function TermsAndConditionsPage() {
   return (
     <Suspense>
       <ContentPage/>

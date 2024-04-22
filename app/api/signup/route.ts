@@ -14,6 +14,27 @@ import VerificationEmail from "@/mail/templates/verification-email"
 import {env} from "@/env"
 import * as u from "node:url"
 
+async function createVerificationAndSendEmail(formData: SignupCredentials, createdAt: DateTime<true>) {
+  const verificationId = await createEmailVerification(formData.email, createdAt)
+  const verificationLink = u.format({
+    host: env.BASE_URL,
+    pathname: "/api/signup/verification-email",
+    query: {vid: verificationId},
+  })
+  const emailHtml = render(VerificationEmail({
+    baseUrl: env.BASE_URL,
+    contactEmail: env.CONTACT_EMAIL,
+    instamintImageUrl: `${env.BASE_URL}/instamint.svg`,
+    verificationLink
+  }))
+
+  await transporter.sendMail({
+    to: formData.email,
+    subject: "Verify email Instamint",
+    html: emailHtml,
+  })
+}
+
 export async function POST(req: NextRequest) {
   if (!isContentType(req, "form")) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/x-www-form-urlencoded"})
@@ -27,7 +48,6 @@ export async function POST(req: NextRequest) {
   try {
     parsedFormData = SignupCredentials.parse(formData)
   } catch (e: any) {
-    // TODO error ?
     url.pathname = "/signup"
 
     return NextResponse.redirect(url)
@@ -37,6 +57,7 @@ export async function POST(req: NextRequest) {
 
   if (emailDb) {
     url.pathname = "/signup"
+    url.searchParams.set("error", "email_exists")
 
     return NextResponse.redirect(url)
   }
@@ -47,8 +68,8 @@ export async function POST(req: NextRequest) {
   )
 
   if (emailVerifications && emailVerifications.length >= 5) {
-    // TODO error ?
     url.pathname = "/signup"
+    url.searchParams.set("error", "email_verification_limit_exceeded")
 
     return NextResponse.redirect(url)
   }
@@ -56,27 +77,8 @@ export async function POST(req: NextRequest) {
   url.pathname = "/verification-email/sent"
   url.searchParams.set("email", parsedFormData.email)
 
-  createEmailVerification(parsedFormData.email, createdAt)
-    .then((verificationId) => {
-      const verificationLink = u.format({
-        host: env.BASE_URL,
-        pathname: "/api/signup/verification-email",
-        query: {vid: verificationId},
-      })
-
-      const emailHtml = render(VerificationEmail({
-        baseUrl: env.BASE_URL,
-        contactEmail: env.CONTACT_EMAIL,
-        instamintImageUrl: env.BASE_URL + "/instamint.svg",
-        verificationLink
-      }))
-
-      transporter.sendMail({
-        to: parsedFormData.email,
-        subject: "Verify email Instamint",
-        html: emailHtml,
-      })
-    })
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  createVerificationAndSendEmail(parsedFormData, createdAt)
 
   return NextResponse.redirect(url)
 }

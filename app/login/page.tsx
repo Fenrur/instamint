@@ -6,15 +6,44 @@ import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Separator} from "@/components/ui/separator"
-import {ThickArrowRightIcon} from "@radix-ui/react-icons"
+import {cn} from "@/lib/utils"
+import {useMemo} from "react"
 
-export default async function LoginPage() {
+type LoginPageError = "email_not_found"
+
+interface LoginPageProps {
+  searchParams: {
+    error?: string
+  }
+}
+
+function parseError(props: LoginPageProps): LoginPageError | null {
+  if (props.searchParams.error) {
+    const error = props.searchParams.error
+
+    if (error === "email_not_found") {
+      return "email_not_found"
+    }
+  }
+
+  
+return null
+}
+
+export default async function LoginPage(props: LoginPageProps) {
+  const error = parseError(props)
+  const errorMessage = useMemo(() => {
+    if (error === "email_not_found") {
+      return "Email does not exist. Please try again."
+    }
+  }, [error])
+
   return (
     <>
       <form method="post" action="/api/login">
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className={error ? "text-destructive" : ""}>Email</Label>
             <Input
               name="email"
               id="email"
@@ -22,6 +51,7 @@ export default async function LoginPage() {
               placeholder="myemail@example.com"
               required
             />
+            <div hidden={error === null} className={cn("text-sm", error ? "text-destructive" : "")}>{errorMessage}</div>
           </div>
           <Button type="submit" className="w-full">
             Login

@@ -81,9 +81,7 @@
       { "enforceForIfStatements": true }
     ],
     "max-classes-per-file": ["error", { "ignoreExpressions": true }],
-    "max-depth": ["error", 3],
     "max-nested-callbacks": ["error", 3],
-    "max-params": ["error", 3],
     "multiline-comment-style": ["error", "separate-lines"],
     "no-alert": "error",
     "no-bitwise": "error",
@@ -153,7 +151,6 @@
         "ignoreReadBeforeAssign": false
       }
     ],
-    "prefer-destructuring": "error",
     "prefer-exponentiation-operator": "error",
     "prefer-numeric-literals": "error",
     "prefer-object-has-own": "error",

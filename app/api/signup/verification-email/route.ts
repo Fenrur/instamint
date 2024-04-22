@@ -8,6 +8,7 @@ export async function GET(req: NextRequest) {
 
   if (!verificationId) {
     url.pathname = "/verification-email/invalid/url"
+
     return NextResponse.redirect(url)
   }
 
@@ -15,11 +16,13 @@ export async function GET(req: NextRequest) {
 
   if (!emailVerification) {
     url.pathname = "/verification-email/invalid/url"
+
     return NextResponse.redirect(url)
   }
 
   if (emailVerification.isVerified) {
     url.pathname = "/verification-email/invalid/already-used"
+
     return NextResponse.redirect(url)
   }
 
@@ -28,9 +31,11 @@ export async function GET(req: NextRequest) {
 
   if (now > expireAt) {
     url.pathname = "/verification-email/invalid/expired"
+
     return NextResponse.redirect(url)
   }
 
   url.pathname = "/signup/password"
+
   return NextResponse.redirect(url)
 }

@@ -23,7 +23,7 @@ export async function existUsernameIgnoreCase(username: string) {
     }
   })
 
-  return !!result
+  return Boolean(result)
 }
 
 export function findUserByEmail(email: string) {
@@ -46,7 +46,9 @@ export function findEmailVerificationByVerificationId(verificationId: string) {
 
 export function findUnverifiedEmailAndInIntervalEmailVerifications(email: string, now: DateTime<true>) {
   const nowSql = now.toSQL({includeZone: false, includeOffset: false})
-  return db.query.EmailVerification.findMany({
+
+  
+return db.query.EmailVerification.findMany({
     where: (emailVerification, {eq, and, gt}) => (
       and(
         eq(emailVerification.email, email),
@@ -61,7 +63,6 @@ export async function createEmailVerification(email: string, createdAt: DateTime
   const expireAt = createdAt.plus(Duration.fromObject({hours: 2}))
   const createAtSql = createdAt.toSQL({includeZone: false, includeOffset: false})
   const expireAtSql = expireAt.toSQL({includeZone: false, includeOffset: false})
-
   const result = await db.insert(EmailVerification).values({
     email,
     createdAt: createAtSql,
@@ -84,25 +85,26 @@ export async function createUser(password: string, username: string, emailVerifi
   const createdAtSql = createdAt.toSQL({includeZone: false, includeOffset: false})
   const hashedPassword = await hashPassword(password, env.PEPPER_PASSWORD_SECRET)
   const avatarUrl = encodeURI(`https://api.dicebear.com/8.x/pixel-art/svg?seed=${username}`)
-
   const emailVerification = await findEmailVerificationByVerificationId(emailVerificationId)
 
   if (!emailVerification) {
     return "email_verification_not_found"
   }
 
-  const email = emailVerification.email
+  const {email} = emailVerification
 
   if (emailVerification.isVerified) {
     return "email_verification_already_verified"
   }
 
   const verificationEmailExpireAt = DateTime.fromSQL(emailVerification.expireAt)
+
   if (verificationEmailExpireAt < createdAt) {
     return "email_verification_expired"
   }
 
   const user = await findUserByEmail(email)
+
   if (user) {
     return "email_already_used"
   }
@@ -120,7 +122,6 @@ export async function createUser(password: string, username: string, emailVerifi
         })
         .where(eq(EmailVerification.verificationId, emailVerificationId))
     }
-
     const createProfile = async () => {
       const createdProfile = await db
         .insert(Profile)
@@ -134,7 +135,6 @@ export async function createUser(password: string, username: string, emailVerifi
 
       return createdProfile[0]
     }
-
     const createUser = async () => {
       const createdUser = await db
         .insert(User)
@@ -153,11 +153,13 @@ export async function createUser(password: string, username: string, emailVerifi
     const createdProfile = await createProfile()
     const profileId = createdProfile.id
     const createdUser = await createUser()
-    const uid = createdUser.uid
+    const {uid} = createdUser
 
     return uid
   })
-  return {uid, email}
+
+  
+return {uid, email}
 }
 
 export async function verifyUserPasswordByEmail(email: string, password: string) {

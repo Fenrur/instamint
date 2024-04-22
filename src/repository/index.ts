@@ -96,10 +96,10 @@ export async function verifyTwoFactorAuthenticatorTotpCode(req: VerifyTotpCodeRe
 }
 
 export async function verifyExistUsername(signal: AbortSignal, username: string) {
-  const url = encodeURI("/api/user/exist?username=" + username)
+  const url = encodeURI(`/api/user/exist?username=${  username}`)
   const res = await fetch(url, {
     method: "GET",
-    signal: signal
+    signal
   })
 
   if (res.status === 200) {

@@ -24,27 +24,30 @@ function ContentPage() {
   const {password: signupPassword, setPassword: setSignupPassword, setVid, reset, vid: currentVid} = useSignup()
   const [init, setInit] = useState(false)
   const passwordRef = React.useRef<HTMLInputElement>(null)
-
   const changeRequirements = (password: string) => {
     const length = password.length >= passwordMinimumLength
     const uppercase = passwordContainsUppercase.test(password)
     const lowercase = passwordContainsLowercase.test(password)
     const number = passwordContainsNumber.test(password)
     const special = passwordContainsSpecial.test(password)
-
     const newRequirements: Requirements[] = []
+
     if (length) {
       newRequirements.push("length")
     }
+
     if (uppercase) {
       newRequirements.push("uppercase")
     }
+
     if (lowercase) {
       newRequirements.push("lowercase")
     }
+
     if (number) {
       newRequirements.push("number")
     }
+
     if (special) {
       newRequirements.push("special")
     }
@@ -54,12 +57,14 @@ function ContentPage() {
 
   useEffect(() => {
     const vid = searchParams.get("vid")
+
     if (!init) {
       if (vid) {
         setVid(vid)
+
         if (signupPassword) {
           const pRef = passwordRef.current
-          console.log(pRef)
+
           if (pRef) {
             pRef.value = signupPassword
             changeRequirements(signupPassword)
@@ -79,10 +84,9 @@ function ContentPage() {
 
     changeRequirements(password)
   }
-
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSignupPassword(e.currentTarget.password.value)
+    setSignupPassword(String(e.currentTarget.password.value))
     router.push("/signup/username")
   }
 
@@ -116,7 +120,7 @@ function ContentPage() {
   )
 }
 
-export default function PasswordCredentialsPage() {
+export default function PasswordSignupPage() {
   return (
     <Suspense>
       <ContentPage/>
