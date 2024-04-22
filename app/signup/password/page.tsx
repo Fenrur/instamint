@@ -4,11 +4,18 @@ import {Label} from "@/components/ui/label"
 import {Input} from "@/components/ui/input"
 import {Button} from "@/components/ui/button"
 import {useRouter, useSearchParams} from "next/navigation"
-import React, {Suspense, useEffect, useMemo, useState} from "react"
+import React, {Suspense, useEffect, useState} from "react"
 import {Progress} from "@/components/ui/progress"
 import {useSignup} from "@/store"
+import {
+  passwordContainsLowercase,
+  passwordContainsNumber, passwordContainsSpecial,
+  passwordContainsUppercase,
+  passwordMinimumLength
+} from "@/utils/validator"
 
 type Requirements = "length" | "uppercase" | "lowercase" | "number" | "special"
+const requirementsEnumSize = 5
 
 function ContentPage() {
   const searchParams = useSearchParams()
@@ -19,11 +26,11 @@ function ContentPage() {
   const passwordRef = React.useRef<HTMLInputElement>(null)
 
   const changeRequirements = (password: string) => {
-    const length = password.length >= 8
-    const uppercase = /[A-Z]/.test(password)
-    const lowercase = /[a-z]/.test(password)
-    const number = /[0-9]/.test(password)
-    const special = /[#?!@$%^&*-]/.test(password)
+    const length = password.length >= passwordMinimumLength
+    const uppercase = passwordContainsUppercase.test(password)
+    const lowercase = passwordContainsLowercase.test(password)
+    const number = passwordContainsNumber.test(password)
+    const special = passwordContainsSpecial.test(password)
 
     const newRequirements: Requirements[] = []
     if (length) {
@@ -65,7 +72,7 @@ function ContentPage() {
         router.push("/signup")
       }
     }
-  }, [init, searchParams, router, signupPassword, setVid, reset, currentVid, setInit])
+  }, [init, searchParams, router, signupPassword, setVid, reset, currentVid, setInit, passwordRef])
 
   const handleOnChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const password = e.target.value
@@ -92,7 +99,7 @@ function ContentPage() {
             onChange={handleOnChangePassword}
             required
           />
-          <Progress value={requirements.length / 5 * 100}/>
+          <Progress value={requirements.length / requirementsEnumSize * 100}/>
           <div className="grid gap-1">
             <div hidden={requirements.includes("length")} className="text-sm">- 8 characters long</div>
             <div hidden={requirements.includes("uppercase")} className="text-sm">- 1 uppercase letter</div>
@@ -100,7 +107,7 @@ function ContentPage() {
             <div hidden={requirements.includes("number")} className="text-sm">- 1 number letter</div>
             <div hidden={requirements.includes("special")} className="text-sm">- 1 special character (#?!@$%^&*-)</div>
           </div>
-          <Button disabled={requirements.length < 5} type="submit" className="w-full">
+          <Button disabled={requirements.length < requirementsEnumSize} type="submit" className="w-full">
             Validate
           </Button>
         </div>

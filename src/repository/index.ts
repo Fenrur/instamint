@@ -1,6 +1,7 @@
 import {
+  RegisterUserRequest, RegisterUserResponse,
   TwoFactorAuthenticatorTypeRequest,
-  TwoFactorAuthenticatorTypeResponse,
+  TwoFactorAuthenticatorTypeResponse, VerifyExistUsernameResponse,
   VerifyPasswordRequest,
   VerifyTotpCodeRequest
 } from "@/http/rest/types"
@@ -72,8 +73,7 @@ export async function verifyTwoFactorAuthenticatorTotpCode(req: VerifyTotpCodeRe
     return "code_valid"
   }
 
-  const body = await res.json()
-  const errorCode = getErrorCodeFromProblem(body)
+  const errorCode = getErrorCodeFromProblem(await res.json())
 
   switch (errorCode) {
     case ErrorCode.EMAIL_NOT_FOUNT:
@@ -90,6 +90,55 @@ export async function verifyTwoFactorAuthenticatorTotpCode(req: VerifyTotpCodeRe
 
     case ErrorCode.INVALID_TWO_FACTOR_CODE:
       return "invalid_totp_code"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
+}
+
+export async function verifyExistUsername(signal: AbortSignal, username: string) {
+  const url = encodeURI("/api/user/exist?username=" + username)
+  const res = await fetch(url, {
+    method: "GET",
+    signal: signal
+  })
+
+  if (res.status === 200) {
+    return VerifyExistUsernameResponse.parse(await res.json())
+  }
+
+  throw new Error("Undefined error code from server")
+}
+
+export async function registerUser(req: RegisterUserRequest) {
+  const res = await fetch("/api/user/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(req)
+  })
+
+  if (res.status === 201) {
+    return RegisterUserResponse.parse(await res.json())
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.EMAIL_VERIFICATION_NOT_FOUND:
+      return "email_verification_not_found"
+
+    case ErrorCode.EMAIL_VERIFICATION_ALREADY_VERIFIED:
+      return "email_verification_already_verified"
+
+    case ErrorCode.EMAIL_VERIFICATION_EXPIRED:
+      return "email_verification_expired"
+
+    case ErrorCode.EMAIL_ALREADY_USED:
+      return "email_already_used"
+
+    case ErrorCode.USERNAME_ALREADY_USED:
+      return "username_already_used"
   }
 
   throw new Error(`Undefined error code from server ${errorCode}`)

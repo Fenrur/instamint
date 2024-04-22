@@ -5,7 +5,6 @@ import {symmetricDecrypt, symmetricEncrypt} from "@/utils/crypto"
 import {env} from "@/env"
 import {authenticator} from "@/two-factor/otp"
 import {DateTime, Duration} from "luxon"
-import {generateUsername} from "@/utils/username"
 import {eq} from "drizzle-orm"
 
 export async function existUsernameIgnoreCase(username: string) {
@@ -24,7 +23,7 @@ export async function existUsernameIgnoreCase(username: string) {
     }
   })
 
-  return !!result;
+  return !!result
 }
 
 export function findUserByEmail(email: string) {
@@ -36,13 +35,6 @@ export function findUserByEmail(email: string) {
 export function findUserByUid(uid: string) {
   return db.query.User.findFirst({
     where: (user, {eq}) => (eq(user.uid, uid)),
-  })
-}
-
-export function verifyEmailVerification(verificationId: string) {
-  return db.update(EmailVerification).set({
-    verificationId,
-    isVerified: true
   })
 }
 
@@ -80,34 +72,95 @@ export async function createEmailVerification(email: string, createdAt: DateTime
   return result[0].verificationId
 }
 
-export async function createUser(email: string, password: string, createdAt: DateTime<true>) {
+type CreateUserResult =
+  "email_verification_not_found"
+  | "email_verification_already_verified"
+  | "email_verification_expired"
+  | "email_already_used"
+  | "username_already_used"
+  | {uid: string, email: string}
+
+export async function createUser(password: string, username: string, emailVerificationId: string, createdAt: DateTime<true>): Promise<CreateUserResult> {
   const createdAtSql = createdAt.toSQL({includeZone: false, includeOffset: false})
-  const username = generateUsername()
   const hashedPassword = await hashPassword(password, env.PEPPER_PASSWORD_SECRET)
-  const avatarUrl = `https://api.dicebear.com/8.x/pixel-art/svg?seed=${username}`
+  const avatarUrl = encodeURI(`https://api.dicebear.com/8.x/pixel-art/svg?seed=${username}`)
 
-  return db.transaction(async (db) => {
-    const resultProfile = await db.insert(Profile).values({
-      username,
-      createdAt: createdAtSql,
-      avatarUrl,
-      displayName: username,
-      link: "https://www.google.com/"
-    }).returning({id: Profile.id})
-    const profileId = resultProfile[0].id
-    const resultUser = await db.insert(User).values({
-      email,
-      hashedPassword,
-      profileId
-    }).returning({uid: User.uid})
+  const emailVerification = await findEmailVerificationByVerificationId(emailVerificationId)
 
-    return resultUser[0].uid
+  if (!emailVerification) {
+    return "email_verification_not_found"
+  }
+
+  const email = emailVerification.email
+
+  if (emailVerification.isVerified) {
+    return "email_verification_already_verified"
+  }
+
+  const verificationEmailExpireAt = DateTime.fromSQL(emailVerification.expireAt)
+  if (verificationEmailExpireAt < createdAt) {
+    return "email_verification_expired"
+  }
+
+  const user = await findUserByEmail(email)
+  if (user) {
+    return "email_already_used"
+  }
+
+  if (await existUsernameIgnoreCase(username)) {
+    return "username_already_used"
+  }
+
+  const uid = await db.transaction(async (db) => {
+    const verifyEmailVerification = () => {
+      return db
+        .update(EmailVerification)
+        .set({
+          isVerified: true
+        })
+        .where(eq(EmailVerification.verificationId, emailVerificationId))
+    }
+
+    const createProfile = async () => {
+      const createdProfile = await db
+        .insert(Profile)
+        .values({
+          username,
+          createdAt: createdAtSql,
+          avatarUrl,
+          displayName: username,
+        })
+        .returning({id: Profile.id})
+
+      return createdProfile[0]
+    }
+
+    const createUser = async () => {
+      const createdUser = await db
+        .insert(User)
+        .values({
+          email,
+          hashedPassword,
+          profileId
+        })
+        .returning({uid: User.uid})
+
+      return createdUser[0]
+    }
+
+    await verifyEmailVerification()
+
+    const createdProfile = await createProfile()
+    const profileId = createdProfile.id
+    const createdUser = await createUser()
+    const uid = createdUser.uid
+
+    return uid
   })
+  return {uid, email}
 }
 
-type VerifyUserPasswordResult = "valid" | "invalid" | "email_not_found";
-
-export async function verifyUserPasswordByEmail(email: string, password: string): Promise<VerifyUserPasswordResult> {
+export async function verifyUserPasswordByEmail(email: string, password: string) {
   const user = await findUserByEmail(email)
 
   if (!user) {

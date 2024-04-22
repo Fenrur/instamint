@@ -3,24 +3,65 @@
 import {Label} from "@/components/ui/label"
 import {Input} from "@/components/ui/input"
 import {Button} from "@/components/ui/button"
-import React, {Suspense, useState} from "react"
+import React, {Suspense, useEffect, useState} from "react"
 import {useSignup} from "@/store"
 import {Progress} from "@/components/ui/progress"
 import {useRouter} from "next/navigation"
+import {useVerifyExistUsername} from "@/repository/hooks"
+import {usernameMaximumLength, usernameMinimumLength, usernameValidCharacter} from "@/utils/validator"
 
 type Requirements = "length" | "valid_character" | "unique"
+const requirementsEnumSize = 3
+
+function isLength(username: string) {
+  return usernameMinimumLength && usernameMaximumLength <= 18
+}
+
+function isValidCharacter(username: string) {
+  return usernameValidCharacter.test(username)
+}
 
 function ContentPage() {
   const router = useRouter()
   const [requirements, setRequirements] = useState<Requirements[]>([])
-  const {} = useSignup()
+  const { username, setUsername} = useSignup()
   const [init, setInit] = useState(false)
   const usernameRef = React.useRef<HTMLInputElement>(null)
+  const {
+    verifyExistUsername,
+    abortVerification,
+    isFetchingVerification
+  } = useVerifyExistUsername()
 
-  const changeRequirements = (username: string) => {
-    const length = username.length >= 3 && username.length <= 18
-    const validCharacter = /^[a-zA-Z0-9_]+$/.test(username)
-    const unique = true
+  useEffect(() => {
+    if (!init) {
+      if (username) {
+        const uRef = usernameRef.current
+        if (uRef) {
+          uRef.value = username
+          onUsernameChanged(username)
+        }
+      }
+      setInit(true)
+    }
+  }, [init, setInit])
+
+  async function onUsernameChanged(username: string) {
+    try {
+      abortVerification()
+    } catch (e) {
+    }
+
+    const length = isLength(username)
+    const validCharacter = isValidCharacter(username)
+    let unique = false
+
+    if (length && validCharacter) {
+      const result = await verifyExistUsername(username)
+      if (result && result.exist !== undefined) {
+        unique = !result.exist
+      }
+    }
 
     const newRequirements: Requirements[] = []
     if (length) {
@@ -36,14 +77,19 @@ function ContentPage() {
     setRequirements(newRequirements)
   }
 
-  const handleOnChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const username = e.target.value
-
-    changeRequirements(username)
+  const handleOnChangeUsername = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await onUsernameChanged(e.target.value)
   }
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (isFetchingVerification) {
+      return
+    }
+
+    const username = e.currentTarget.username.value
+    setUsername(username)
+    router.push("/signup/terms-and-conditions")
   }
 
   return (
@@ -66,7 +112,7 @@ function ContentPage() {
               required
             />
           </div>
-          <Progress value={requirements.length / 3 * 100}/>
+          <Progress value={requirements.length / requirementsEnumSize * 100}/>
           <div className="grid gap-1">
             <div hidden={requirements.includes("length")} className="text-sm">- between 3 and 18 characters</div>
             <div hidden={requirements.includes("valid_character")} className="text-sm">- characters valid: letters
@@ -74,7 +120,7 @@ function ContentPage() {
             </div>
             <div hidden={requirements.includes("unique")} className="text-sm">- unique username</div>
           </div>
-          <Button disabled={false} type="submit" className="w-full">
+          <Button disabled={requirements.length < requirementsEnumSize} type="submit" className="w-full">
             Validate
           </Button>
         </div>
