@@ -9,6 +9,7 @@ import {Progress} from "@/components/ui/progress"
 import {useRouter} from "next/navigation"
 import {useVerifyExistUsername} from "@/repository/hooks"
 import {usernameMaximumLength, usernameMinimumLength, usernameValidCharacter} from "@/utils/validator"
+import {RightPanel} from "../right-panel"
 
 type Requirements = "length" | "valid_character" | "unique"
 const requirementsEnumSize = 3
@@ -99,7 +100,7 @@ function ContentPage() {
   }
 
   return (
-    <>
+    <RightPanel title="Signup" text="Fill below to sign up to your account" width="w-[350px]">
       <form onSubmit={handleFormSubmit}>
         <div className="grid gap-4">
           <Label htmlFor="username">Username</Label>
@@ -131,7 +132,7 @@ function ContentPage() {
           </Button>
         </div>
       </form>
-    </>
+    </RightPanel>
   )
 }
 

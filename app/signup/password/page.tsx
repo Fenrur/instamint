@@ -13,6 +13,7 @@ import {
   passwordContainsUppercase,
   passwordMinimumLength
 } from "@/utils/validator"
+import {RightPanel} from "../right-panel"
 
 type Requirements = "length" | "uppercase" | "lowercase" | "number" | "special"
 const requirementsEnumSize = 5
@@ -91,7 +92,7 @@ function ContentPage() {
   }
 
   return (
-    <>
+    <RightPanel title="Signup" text="Fill below to sign up to your account" width="w-[350px]">
       <form onSubmit={handleFormSubmit}>
         <div className="grid gap-4">
           <Label htmlFor="password">Password</Label>
@@ -116,7 +117,7 @@ function ContentPage() {
           </Button>
         </div>
       </form>
-    </>
+    </RightPanel>
   )
 }
 

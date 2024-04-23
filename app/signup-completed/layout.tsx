@@ -9,8 +9,16 @@ export default async function LayoutLoginPage({
   children: React.ReactNode
 }>) {
   return (
-    <ConnectionLayout title="Signup completed !" text="You have received an email confirming your registration">
-      {children}
+    <ConnectionLayout>
+      <div className="mx-auto grid w-[350px] gap-6">
+        <div className="grid gap-2 text-center">
+          <h1 className="text-3xl font-bold">Signup completed !</h1>
+          <p className="text-balance text-muted-foreground">
+            You have received an email confirming your registration
+          </p>
+        </div>
+        {children}
+      </div>
     </ConnectionLayout>
   )
 }

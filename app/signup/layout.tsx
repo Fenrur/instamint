@@ -9,7 +9,7 @@ export default async function LayoutLoginPage({
   children: React.ReactNode
 }>) {
   return (
-    <ConnectionLayout title="Signup" text="Fill below to sign up to your account">
+    <ConnectionLayout>
       {children}
     </ConnectionLayout>
   )

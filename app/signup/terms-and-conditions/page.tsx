@@ -11,6 +11,7 @@ import {CheckedState} from "@radix-ui/react-checkbox"
 import {useRegisterUser} from "@/repository/hooks"
 import {LoadingDots} from "@/components/ui/loading-dots"
 import {toast} from "sonner"
+import {RightPanel} from "../right-panel"
 
 function ContentPage() {
   const router = useRouter()
@@ -104,7 +105,7 @@ function ContentPage() {
   }
 
   return (
-    <>
+    <RightPanel title="Signup" text="Fill below to sign up to your account" width="w-[500px]">
       <Card>
         <CardHeader>
           <CardTitle>Terms & Conditions</CardTitle>
@@ -188,7 +189,7 @@ function ContentPage() {
           </CardFooter>
         </form>
       </Card>
-    </>
+    </RightPanel>
   )
 }
 
