@@ -6,6 +6,7 @@ import {Label} from "@/components/ui/label"
 import {Separator} from "@/components/ui/separator"
 import {cn} from "@/lib/utils"
 import {useMemo} from "react"
+import {RightPanel} from "./right-panel"
 
 export const dynamic = 'force-dynamic'
 
@@ -42,7 +43,7 @@ export default async function SignupPage(props: SignupPageProps) {
   }, [error])
 
   return (
-    <>
+    <RightPanel title="Signup" text="Fill below to sign up to your account" width="w-[350px]">
       <form method="post" action="/api/signup">
         <div className="grid gap-4">
           <div className="grid gap-2">
@@ -73,7 +74,7 @@ export default async function SignupPage(props: SignupPageProps) {
           Forgot my password?{" "}
         </Link>
       </div>
-    </>
+    </RightPanel>
   )
 }
 
