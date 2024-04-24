@@ -7,7 +7,7 @@ import {Separator} from "@/components/ui/separator"
 import {cn} from "@/lib/utils"
 import {useMemo} from "react"
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic"
 
 type LoginPageError = "email_not_found"
 

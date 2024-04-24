@@ -8,7 +8,7 @@ import {cn} from "@/lib/utils"
 import {useMemo} from "react"
 import {RightPanel} from "./right-panel"
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic"
 
 type SignupPageError = "email_verification_limit_exceeded" | "email_exists"
 

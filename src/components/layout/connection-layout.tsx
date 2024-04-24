@@ -1,6 +1,6 @@
 import React from "react"
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic"
 
 export async function ConnectionLayout({
                                          children,
