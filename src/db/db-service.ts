@@ -28,7 +28,7 @@ export async function existUsernameIgnoreCase(username: string) {
 
 export function findUserByEmail(email: string) {
   return db.query.User.findFirst({
-    where: (user, {eq}) => (eq(user.email, email)),
+    where: (user, {eq}) => (eq(user.email, email.toLowerCase())),
   })
 }
 
@@ -47,11 +47,11 @@ export function findEmailVerificationByVerificationId(verificationId: string) {
 export function findUnverifiedEmailAndInIntervalEmailVerifications(email: string, now: DateTime<true>) {
   const nowSql = now.toSQL({includeZone: false, includeOffset: false})
 
-  
+
 return db.query.EmailVerification.findMany({
     where: (emailVerification, {eq, and, gt}) => (
       and(
-        eq(emailVerification.email, email),
+        eq(emailVerification.email, email.toLowerCase()),
         eq(emailVerification.isVerified, false),
         gt(emailVerification.expireAt, nowSql)
       )
@@ -64,7 +64,7 @@ export async function createEmailVerification(email: string, createdAt: DateTime
   const createAtSql = createdAt.toSQL({includeZone: false, includeOffset: false})
   const expireAtSql = expireAt.toSQL({includeZone: false, includeOffset: false})
   const result = await db.insert(EmailVerification).values({
-    email,
+    email: email.toLowerCase(),
     createdAt: createAtSql,
     expireAt: expireAtSql,
     isVerified: false
@@ -158,7 +158,7 @@ export async function createUser(password: string, username: string, emailVerifi
     return uid
   })
 
-  
+
 return {uid, email}
 }
 
