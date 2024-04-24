@@ -3,7 +3,6 @@ import {Session} from "@/auth/types"
 
 export function useSession() {
   const {data, status, update} = useNextAuthSession()
-
   const session = Session.safeParse(data)
 
   return {
