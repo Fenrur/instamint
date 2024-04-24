@@ -2,6 +2,8 @@ import {NextRequest, NextResponse} from "next/server"
 import {findEmailVerificationByVerificationId} from "@/db/db-service"
 import {DateTime} from "luxon"
 
+export const dynamic = "force-dynamic"
+
 export async function GET(req: NextRequest) {
   const url = req.nextUrl.clone()
   const verificationId = url.searchParams.get("vid")

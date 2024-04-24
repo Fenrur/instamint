@@ -26,8 +26,7 @@ function parseError(props: LoginPageProps): LoginPageError | null {
     }
   }
 
-
-return null
+  return null
 }
 
 export default async function LoginPage(props: LoginPageProps) {
