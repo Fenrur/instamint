@@ -288,6 +288,15 @@ export const passwordResetRelations = relations(PasswordReset, ({ one }) => ({
   user: one(User, { fields: [PasswordReset.userId], references: [User.id] }),
 }))
 
+export const EmailVerification = pgTable("EmailVerification", {
+  id: serial("id").notNull().primaryKey(),
+  verificationId: uuid("verificationId").notNull().unique().defaultRandom(),
+  email: varchar("email", {length: 255}).notNull(),
+  createdAt: timestamp("createdAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
+  expireAt: timestamp("expireAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
+  isVerified: boolean("isVerified").notNull()
+})
+
 export const RequestFollow = pgTable("RequestFollow", {
   requesterUserId: integer("requesterUserId").notNull().references(() => User.id, {onDelete: "cascade"}).primaryKey(),
   requestedUserId: integer("requestedUserId").notNull().references(() => User.id, {onDelete: "cascade"}).primaryKey(),

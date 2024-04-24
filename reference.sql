@@ -16,7 +16,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TABLE IF EXISTS "Profile", "User", "TeaBag", "Nft", "Mint", "HashtagNft", "Comment", "ReportComment", "ReportNft", "ReportUser", "Whitelist", "ViewProfile", "ScheduleDeletionUser", "DraftNft", "WhitelistUser", "ViewNft", "UserTeaBag", "PrivateMessage", "Follow", "PasswordReset", "RequestFollow";
+DROP TABLE IF EXISTS "Profile", "User", "TeaBag", "Nft", "Mint", "HashtagNft", "Comment", "ReportComment", "ReportNft", "ReportUser", "Whitelist", "ViewProfile", "ScheduleDeletionUser", "DraftNft", "WhitelistUser", "ViewNft", "UserTeaBag", "PrivateMessage", "Follow", "PasswordReset", "RequestFollow", "EmailVerification";
 DROP TYPE IF EXISTS "LanguageType", "UserRole", "ProfileVisibilityType", "CurrencyType", "UserTeaBagRole", "NotificationType";
 
 CREATE TYPE "LanguageType" AS ENUM ('en', 'fr', 'es');
@@ -343,4 +343,14 @@ CREATE TABLE "RequestFollow"
   "requestAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   "isIgnored"       BOOLEAN                        NOT NULL DEFAULT FALSE,
   PRIMARY KEY ("requesterUserId", "requestedUserId")
+);
+
+CREATE TABLE "EmailVerification"
+(
+  "id"             SERIAL                         NOT NULL PRIMARY KEY,
+  "verificationId" UUID                           NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+  "email"          VARCHAR(255)                   NOT NULL,
+  "createdAt"      TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+  "expireAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+  "isVerified"     BOOLEAN                        NOT NULL
 );

@@ -1,386 +1,356 @@
 export async function up(knex) {
-  await knex.raw(`CREATE OR REPLACE FUNCTION check_hashtags(hashtags VARCHAR[])
-  RETURNS BOOLEAN AS
-  $$
-  DECLARE
-  hashtag VARCHAR;
-  BEGIN
-  FOREACH hashtag IN ARRAY hashtags
-    LOOP
-      IF NOT (hashtag ~* '^[a-zA-Z0-9_]{3,255}$') THEN
-        RETURN false;
-      END IF;
-    END LOOP;
-  RETURN true;
-  END;
-  $$ LANGUAGE plpgsql;`)
-  await knex.raw(`DROP TYPE IF EXISTS "LanguageType", "UserRole", "ProfileVisibilityType", "CurrencyType",
-   "UserTeaBagRole", "NotificationType";`)
-  await knex.raw(`CREATE TYPE "NotificationType" AS ENUM ('replies_comments', 'thread_comment', 'mint', 'follow',
-   'follow_request_accepted');`)
-  await knex.schema
+  await knex.raw(`
+    CREATE EXTENSION "uuid-ossp";
 
-    .createTable("Profile", (table) => {
-      table.increments("id")
-      table.string("username", "18").unique().notNullable().checkRegex("^[a-zA-Z0-9_]{3,18}$")
-      table.timestamp("createdAt", { useTz: false }, { precision: 3 }).notNullable()
-      table.string("bio").notNullable().defaultTo("")
-      table.string("link")
-      table.string("avatarUrl").notNullable()
-      table.boolean("canBeSearched").notNullable().defaultTo(true)
-      table.enu("visibilityType", ["public", "private"]).notNullable().defaultTo("public")
-      table.text("location")
-      table.string("displayName", "40").notNullable()
-    })
-    .createTable("User", (table) => {
-      table.increments("id")
-      table.string("email").notNullable().unique()
-      table.uuid("uid").notNullable().unique().defaultTo(knex.fn.uuid())
-      table.string("hashedPassword").notNullable()
-      table.boolean("isActivated").notNullable().defaultTo(false)
-      table.boolean("twoFactorEnabled").notNullable().defaultTo(false)
-      table.string("twoFactorSecret")
-      table.string("phoneNumber", "20")
-      table.enu("languageType", ["en", "fr", "es"]).notNullable().defaultTo("en")
-      table.enu("role", ["user", "admin"]).notNullable().defaultTo("user")
-      table.integer("profileId").unsigned().notNullable()
-      table
-        .foreign("profileId")
-        .references("id")
-        .inTable("Profile")
-        .onDelete("CASCADE")
-      table.specificType("enabledNotificationTypes", `"NotificationType"[] NOT NULL DEFAULT ARRAY [
-    'replies_comments'::"NotificationType",
-    'thread_comment'::"NotificationType",
-    'mint'::"NotificationType",
-    'follow'::"NotificationType",
-    'follow_request_accepted'::"NotificationType"]`)
-    })
+    CREATE FUNCTION check_hashtags(hashtags VARCHAR[])
+      RETURNS BOOLEAN AS
+    $$
+    DECLARE
+      hashtag VARCHAR;
+    BEGIN
+      FOREACH hashtag IN ARRAY hashtags
+        LOOP
+          IF NOT (hashtag ~* '^[a-zA-Z0-9_]{3,255}$') THEN
+            RETURN false;
+          END IF;
+        END LOOP;
+      RETURN true;
+    END;
+    $$ LANGUAGE plpgsql;
 
-    .createTable("TeaBag", (table) => {
-      table.increments("id")
-      table.integer("profileId").unsigned().notNullable()
-      table
-        .foreign("profileId")
-        .references("id")
-        .inTable("Profile")
-        .onDelete("CASCADE")
-    })
-    .createTable("Nft", (table) => {
-      table.increments("id")
-      table.integer("ownerUserId").unsigned().notNullable()
-      table
-        .foreign("ownerUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.integer("showOnProfileId").unsigned().notNullable()
-      table
-        .foreign("showOnProfileId")
-        .references("id")
-        .inTable("Profile")
-        .onDelete("CASCADE")
-      table.string("title").notNullable()
-      table.text("description").notNullable().defaultTo("")
-      table.text("location")
-      table.double("price", "precision").notNullable()
-      table.enu("currencyType", ["usd", "eur", "eth", "sol"]).notNullable()
-      table.string("contentUrl").notNullable()
-    })
-    .createTable("Mint", (table) => {
-      table.increments("id")
-      table.integer("nftId").unsigned().notNullable()
-      table
-        .foreign("nftId")
-        .references("id")
-        .inTable("Nft")
-        .onDelete("CASCADE")
-      table.integer("userId").unsigned().notNullable()
-      table
-        .foreign("userId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.timestamp("mintAt", { useTz: false }, { precision: 3 }).notNullable()
-    })
-    .createTable("HashtagNft", (table) => {
-      table.increments("id")
-      table.string("hashtag").notNullable().checkRegex("^[a-zA-Z0-9_]{3,255}$")
-      table.integer("nftId").unsigned().notNullable()
-      table
-        .foreign("nftId")
-        .references("id")
-        .inTable("Nft")
-        .onDelete("CASCADE")
-    })
-    .createTable("Comment", (table) => {
-      table.increments("id")
-      table.integer("nftId").unsigned().notNullable()
-      table
-        .foreign("nftId")
-        .references("id")
-        .inTable("Nft")
-        .onDelete("CASCADE")
-      table.integer("userId").unsigned().notNullable()
-      table
-        .foreign("userId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.timestamp("commentedAt", { useTz: false }, { precision: 3 }).notNullable()
-      table.string("commentary", "1000").notNullable()
-      table.integer("replyCommentId").unsigned()
-      table
-        .foreign("replyCommentId")
-        .references("id")
-        .inTable("Comment")
-        .onDelete("CASCADE")
-    })
-    .createTable("ReportComment", (table) => {
-      table.increments("id")
-      table.integer("reporterUserId").unsigned().notNullable()
-      table
-        .foreign("reporterUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.integer("reportedCommentId").unsigned().notNullable()
-      table
-        .foreign("reportedCommentId")
-        .references("id")
-        .inTable("Comment")
-        .onDelete("CASCADE")
-      table.string("reason", "1000")
-      table.timestamp("reportAt", { useTz: false }, { precision: 3 }).notNullable()
-    })
-    .createTable("ReportNft", (table) => {
-      table.increments("id")
-      table.integer("reporterUserId").unsigned().notNullable()
-      table
-        .foreign("reporterUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.integer("reportedNftId").unsigned().notNullable()
-      table
-        .foreign("reportedNftId")
-        .references("id")
-        .inTable("Nft")
-        .onDelete("CASCADE")
-      table.string("reason", "1000")
-      table.timestamp("reportAt", { useTz: false }, { precision: 3 }).notNullable()
-    })
-    .createTable("ReportUser", (table) => {
-      table.increments("id")
-      table.integer("reporterUserId").unsigned().notNullable()
-      table
-        .foreign("reporterUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.integer("reportedUserId").unsigned().notNullable()
-      table
-        .foreign("reportedUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.string("reason", "1000")
-      table.timestamp("reportAt", { useTz: true }, { precision: 3 }).notNullable()
-    })
-    .createTable("WhiteList", (table) => {
-      table.increments("id")
-      table.timestamp("startAt", { useTz: false }, { precision: 3 }).notNullable()
-      table.timestamp("endAt", { useTz: false }, { precision: 3 }).notNullable()
-      table.integer("teaBagId").unsigned().notNullable()
-      table
-        .foreign("teaBagId")
-        .references("id")
-        .inTable("TeaBag")
-        .onDelete("CASCADE")
-    })
-    .createTable("ViewProfile", (table) => {
-      table.increments("id")
-      table.integer("viewerUserId").unsigned().notNullable()
-      table
-        .foreign("viewerUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.integer("viewedProfileId").unsigned().notNullable()
-      table
-        .foreign("viewedProfileId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.timestamp("viewAt", { useTz: false }, { precision: 3 }).notNullable()
-    })
-    .createTable("ScheduleDeletionUser", (table) => {
-      table.increments("id")
-      table.integer("userId").unsigned().notNullable()
-      table
-        .foreign("userId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.timestamp("scheduleAt", { useTz: true }, { precision: 3 }).notNullable()
-      table.integer("byUserId").unsigned().notNullable()
-      table
-        .foreign("byUserId")
-        .references("id")
-        .inTable("ScheduleDeletionUser")
-        .onDelete("CASCADE")
-      table.string("reason", "1000")
-    })
-    .createTable("DraftNft", (table) => {
-      table.increments("id")
-      table.text("description")
-      table.integer("ownerId").unsigned().notNullable()
-      table
-        .foreign("ownerId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.specificType("hashtags", "VARCHAR(255)[5] NOT NULL CHECK (check_hashtags(\"hashtags\"))")
-      table.text("location").notNullable()
-    })
-    .createTable("WhiteListUser", (table) => {
-      table.increments("id")
-      table.integer("whiteListId").unsigned().notNullable()
-      table
-        .foreign("whiteListId")
-        .references("id")
-        .inTable("WhiteList")
-        .onDelete("CASCADE")
-      table.integer("whiteListedUserId").unsigned().notNullable()
-      table
-        .foreign("whiteListedUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-    })
-    .createTable("ViewNft", (table) => {
-      table.increments("id")
-      table.integer("userId").unsigned().notNullable()
-      table
-        .foreign("userId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.integer("nftId").unsigned().notNullable()
-      table
-        .foreign("nftId")
-        .references("id")
-        .inTable("Nft")
-        .onDelete("CASCADE")
-      table.timestamp("viewAt", { useTz: false }, { precision: 3 }).notNullable()
-    })
-    .createTable("UserTeaBag", (table) => {
-      table.increments("id")
-      table.integer("userId").unsigned().notNullable()
-      table
-        .foreign("userId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.integer("teaBagId").unsigned().notNullable()
-      table
-        .foreign("teaBagId")
-        .references("id")
-        .inTable("TeaBag")
-        .onDelete("CASCADE")
-      table.enu("role", ["user", "admin"]).notNullable().defaultTo("user")
-    })
-    .createTable("PrivateMessage", (table) => {
-      table.increments("id")
-      table.integer("fromUserId").unsigned().notNullable()
-      table
-        .foreign("fromUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.integer("toUserId").unsigned().notNullable()
-      table
-        .foreign("toUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.string("message", "1000").notNullable()
-      table.integer("replyPrivateMessageId").unsigned()
-      table
-        .foreign("replyPrivateMessageId")
-        .references("id")
-        .inTable("PrivateMessage")
-        .onDelete("CASCADE")
-    })
-    .createTable("Follow", (table) => {
-      table.increments("id")
-      table.integer("followerUserId").unsigned()
-      table
-        .foreign("followerUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.integer("followedUserId").unsigned()
-      table
-        .foreign("followedUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.timestamp("followAt", { useTz: false }, { precision: 3 }).notNullable()
-    })
-    .createTable("PasswordReset", (table) => {
-      table.increments("id")
-      table.uuid("resetId").notNullable().unique().defaultTo(knex.fn.uuid())
-      table.integer("userId").unsigned()
-      table
-        .foreign("userId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.timestamp("createdAt", { useTz: false }, { precision: 3 }).notNullable()
-      table.timestamp("expireAt", { useTz: false }, { precision: 3 }).notNullable()
-      table.boolean("active").notNullable()
-    })
-    .createTable("RequestFollow", (table) => {
-      table.increments("id")
-      table.integer("requestUserId").unsigned()
-      table
-        .foreign("requestUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.integer("requestedUserId").unsigned()
-      table
-        .foreign("requestedUserId")
-        .references("id")
-        .inTable("User")
-        .onDelete("CASCADE")
-      table.timestamp("requestAt", { useTz: false }, { precision: 3 }).notNullable()
-      table.boolean("isIgnored").notNullable().defaultTo(false)
-    })
+    CREATE TYPE "LanguageType" AS ENUM ('en', 'fr', 'es');
+
+    CREATE TYPE "UserRole" AS ENUM ('user', 'admin');
+
+    CREATE TYPE "ProfileVisibilityType" AS ENUM ('public', 'private');
+
+    CREATE TYPE "CurrencyType" AS ENUM ('usd', 'eur', 'eth', 'sol');
+
+    CREATE TYPE "UserTeaBagRole" AS ENUM ('user', 'cooker');
+
+    CREATE TYPE "NotificationType" AS ENUM ('replies_comments', 'thread_comment', 'mint', 'follow', 'follow_request_accepted');
+
+    CREATE TABLE "Profile"
+    (
+      "id"             SERIAL                         NOT NULL PRIMARY KEY,
+      "username"       VARCHAR(18)                    NOT NULL UNIQUE CHECK ("username" ~* '^[a-zA-Z0-9_]{3,18}$'),
+      "createdAt"      TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      "bio"            VARCHAR(255)                   NOT NULL DEFAULT '',
+      "link"           VARCHAR(255)                   NULL
+    --     CHECK ( "link" ~* '^(https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*))$')
+      ,
+      "avatarUrl"      VARCHAR(255)                   NOT NULL
+    --     CHECK ( "avatarUrl" ~* '^(http(s):\\/\\/.)[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$')
+      ,
+      "canBeSearched"  BOOLEAN                        NOT NULL DEFAULT TRUE,
+      "visibilityType" "ProfileVisibilityType"        NOT NULL DEFAULT 'public',
+      "location"       TEXT                           NULL,
+      "displayName"    VARCHAR(40)                    NOT NULL
+    --     CHECK ( "displayName" ~* '^.{3,26}$')
+    );
+
+    CREATE TABLE "User"
+    (
+      "id"                       SERIAL               NOT NULL PRIMARY KEY,
+      "email"                    VARCHAR(255)         NOT NULL UNIQUE
+    --     CHECK ( "email" ~* '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
+      ,
+      "uid"                      UUID                 NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+      "hashedPassword"           VARCHAR(255)         NOT NULL,
+      "isActivated"              BOOLEAN              NOT NULL        DEFAULT FALSE,
+      "twoFactorEnabled"         BOOLEAN              NOT NULL        DEFAULT FALSE,
+      "twoFactorSecret"          VARCHAR(255)         NULL,
+      "phoneNumber"              VARCHAR(20)          NULL,
+      "languageType"             "LanguageType"       NOT NULL        DEFAULT 'en',
+      "role"                     "UserRole"           NOT NULL        DEFAULT 'user',
+      "profileId"                INTEGER              NOT NULL
+        CONSTRAINT "userProfileFk"
+          REFERENCES "Profile" ("id")
+          ON DELETE CASCADE,
+      "enabledNotificationTypes" "NotificationType"[] NOT NULL        DEFAULT ARRAY [
+        'replies_comments'::"NotificationType",
+        'thread_comment'::"NotificationType",
+        'mint'::"NotificationType",
+        'follow'::"NotificationType",
+        'follow_request_accepted'::"NotificationType"]
+    );
+
+    CREATE TABLE "TeaBag"
+    (
+      "id"        SERIAL  NOT NULL PRIMARY KEY,
+      "profileId" INTEGER NOT NULL
+        CONSTRAINT "teaBagProfileFk"
+          REFERENCES "Profile" ("id")
+          ON DELETE CASCADE
+    );
+
+    CREATE TABLE "Nft"
+    (
+      "id"              SERIAL           NOT NULL PRIMARY KEY,
+      "ownerUserId"     INTEGER          NOT NULL
+        CONSTRAINT "nftOwnerUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "showOnProfileId" INTEGER          NOT NULL
+        CONSTRAINT "nftShowOnProfileFk"
+          REFERENCES "Profile" ("id")
+          ON DELETE CASCADE,
+      "title"           VARCHAR(255)     NOT NULL,
+      "description"     TEXT             NOT NULL DEFAULT '',
+      "location"        TEXT             NULL,
+      "price"           DOUBLE PRECISION NOT NULL,
+      "currencyType"    "CurrencyType"   NOT NULL,
+      "contentUrl"      VARCHAR(255)     NOT NULL
+    );
+
+    CREATE TABLE "Mint"
+    (
+      "nftId"  INTEGER                        NOT NULL
+        CONSTRAINT "mintNftFk"
+          REFERENCES "Nft" ("id")
+          ON DELETE CASCADE,
+      "userId" INTEGER                        NOT NULL
+        CONSTRAINT "mintUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "mintAt" TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      PRIMARY KEY ("nftId", "userId")
+    );
+
+    CREATE TABLE "HashtagNft"
+    (
+      "hashtag" VARCHAR(255) NOT NULL CHECK ( "hashtag" ~* '^#[a-zA-Z0-9_]{3,255}$'),
+      "nftId"   INTEGER      NOT NULL
+        CONSTRAINT "hashtagNftFk"
+          REFERENCES "Nft" ("id")
+          ON DELETE CASCADE,
+      PRIMARY KEY ("hashtag", "nftId")
+    );
+
+    CREATE TABLE "Comment"
+    (
+      "id"             SERIAL                         NOT NULL PRIMARY KEY,
+      "nftId"          INTEGER                        NOT NULL
+        CONSTRAINT "commentNftFk"
+          REFERENCES "Nft" ("id")
+          ON DELETE CASCADE,
+      "userId"         INTEGER                        NOT NULL
+        CONSTRAINT "commentUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "commentedAt"    TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      "commentary"     VARCHAR(1000)                  NOT NULL,
+      "replyCommentId" INTEGER                        NULL
+        CONSTRAINT "replyCommentFk"
+          REFERENCES "Comment" ("id")
+          ON DELETE CASCADE
+    );
+
+    CREATE TABLE "ReportComment"
+    (
+      "reporterUserId"    INTEGER                        NOT NULL
+        CONSTRAINT "reporterUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "reportedCommentId" INTEGER                        NOT NULL
+        CONSTRAINT "reportedCommentFk"
+          REFERENCES "Comment" ("id")
+          ON DELETE CASCADE,
+      "reason"            VARCHAR(1000)                  NULL,
+      "reportAt"          TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      PRIMARY KEY ("reporterUserId", "reportedCommentId")
+    );
+
+    CREATE TABLE "ReportNft"
+    (
+      "reporterUserId" INTEGER                        NOT NULL
+        CONSTRAINT "reporterUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "reportedNftId"  INTEGER                        NOT NULL
+        CONSTRAINT "reportedNftFk"
+          REFERENCES "Nft" ("id")
+          ON DELETE CASCADE,
+      "reason"         VARCHAR(1000)                  NULL,
+      "reportAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      PRIMARY KEY ("reporterUserId", "reportedNftId")
+    );
+
+    CREATE TABLE "ReportUser"
+    (
+      "reporterUserId" INTEGER                     NOT NULL
+        CONSTRAINT "reporterUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "reportedUserId" INTEGER                     NOT NULL
+        CONSTRAINT "reportedUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "reason"         VARCHAR(1000)               NULL,
+      "reportAt"       TIMESTAMP(3) WITH TIME ZONE NOT NULL,
+      PRIMARY KEY ("reporterUserId", "reportedUserId")
+    );
+
+    CREATE TABLE "Whitelist"
+    (
+      "id"       SERIAL                         NOT NULL PRIMARY KEY,
+      "startAt"  TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      "endAt"    TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      "teaBagId" INTEGER                        NOT NULL
+        CONSTRAINT "whitelistTeaBagFk"
+          REFERENCES "TeaBag" ("id")
+          ON DELETE CASCADE
+    );
+
+    CREATE TABLE "ViewProfile"
+    (
+      "id"              SERIAL                         NOT NULL PRIMARY KEY,
+      "viewerUserId"    INTEGER                        NOT NULL
+        CONSTRAINT "viewerUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "viewedProfileId" INTEGER                        NOT NULL
+        CONSTRAINT "viewedProfileFk"
+          REFERENCES "Profile" ("id")
+          ON DELETE CASCADE,
+      "viewAt"          TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL
+    );
+
+    CREATE TABLE "ScheduleDeletionUser"
+    (
+      "id"         SERIAL                         NOT NULL PRIMARY KEY,
+      "userId"     INTEGER                        NOT NULL UNIQUE
+        CONSTRAINT "scheduledDeletionUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "scheduleAt" TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      "byUserId"   INTEGER                        NOT NULL
+        CONSTRAINT "scheduledDeletionByUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "reason"     VARCHAR(1000)                  NULL
+    );
+
+    CREATE TABLE "DraftNft"
+    (
+      "id"          SERIAL          NOT NULL PRIMARY KEY,
+      "description" TEXT            NULL,
+      "ownerId"     INTEGER         NOT NULL
+        CONSTRAINT "draftNftOwnerFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "hashtags"    VARCHAR(255)[5] NOT NULL CHECK (check_hashtags("hashtags")),
+      "location"    TEXT            NOT NULL
+    );
+
+    CREATE TABLE "WhitelistUser"
+    (
+      "whitelistId"       INTEGER NOT NULL
+        CONSTRAINT "whitelistUserFk"
+          REFERENCES "Whitelist" ("id")
+          ON DELETE CASCADE,
+      "whitelistedUserId" INTEGER NOT NULL
+        CONSTRAINT "whitelistedUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      PRIMARY KEY ("whitelistId", "whitelistedUserId")
+    );
+
+    CREATE TABLE "ViewNft"
+    (
+      "id"     SERIAL                         NOT NULL PRIMARY KEY,
+      "userId" INTEGER                        NOT NULL
+        CONSTRAINT "viewNftUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "nftId"  INTEGER                        NOT NULL
+        CONSTRAINT "viewNftNftFk"
+          REFERENCES "Nft" ("id")
+          ON DELETE CASCADE,
+      "viewAt" TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL
+    );
+
+    CREATE TABLE "UserTeaBag"
+    (
+      "userId"   INTEGER          NOT NULL
+        CONSTRAINT "userTeaBagUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "teaBagId" INTEGER          NOT NULL
+        CONSTRAINT "userTeaBagTeaBagFk"
+          REFERENCES "TeaBag" ("id")
+          ON DELETE CASCADE,
+      "role"     "UserTeaBagRole" NOT NULL DEFAULT 'user',
+      PRIMARY KEY ("userId", "teaBagId")
+    );
+
+    CREATE TABLE "PrivateMessage"
+    (
+      "id"                    SERIAL        NOT NULL PRIMARY KEY,
+      "fromUserId"            INTEGER       NOT NULL
+        CONSTRAINT "fromUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "toUserId"              INTEGER       NOT NULL
+        CONSTRAINT "toUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "message"               VARCHAR(1000) NOT NULL,
+      "replyPrivateMessageId" INTEGER       NULL
+        CONSTRAINT "replyPrivateMessageFk"
+          REFERENCES "PrivateMessage" ("id")
+          ON DELETE CASCADE
+    );
+
+    CREATE TABLE "Follow"
+    (
+      "followerUserId" INTEGER                        NOT NULL
+        CONSTRAINT "followerUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "followedUserId" INTEGER                        NOT NULL
+        CONSTRAINT "followedUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "followAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      PRIMARY KEY ("followerUserId", "followedUserId")
+    );
+
+    CREATE TABLE "PasswordReset"
+    (
+      "id"        SERIAL                         NOT NULL UNIQUE,
+      "resetId"   UUID                           NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+      "userId"    INTEGER                        NOT NULL
+        CONSTRAINT "passwordResetUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "createdAt" TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      "expireAt"  TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      "active"    BOOLEAN                        NOT NULL
+    );
+
+    CREATE TABLE "RequestFollow"
+    (
+      "requesterUserId" INTEGER                        NOT NULL
+        CONSTRAINT "requesterUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "requestedUserId" INTEGER                        NOT NULL
+        CONSTRAINT "requestedUserFk"
+          REFERENCES "User" ("id")
+          ON DELETE CASCADE,
+      "requestAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      "isIgnored"       BOOLEAN                        NOT NULL DEFAULT FALSE,
+      PRIMARY KEY ("requesterUserId", "requestedUserId")
+    );
+  `)
 }
 
 export async function down(knex) {
-  await knex.schema
-    .dropTable("RequestFollow")
-    .dropTable("PasswordReset")
-    .dropTable("Follow")
-    .dropTable("PrivateMessage")
-    .dropTable("UserTeaBag")
-    .dropTable("ViewNft")
-    .dropTable("WhiteListUser")
-    .dropTable("DraftNft")
-    .dropTable("ScheduleDeletionUser")
-    .dropTable("ViewProfile")
-    .dropTable("WhiteList")
-    .dropTable("ReportUser")
-    .dropTable("ReportNft")
-    .dropTable("ReportComment")
-    .dropTable("Comment")
-    .dropTable("HashtagNft")
-    .dropTable("Mint")
-    .dropTable("Nft")
-    .dropTable("TeaBag")
-    .dropTable("User")
-    .dropTable("Profile")
+  await knex.raw(`
+    DROP TABLE "Profile", "User", "TeaBag", "Nft", "Mint", "HashtagNft", "Comment", "ReportComment", "ReportNft", "ReportUser", "Whitelist", "ViewProfile", "ScheduleDeletionUser", "DraftNft", "WhitelistUser", "ViewNft", "UserTeaBag", "PrivateMessage", "Follow", "PasswordReset", "RequestFollow";
+    DROP TYPE "LanguageType", "UserRole", "ProfileVisibilityType", "CurrencyType", "UserTeaBagRole", "NotificationType";
+    DROP FUNCTION check_hashtags;
+    DROP EXTENSION "uuid-ossp";
+  `)
 }

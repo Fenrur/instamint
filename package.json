@@ -4,18 +4,17 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "NODE_ENV=production next build",
+    "start": "NODE_ENV=production next start",
     "lint": "next lint",
-    "migrate": "npx knex migrate:latest --esm --cwd ./db_migrations",
-    "rollback": "npx knex migrate:rollback --esm --cwd ./db_migrations",
+    "migrate": "knex migrate:latest --esm --cwd ./db_migrations",
+    "rollback": "knex migrate:rollback --esm --cwd ./db_migrations",
     "email-dev": "email dev -d ./src/mail/templates"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^0.8.1",
     "@aws-sdk/client-s3": "^3.556.0",
     "@hookform/resolvers": "^3.3.4",
-    "@prisma/client": "^5.11.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-aspect-ratio": "^1.0.3",

@@ -11,6 +11,8 @@ export const env = createEnv({
     SECURE_AUTH_COOKIES: z.string(),
     TOTP_ENCRYPTION_KEY: z.string(),
     PEPPER_PASSWORD_SECRET: z.string(),
+    BASE_URL: z.string().url(),
+    CONTACT_EMAIL: z.string().email()
   },
   client: {
   },
