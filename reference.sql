@@ -353,4 +353,4 @@ CREATE TABLE "EmailVerification"
   "createdAt"      TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   "expireAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   "isVerified"     BOOLEAN                        NOT NULL
-)
+);
