@@ -21,10 +21,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  const emailDb = await findUserByEmail(parsedFormData.email)
+  const user = await findUserByEmail(parsedFormData.email)
 
-  if (!emailDb) {
+  if (!user) {
     url.pathname = "/login"
+    url.searchParams.set("error", "email_not_found")
 
     return NextResponse.redirect(url)
   }

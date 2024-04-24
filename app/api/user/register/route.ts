@@ -1,46 +1,82 @@
 import {NextRequest, NextResponse} from "next/server"
-import {createUser, findUserByEmail} from "@/db/db-service"
-import {z} from "zod"
+import {createUser} from "@/db/db-service"
 import {isContentType} from "@/http/content-type"
-import {invalidContentTypeProblem, problem} from "@/http/problem"
-import {password} from "@/utils/regex"
+import {
+  emailAlreadyUsedProblem,
+  emailVerificationAlreadyVerifiedProblem,
+  emailVerificationExpiredProblem,
+  emailVerificationNotFoundProblem,
+  invalidContentTypeProblem,
+  problem, usernameAlreadyUsedProblem
+} from "@/http/problem"
+import {DateTime} from "luxon"
+import {RegisterUserRequest, RegisterUserResponse} from "@/http/rest/types"
+import {render} from "@react-email/render"
+import {env} from "@/env"
+import {transporter} from "@/mail/mailer"
+import {RegisteringUser} from "@/mail/templates/registering-user"
 
-const Body = z.object({
-  email: z.string().email(),
-  password: z
-    .string()
-    .regex(
-      password,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-    ),
-})
+async function sendRegisteredEmail(body: RegisterUserRequest, result: { uid: string; email: string }) {
+  const emailHtml = render(RegisteringUser({
+    baseUrl: env.BASE_URL,
+    contactEmail: env.CONTACT_EMAIL,
+    instamintImageUrl: `${env.BASE_URL}/instamint.svg`,
+    username: body.username,
+    profileLink: `${env.BASE_URL}/profile/${body.username}`,
+  }))
+
+  await transporter.sendMail({
+    to: result.email,
+    subject: "Registered on Instamint",
+    html: emailHtml,
+  })
+}
 
 export const POST = async (req: NextRequest) => {
   if (!isContentType(req, "json")) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
   }
 
+  const createdAt = DateTime.now()
   const body = await req.json()
 
   let parsedBody = null
 
   try {
-    parsedBody = Body.parse(body)
+    parsedBody = RegisterUserRequest.parse(body)
   } catch (e: any) {
-    return NextResponse.json({ message: e.errors }, { status: 400 })
+    return NextResponse.json({message: e.errors}, {status: 400})
   }
 
-  const user = await findUserByEmail(parsedBody.email)
+  const result = await createUser(
+    parsedBody.password,
+    parsedBody.username,
+    parsedBody.emailVerificationId, createdAt
+  )
 
-  if (user) {
-    return NextResponse.json({ message: "Email is already in use" }, { status: 400 })
+  switch (result) {
+    case "email_verification_not_found":
+      return problem(emailVerificationNotFoundProblem)
+
+    case "email_verification_already_verified":
+      return problem(emailVerificationAlreadyVerifiedProblem)
+
+    case "email_verification_expired":
+      return problem(emailVerificationExpiredProblem)
+
+    case "email_already_used":
+      return problem(emailAlreadyUsedProblem)
+
+    case "username_already_used":
+      return problem(usernameAlreadyUsedProblem)
   }
 
-  const uid = await createUser(parsedBody.email, parsedBody.password)
-
-  if (!uid) {
-    return NextResponse.json({ message: "Failed to create user" }, { status: 500 })
+  const response: RegisterUserResponse = {
+    uid: result.uid
   }
 
-  return NextResponse.json({ message: "User created successfully", data: {uid, email: parsedBody.email} }, { status: 200 })
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  sendRegisteredEmail(parsedBody, result)
+
+  return NextResponse.json(response, {status: 201})
 }

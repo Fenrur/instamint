@@ -2,7 +2,6 @@
 
 import {Button} from "@/components/ui/button"
 import {useRouter} from "next/navigation"
-import {CheckIcon} from "@radix-ui/react-icons"
 import Link from "next/link"
 import {Badge} from "@/components/ui/badge"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
@@ -25,7 +24,7 @@ const FormSchema = z.object({
   }),
 })
 
-export default function TotpPage() {
+export default function TotpCodeLoginPage() {
   const {credentials, resetCredentials} = useLogin()
   const router = useRouter()
   const {verifyTwoFactorAuthenticatorTotpCode, isFetchingVerification, errorVerification} = useVerifyTwoFactorAuthenticatorTotpCode()
@@ -107,7 +106,7 @@ export default function TotpPage() {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="grid gap-2 space-y-6">
+          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="grid gap-2 space-y-6 justify-center">
             <FormField
               control={form.control}
               name="pin"
@@ -139,7 +138,7 @@ export default function TotpPage() {
               {
                 isFetchingVerification ? <div className="ml-1">
                   <LoadingDots size={12}/>
-                </div> : <CheckIcon className="ml-1"/>
+                </div> : null
               }
             </Button>
 
