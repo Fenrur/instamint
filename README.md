@@ -155,7 +155,7 @@ This choice was made for several reasons:
 
 ### 🔑 Prerequisites
 
-- Node.js (in the path)
+- Node.js version v20.12 (in the path)
 - Docker (in the path)
 
 ### ⚙️ Environment Variables

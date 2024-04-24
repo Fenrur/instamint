@@ -7,8 +7,8 @@
     "build": "NODE_ENV=production next build",
     "start": "NODE_ENV=production next start",
     "lint": "next lint",
-    "migrate": "npx knex migrate:latest --esm --cwd ./db_migrations",
-    "rollback": "npx knex migrate:rollback --esm --cwd ./db_migrations",
+    "migrate": "knex migrate:latest --esm --cwd ./db_migrations",
+    "rollback": "knex migrate:rollback --esm --cwd ./db_migrations",
     "email-dev": "email dev -d ./src/mail/templates"
   },
   "dependencies": {
