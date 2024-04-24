@@ -1,31 +1,47 @@
-import {GenericContainer, StartedTestContainer} from 'testcontainers'
-import axios from 'axios'
+// Importez les classes nécessaires à partir de 'testcontainers'
+import { GenericContainer, StartedTestContainer } from 'testcontainers';
+import { Pool } from 'pg';
 
-describe('LoginPage Integration Test', () => {
-  let postgresContainer: any
+describe('Database Integration Test', () => {
+  let pool: Pool;
+  let container: StartedTestContainer;
 
   beforeAll(async () => {
-    postgresContainer = await new GenericContainer('postgres')
+    container = await new GenericContainer('postgres')
       .withEnv('POSTGRES_USER', 'user')
       .withEnv('POSTGRES_PASSWORD', 'password')
       .withEnv('POSTGRES_DB', 'testdb')
       .withExposedPorts(5432)
-      .start()
-  })
+      .start();
+
+    pool = new Pool({
+      host: container.getHost(),
+      port: container.getMappedPort(5432),
+      database: 'testdb',
+      user: 'user',
+      password: 'password',
+    });
+  });
 
   afterAll(async () => {
-    if (postgresContainer) {
-      await postgresContainer.stop()
+    if (pool) {
+      await pool.end();
     }
-  })
+    if (container) {
+      await container.stop();
+    }
+  });
 
-  test('should authenticate user with valid credentials', async () => {
-    const response = await axios.post('http://localhost:3000/api/login', {
-      email: 'user@example.com',
-      password: 'password'
-    })
+  test('should insert a row into test_table and find it', async () => {
+    // Création de la table test_table si elle n'existe pas
+    await pool.query('CREATE TABLE IF NOT EXISTS test_table (id SERIAL PRIMARY KEY, text VARCHAR(255));');
 
-    expect(response.status).toBe(200)
-  })
-})
+    // Insertion d'une nouvelle ligne dans test_table
+    const insertText = 'Test row';
+    await pool.query('INSERT INTO test_table (text) VALUES ($1)', [insertText]);
 
+    // Vérification de la présence de la ligne
+    const res = await pool.query('SELECT * FROM test_table WHERE text = $1', [insertText]);
+    expect(res.rows[0].text).toBe(insertText);
+  });
+});
