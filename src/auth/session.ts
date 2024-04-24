@@ -5,7 +5,7 @@ export function useSession() {
   const {data, status, update} = useNextAuthSession()
 
   return {
-    data: data as Session|null,
+    session: data as Session|null,
     status,
     update
   }

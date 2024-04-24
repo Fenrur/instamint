@@ -12,7 +12,7 @@ export default function Home() {
   const handleClick = () => {
     setCount(prevState => prevState + 1)
   }
-  const {status, data} = useSession()
+  const {status, session} = useSession()
   const router = useRouter()
   const routingToLoginPage = () => {
     router.push("/login")
@@ -38,7 +38,7 @@ export default function Home() {
           Logout
         </Button>
         <div>{status}</div>
-        <div>{data?.uid}</div>
+        <div>{session?.uid}</div>
       </div>
     </main>
   )
