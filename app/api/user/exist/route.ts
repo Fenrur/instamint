@@ -1,6 +1,6 @@
 import {invalidQueryParameterProblem, problem} from "@/http/problem"
-import {existUsernameIgnoreCase} from "@/db/db-service"
 import {NextRequest, NextResponse} from "next/server"
+import {userService} from "@/services"
 
 export async function GET(req: NextRequest) {
   const username = req.nextUrl.searchParams.get("username")
@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     return problem({...invalidQueryParameterProblem, detail: "Username is required"})
   }
 
-  const exist = await existUsernameIgnoreCase(username)
+  const exist = await userService.existUsername(username)
 
   return NextResponse.json({exist})
 }

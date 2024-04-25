@@ -7,8 +7,8 @@ import {
   problem, twoFactorNotEnabledProblem, twoFactorSetupRequiredProblem,
 } from "@/http/problem"
 import {VerifyTotpCodeRequest} from "@/http/rest/types"
-import {verifyUserTotpCode} from "@/db/db-service"
 import {isContentType} from "@/http/content-type"
+import {userService} from "@/services"
 
 export async function POST(req: NextRequest) {
   if (!isContentType(req, "json")) {
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     return problem({...invalidRequestBodyProblem, detail: e.errors})
   }
 
-  const result = await verifyUserTotpCode(parsedBody.email, parsedBody.password, parsedBody.totpCode)
+  const result = await userService.verifyPasswordAndTotpCodeByEmail(parsedBody.email, parsedBody.password, parsedBody.totpCode)
 
   switch (result) {
     case "email_not_found":

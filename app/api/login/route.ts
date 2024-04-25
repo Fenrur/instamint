@@ -1,8 +1,8 @@
 import {NextRequest, NextResponse} from "next/server"
-import {findUserByEmail} from "@/db/db-service"
 import {invalidContentTypeProblem, problem} from "@/http/problem"
 import {LoginCredentials} from "@/http/rest/types"
 import {isContentType} from "@/http/content-type"
+import {userService} from "@/services"
 
 export async function POST(req: NextRequest) {
   if (!isContentType(req, "form")) {
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  const user = await findUserByEmail(parsedFormData.email)
+  const user = await userService.findByEmail(parsedFormData.email)
 
   if (!user) {
     url.pathname = "/login"

@@ -8,12 +8,12 @@ import {
   problem, twoFactorAlreadyEnabledProblem, uidNotFoundProblem
 } from "@/http/problem"
 import qrcode from "qrcode"
-import {setupTwoFactorAuthentification} from "@/db/db-service"
 import {TwoFactorAuthenticatorSetupRequest, TwoFactorAuthenticatorSetupResponse} from "@/http/rest/types"
 // @ts-expect-error TODO fix library not found
 import {NextAuthRequest} from "next-auth/lib"
 import {isContentType} from "@/http/content-type"
 import {authenticator} from "@/two-factor/otp"
+import {userService} from "@/services"
 
 export const POST = auth(async (req: NextAuthRequest) => {
   if (!isContentType(req, "json")) {
@@ -36,7 +36,7 @@ export const POST = auth(async (req: NextAuthRequest) => {
   }
 
   const secret = authenticator().generateSecret(20)
-  const result = await setupTwoFactorAuthentification(session.uid, parsedBody.password, secret)
+  const result = await userService.setupTwoFactorAuthentification(session.uid, parsedBody.password, secret)
 
   switch (result) {
     case "uid_not_found":

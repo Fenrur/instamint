@@ -1,6 +1,5 @@
 import {NextRequest, NextResponse} from "next/server"
 import {VerifyPasswordRequest} from "@/http/rest/types"
-import {verifyUserPasswordByEmail} from "@/db/db-service"
 import {
   emailNotFoundProblem,
   invalidContentTypeProblem,
@@ -9,6 +8,7 @@ import {
   problem
 } from "@/http/problem"
 import {isContentType} from "@/http/content-type"
+import {userService} from "@/services"
 
 export async function POST(req: NextRequest) {
   if (!isContentType(req, "json")) {
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     return problem({...invalidRequestBodyProblem, detail: e.errors})
   }
 
-  const result = await verifyUserPasswordByEmail(parsedBody.email, parsedBody.password)
+  const result = await userService.verifyPasswordByEmail(parsedBody.email, parsedBody.password)
 
   switch (result) {
     case "valid":

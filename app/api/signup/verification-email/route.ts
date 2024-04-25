@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from "next/server"
-import {findEmailVerificationByVerificationId} from "@/db/db-service"
 import {DateTime} from "luxon"
+import {emailVerificationService} from "@/services"
 
 export const dynamic = "force-dynamic"
 
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  const emailVerification = await findEmailVerificationByVerificationId(verificationId)
+  const emailVerification = await emailVerificationService.findByVerificationId(verificationId)
 
   if (!emailVerification) {
     url.pathname = "/verification-email/invalid/url"
