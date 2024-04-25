@@ -2,7 +2,7 @@ import {
   boolean,
   doublePrecision,
   integer,
-  pgEnum, pgSchema,
+  pgEnum,
   pgTable,
   serial,
   text,

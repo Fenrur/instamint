@@ -1,4 +1,4 @@
-import {pgClient, PgClient} from "@/db/db-client"
+import {PgClient} from "@/db/db-client"
 import {DateTime, Duration} from "luxon"
 import {EmailVerificationTable} from "@/db/schema"
 import {eq} from "drizzle-orm"
@@ -46,8 +46,8 @@ export class EmailVerificationPgRepository {
     return result[0].verificationId
   }
 
-  public async verify(emailVerificationId: string) {
-    return pgClient
+  public verify(emailVerificationId: string) {
+    return this.pgClient
       .update(EmailVerificationTable)
       .set({
         isVerified: true

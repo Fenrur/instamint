@@ -19,15 +19,17 @@ export class AvatarProfileS3Repository {
 
     try {
       const result = await this.s3client.send(getCommand)
+
       if (result.Body) {
         return result.Body
-      } else {
-        return "avatar_not_found"
       }
+
+      return "avatar_not_found"
     } catch (error: any) {
-      if (error.name === 'NoSuchKey') {
+      if (error.name === "NoSuchKey") {
         return "avatar_not_found"
       }
+
       throw error
     }
   }

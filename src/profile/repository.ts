@@ -1,4 +1,4 @@
-import {pgClient, PgClient} from "@/db/db-client"
+import {PgClient} from "@/db/db-client"
 import {ProfileTable} from "@/db/schema"
 import {ilike} from "drizzle-orm"
 import {DateTime} from "luxon"
@@ -10,24 +10,24 @@ export class ProfilePgRepository {
     this.pgClient = pqClient
   }
 
-  public async findByUsername(username: string) {
-    return pgClient.query.ProfileTable
+  public findByUsername(username: string) {
+    return this.pgClient.query.ProfileTable
       .findFirst({
         where: (profile, {ilike}) => ilike(profile.username, username)
       })
   }
 
-  public async updateAvatarUrl(username: string, avatarUrl: string) {
-    return pgClient
+  public updateAvatarUrl(username: string, avatarUrl: string) {
+    return this.pgClient
       .update(ProfileTable)
       .set({
-        avatarUrl: avatarUrl
+        avatarUrl
       })
       .where(ilike(ProfileTable.username, username))
   }
 
   public async create(username: string, createdAt: DateTime<true>, avatarUrl: string) {
-    const createdProfile = await pgClient
+    const createdProfile = await this.pgClient
       .insert(ProfileTable)
       .values({
         username,

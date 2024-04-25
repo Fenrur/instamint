@@ -42,7 +42,7 @@ export class UserPgRepository {
         }
       })
 
-    return !!result
+    return Boolean(result)
   }
 
   public async resetTwoFactorAuthentification(id: number) {
