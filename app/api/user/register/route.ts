@@ -1,5 +1,4 @@
 import {NextRequest, NextResponse} from "next/server"
-import {createUser} from "@/db/db-service"
 import {isContentType} from "@/http/content-type"
 import {
   emailAlreadyUsedProblem,
@@ -15,6 +14,7 @@ import {render} from "@react-email/render"
 import {env} from "@/env"
 import {transporter} from "@/mail/mailer"
 import {RegisteringUser} from "@/mail/templates/registering-user"
+import {userService} from "@/services"
 
 async function sendRegisteredEmail(body: RegisterUserRequest, result: { uid: string; email: string }) {
   const emailHtml = render(RegisteringUser({
@@ -48,7 +48,7 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json({message: e.errors}, {status: 400})
   }
 
-  const result = await createUser(
+  const result = await userService.create(
     parsedBody.password,
     parsedBody.username,
     parsedBody.emailVerificationId, createdAt

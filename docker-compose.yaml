@@ -4,8 +4,27 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./db_data:/var/lib/postgresql/data
+      - ./pg_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=instamint
       - POSTGRES_USER=instamint
       - POSTGRES_DB=instamint
+  minio:
+    image: 'minio/minio:latest'
+    ports:
+      - 9000:9000
+      - 8900:8900
+    environment:
+      MINIO_ROOT_USER: instamint
+      MINIO_ROOT_PASSWORD: instamint
+    volumes:
+      - './minio_data:/data/minio'
+    command: 'minio server /data/minio --console-address ":8900"'
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - '-f'
+        - 'http://localhost:9000/minio/health/live'
+      retries: 3
+      timeout: 5s

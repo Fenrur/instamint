@@ -1,6 +1,5 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import {findUserByEmail, resetTwoFactorAuthentification} from "@/db/db-service"
 import {isPasswordValid} from "@/utils/password"
 import {env} from "@/env"
 import {Session} from "@/auth/types"
@@ -8,6 +7,7 @@ import {Session} from "@/auth/types"
 import {NextAuthRequest} from "next-auth/lib"
 import {symmetricDecrypt} from "@/utils/crypto"
 import {authenticator} from "@/two-factor/otp"
+import {userService} from "@/services"
 
 export const {handlers, auth, signIn, signOut} = NextAuth({
   providers: [
@@ -20,7 +20,7 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
         twoFactorAuthentification: {label: "2Fa", type: "text"}
       },
       async authorize(credentials) {
-        const user = await findUserByEmail(credentials.email as string)
+        const user = await userService.findByEmail(credentials.email as string)
 
         if (!user) {
           throw new Error("User not found")
@@ -38,7 +38,7 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
           }
 
           if (user.twoFactorSecret === null) {
-            await resetTwoFactorAuthentification(user.id)
+            await userService.resetTwoFactorAuthentification(user.id)
 
             return {uid: user.uid, email: user.email}
           }

@@ -7,10 +7,10 @@ import {
   passwordIsInvalidProblem,
   problem
 } from "@/http/problem"
-import {findUserByEmail} from "@/db/db-service"
 import {isPasswordValid} from "@/utils/password"
 import {isContentType} from "@/http/content-type"
 import { env } from "@/env"
+import {userService} from "@/services"
 
 export async function POST(req: NextRequest) {
   if (!isContentType(req, "json")) {
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     return problem({...invalidRequestBodyProblem, detail: e.errors})
   }
 
-  const user = await findUserByEmail(parsedBody.email)
+  const user = await userService.findByEmail(parsedBody.email)
 
   if (!user) {
     return problem(emailNotFoundProblem)

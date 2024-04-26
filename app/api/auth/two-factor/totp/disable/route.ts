@@ -8,11 +8,11 @@ import {
   problem, twoFactorNotEnabledProblem, twoFactorSetupRequiredProblem,
   uidNotFoundProblem
 } from "@/http/problem"
-import {disableTwoFactorAuthentification, verifyUserPasswordAndTotpCode} from "@/db/db-service"
 import {TwoFactorAuthenticatorDisableRequest} from "@/http/rest/types"
 // @ts-expect-error TODO fix library not found
 import {NextAuthRequest} from "next-auth/lib"
 import {isContentType} from "@/http/content-type"
+import {userService} from "@/services"
 
 export const POST = auth(async (req: NextAuthRequest) => {
   if (!isContentType(req, "json")) {
@@ -35,7 +35,7 @@ export const POST = auth(async (req: NextAuthRequest) => {
     return problem({...invalidRequestBodyProblem, detail: e.errors})
   }
 
-  const result = await verifyUserPasswordAndTotpCode(session.uid, parsedBody.password, parsedBody.totpCode)
+  const result = await userService.verifyPasswordAndTotpCodeByUid(session.uid, parsedBody.password, parsedBody.totpCode)
 
   switch (result) {
     case "uid_not_found":
@@ -54,7 +54,7 @@ export const POST = auth(async (req: NextAuthRequest) => {
       return problem(invalidTwoFactorCodeProblem)
 
     case "valid":
-      await disableTwoFactorAuthentification(session.uid)
+      await userService.disableTwoFactorAuthentification(session.uid)
 
     return NextResponse.json({message: "Two-factor authentication has been disabled"})
   }

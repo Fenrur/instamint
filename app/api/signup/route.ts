@@ -1,9 +1,4 @@
 import {NextRequest, NextResponse} from "next/server"
-import {
-  createEmailVerification,
-  findUnverifiedEmailAndInIntervalEmailVerifications,
-  findUserByEmail,
-} from "@/db/db-service"
 import {invalidContentTypeProblem, problem} from "@/http/problem"
 import {SignupCredentials} from "@/http/rest/types"
 import {isContentType} from "@/http/content-type"
@@ -13,9 +8,10 @@ import {render} from "@react-email/render"
 import VerificationEmail from "@/mail/templates/verification-email"
 import {env} from "@/env"
 import * as u from "node:url"
+import {emailVerificationService, userService} from "@/services"
 
 async function createVerificationAndSendEmail(formData: SignupCredentials, createdAt: DateTime<true>) {
-  const verificationId = await createEmailVerification(formData.email, createdAt)
+  const verificationId = await emailVerificationService.create(formData.email, createdAt)
   const verificationLink = u.format({
     host: env.BASE_URL,
     pathname: "/api/signup/verification-email",
@@ -53,7 +49,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  const emailDb = await findUserByEmail(parsedFormData.email)
+  const emailDb = await userService.findByEmail(parsedFormData.email)
 
   if (emailDb) {
     url.pathname = "/signup"
@@ -62,7 +58,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  const emailVerifications = await findUnverifiedEmailAndInIntervalEmailVerifications(
+  const emailVerifications = await emailVerificationService.findUnverifiedAndBeforeExpirationByEmail(
     parsedFormData.email,
     createdAt
   )
