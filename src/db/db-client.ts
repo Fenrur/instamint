@@ -17,5 +17,6 @@ export const s3client = new S3Client({
     accessKeyId: env.S3_ACCESS_KEY_ID,
     secretAccessKey: env.S3_SECRET_ACCESS_KEY
   },
+  forcePathStyle: true,
   endpoint: env.S3_ENDPOINT
 })
