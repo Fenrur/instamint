@@ -10,7 +10,6 @@ import {
   uuid,
   varchar
 } from "drizzle-orm/pg-core"
-import {relations} from "drizzle-orm"
 
 export const LanguageTypeEnum = pgEnum("LanguageType", ["en", "fr", "es"])
 
