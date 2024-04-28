@@ -29,9 +29,10 @@ VALUES (1, 'sane_blindness691', '2024-01-01 00:00:00', 'Just a bio', 'https://ww
        (10, 'confidential_tanka', '2024-01-10 00:00:00', 'Blockchain Enthusiast', NULL,
         'https://api.dicebear.com/8.x/pixel-art/svg?seed=confidential_tanka', TRUE, 'public', 'New York',
         'Blockchain Guy'),
-       (16, 'christ_david', '2024-01-10 00:00:00', 'Enjoy these as art, nothing more.', NULL,
+       (11, 'christ_david', '2024-01-10 00:00:00', 'Enjoy these as art, nothing more.', NULL,
         'https://api.dicebear.com/8.x/pixel-art/svg?seed=christ_david', TRUE, 'public', 'New York',
-        'Christopher David');
+        'Christopher David'),
+       (12, 'k_mbappe', '2017-01-10 00:00:00', 'PSG & France', 'https://www.psg.fr/', '/mbappe.jpg', TRUE, 'public', 'Paris', 'Kylian Mbappé');
 
 INSERT INTO "User" ("id", "email", "hashedPassword", "isActivated", "twoFactorEnabled", "languageType", "role", "profileId", "enabledNotificationTypes", "twoFactorSecret")
 VALUES (1, 'instaminttest+1@outlook.com', '$2a$12$Uxou41mTi/jxwoU3yeINDeMRftoG/glmHUvGavVRXOJjVIEeiTjWO', TRUE, FALSE, 'en', 'user', 1, '{"replies_comments", "mint"}', NULL),
@@ -57,3 +58,13 @@ VALUES (1, 'instaminttest+1@outlook.com', '$2a$12$Uxou41mTi/jxwoU3yeINDeMRftoG/g
 -- PASSWORD: h8G6?87*£+7ae6srvp
        (10, 'instaminttest+10@outlook.com', '$2a$12$88CcZPjmX8ZY/qifYgEeZeMW756ojAAJ2jpN2bvrJyx8k9Z965AX2', TRUE, FALSE, 'en', 'user', 10, '{"replies_comments", "thread_comment", "mint", "follow", "follow_request_accepted"}', NULL);
 -- PASSWORD: +b.4e8&OqP7CBso6?g
+
+INSERT INTO "Nft" ("id", "ownerUserId", "showOnProfileId", "title", "description", "location", "price", "currencyType", "contentUrl")
+VALUES (1, 1, 12, 'test', 'coucou', 'France, Paris', 1, 'eur', 'https://dl.openseauserdata.com/cache/originImage/files/eee083e63934370a740ecc2d56968389.png'),
+       (2, 1, 12, 'test', 'coucou', 'France, Paris', 1, 'eur', 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Donald_Trump_official_portrait.jpg/220px-Donald_Trump_official_portrait.jpg'),
+       (3, 1, 12, 'test', 'coucou', 'France, Paris', 1, 'eur', 'https://raw.seadn.io/files/d46a08251988b448ea2e039894ef9cdf.svg'),
+       (4, 1, 12, 'test', 'coucou', 'France, Paris', 1, 'eur', 'https://dl.openseauserdata.com/cache/originImage/files/92fc4711ddaa3900be427aae7fe1a432.png'),
+       (5, 1, 12, 'test', 'coucou', 'France, Paris', 1, 'eur', 'https://raw.seadn.io/files/4c470e00718aea29c5dca586b342ec0f.gif'),
+       (6, 1, 12, 'test', 'coucou', 'France, Paris', 1, 'eur', 'https://raw.seadn.io/files/484e278e570694c368ce4c41a6641488.png'),
+       (7, 1, 12, 'test', 'coucou', 'France, Paris', 1, 'eur', 'https://dl.openseauserdata.com/cache/originImage/files/c07eef18a62227221beb08f5175aab0a.jpg'),
+       (8, 1, 12, 'test', 'coucou', 'France, Paris', 1, 'eur', 'https://raw.seadn.io/files/be199935653af8169a748075f88c53d1.jpg');
