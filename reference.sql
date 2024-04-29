@@ -87,21 +87,22 @@ CREATE TABLE "TeaBag"
 
 CREATE TABLE "Nft"
 (
-  "id"              SERIAL           NOT NULL PRIMARY KEY,
-  "ownerUserId"     INTEGER          NOT NULL
+  "id"              SERIAL                         NOT NULL PRIMARY KEY,
+  "ownerUserId"     INTEGER                        NOT NULL
     CONSTRAINT "nftOwnerUserFk"
       REFERENCES "User" ("id")
       ON DELETE CASCADE,
-  "showOnProfileId" INTEGER          NOT NULL
+  "showOnProfileId" INTEGER                        NOT NULL
     CONSTRAINT "nftShowOnProfileFk"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "title"           VARCHAR(255)     NOT NULL,
-  "description"     TEXT             NOT NULL DEFAULT '',
-  "location"        TEXT             NULL,
-  "price"           DOUBLE PRECISION NOT NULL,
-  "currencyType"    "CurrencyType"   NOT NULL,
-  "contentUrl"      VARCHAR(255)     NOT NULL
+  "title"           VARCHAR(255)                   NOT NULL,
+  "description"     TEXT                           NOT NULL DEFAULT '',
+  "location"        TEXT                           NULL,
+  "price"           DOUBLE PRECISION               NOT NULL,
+  "currencyType"    "CurrencyType"                 NOT NULL,
+  "contentUrl"      VARCHAR(255)                   NOT NULL,
+  "postedAt"        TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL DEFAULT now()
 );
 
 CREATE TABLE "Mint"
@@ -110,12 +111,12 @@ CREATE TABLE "Mint"
     CONSTRAINT "mintNftFk"
       REFERENCES "Nft" ("id")
       ON DELETE CASCADE,
-  "userId" INTEGER                        NOT NULL
-    CONSTRAINT "mintUserFk"
-      REFERENCES "User" ("id")
+  "profileId" INTEGER                        NOT NULL
+    CONSTRAINT "mintProfileFk"
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
   "mintAt" TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
-  PRIMARY KEY ("nftId", "userId")
+  PRIMARY KEY ("nftId", "profileId")
 );
 
 CREATE TABLE "HashtagNft"
@@ -135,9 +136,9 @@ CREATE TABLE "Comment"
     CONSTRAINT "commentNftFk"
       REFERENCES "Nft" ("id")
       ON DELETE CASCADE,
-  "userId"         INTEGER                        NOT NULL
-    CONSTRAINT "commentUserFk"
-      REFERENCES "User" ("id")
+  "profileId"      INTEGER                        NOT NULL
+    CONSTRAINT "commentProfileFk"
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
   "commentedAt"    TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   "commentary"     VARCHAR(1000)                  NOT NULL,
@@ -149,9 +150,9 @@ CREATE TABLE "Comment"
 
 CREATE TABLE "ReportComment"
 (
-  "reporterUserId"    INTEGER                        NOT NULL
-    CONSTRAINT "reporterUserFk"
-      REFERENCES "User" ("id")
+  "reporterProfileId" INTEGER                        NOT NULL
+    CONSTRAINT "reporterProfileFk"
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
   "reportedCommentId" INTEGER                        NOT NULL
     CONSTRAINT "reportedCommentFk"
@@ -159,14 +160,14 @@ CREATE TABLE "ReportComment"
       ON DELETE CASCADE,
   "reason"            VARCHAR(1000)                  NULL,
   "reportAt"          TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
-  PRIMARY KEY ("reporterUserId", "reportedCommentId")
+  PRIMARY KEY ("reporterProfileId", "reportedCommentId")
 );
 
 CREATE TABLE "ReportNft"
 (
-  "reporterUserId" INTEGER                        NOT NULL
-    CONSTRAINT "reporterUserFk"
-      REFERENCES "User" ("id")
+  "reporterProfileId" INTEGER                        NOT NULL
+    CONSTRAINT "reporterProfileFk"
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
   "reportedNftId"  INTEGER                        NOT NULL
     CONSTRAINT "reportedNftFk"
@@ -174,22 +175,22 @@ CREATE TABLE "ReportNft"
       ON DELETE CASCADE,
   "reason"         VARCHAR(1000)                  NULL,
   "reportAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
-  PRIMARY KEY ("reporterUserId", "reportedNftId")
+  PRIMARY KEY ("reporterProfileId", "reportedNftId")
 );
 
-CREATE TABLE "ReportUser"
+CREATE TABLE "ReportProfile"
 (
-  "reporterUserId" INTEGER                     NOT NULL
-    CONSTRAINT "reporterUserFk"
-      REFERENCES "User" ("id")
+  "reporterProfileId" INTEGER                        NOT NULL
+    CONSTRAINT "reporterProfileFk"
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "reportedUserId" INTEGER                     NOT NULL
-    CONSTRAINT "reportedUserFk"
-      REFERENCES "User" ("id")
+  "reportedProfileId" INTEGER                        NOT NULL
+    CONSTRAINT "reportedProfileFk"
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
   "reason"         VARCHAR(1000)               NULL,
   "reportAt"       TIMESTAMP(3) WITH TIME ZONE NOT NULL,
-  PRIMARY KEY ("reporterUserId", "reportedUserId")
+  PRIMARY KEY ("reporterProfileId", "reportedProfileId")
 );
 
 CREATE TABLE "Whitelist"
@@ -206,9 +207,9 @@ CREATE TABLE "Whitelist"
 CREATE TABLE "ViewProfile"
 (
   "id"              SERIAL                         NOT NULL PRIMARY KEY,
-  "viewerUserId"    INTEGER                        NOT NULL
-    CONSTRAINT "viewerUserFk"
-      REFERENCES "User" ("id")
+  "viewerProfileId" INTEGER                        NOT NULL
+    CONSTRAINT "viewerProfileFk"
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
   "viewedProfileId" INTEGER                        NOT NULL
     CONSTRAINT "viewedProfileFk"
@@ -260,9 +261,9 @@ CREATE TABLE "WhitelistUser"
 CREATE TABLE "ViewNft"
 (
   "id"     SERIAL                         NOT NULL PRIMARY KEY,
-  "userId" INTEGER                        NOT NULL
-    CONSTRAINT "viewNftUserFk"
-      REFERENCES "User" ("id")
+  "profileId" INTEGER                        NOT NULL
+    CONSTRAINT "viewNftProfileFk"
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
   "nftId"  INTEGER                        NOT NULL
     CONSTRAINT "viewNftNftFk"
@@ -287,17 +288,18 @@ CREATE TABLE "UserTeaBag"
 
 CREATE TABLE "PrivateMessage"
 (
-  "id"                    SERIAL        NOT NULL PRIMARY KEY,
-  "fromUserId"            INTEGER       NOT NULL
+  "id"                    SERIAL                         NOT NULL PRIMARY KEY,
+  "fromProfileId"         INTEGER                        NOT NULL
     CONSTRAINT "fromUserFk"
-      REFERENCES "User" ("id")
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "toUserId"              INTEGER       NOT NULL
+  "toProfileId"           INTEGER                        NOT NULL
     CONSTRAINT "toUserFk"
-      REFERENCES "User" ("id")
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "message"               VARCHAR(1000) NOT NULL,
-  "replyPrivateMessageId" INTEGER       NULL
+  "message"               VARCHAR(1000)                  NOT NULL,
+  "sentAt"                TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+  "replyPrivateMessageId" INTEGER                        NULL
     CONSTRAINT "replyPrivateMessageFk"
       REFERENCES "PrivateMessage" ("id")
       ON DELETE CASCADE
@@ -305,16 +307,16 @@ CREATE TABLE "PrivateMessage"
 
 CREATE TABLE "Follow"
 (
-  "followerUserId" INTEGER                        NOT NULL
+  "followerProfileId" INTEGER                        NOT NULL
     CONSTRAINT "followerUserFk"
-      REFERENCES "User" ("id")
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "followedUserId" INTEGER                        NOT NULL
+  "followedProfileId" INTEGER                        NOT NULL
     CONSTRAINT "followedUserFk"
-      REFERENCES "User" ("id")
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "followAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
-  PRIMARY KEY ("followerUserId", "followedUserId")
+  "followAt"          TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+  PRIMARY KEY ("followerProfileId", "followedProfileId")
 );
 
 CREATE TABLE "PasswordReset"
@@ -332,17 +334,17 @@ CREATE TABLE "PasswordReset"
 
 CREATE TABLE "RequestFollow"
 (
-  "requesterUserId" INTEGER                        NOT NULL
+  "requesterProfileId" INTEGER                        NOT NULL
     CONSTRAINT "requesterUserFk"
-      REFERENCES "User" ("id")
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "requestedUserId" INTEGER                        NOT NULL
+  "requestedProfileId" INTEGER                        NOT NULL
     CONSTRAINT "requestedUserFk"
-      REFERENCES "User" ("id")
+      REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "requestAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
-  "isIgnored"       BOOLEAN                        NOT NULL DEFAULT FALSE,
-  PRIMARY KEY ("requesterUserId", "requestedUserId")
+  "requestAt"          TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+  "isIgnored"          BOOLEAN                        NOT NULL DEFAULT FALSE,
+  PRIMARY KEY ("requesterProfileId", "requestedProfileId")
 );
 
 CREATE TABLE "EmailVerification"
