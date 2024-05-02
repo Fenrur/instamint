@@ -1,4 +1,5 @@
 import {
+  GetPaginedNftsByUsernameResponse,
   RegisterUserRequest, RegisterUserResponse,
   TwoFactorAuthenticatorTypeRequest,
   TwoFactorAuthenticatorTypeResponse, VerifyExistUsernameResponse,
@@ -7,6 +8,28 @@ import {
 } from "@/http/rest/types"
 import {getErrorCodeFromProblem} from "@/http/problem"
 import {ErrorCode} from "@/http/error-code"
+
+export async function getPaginedNftsByUsername(username: string, page: number) {
+  const url = encodeURI(`/api/profile/nft?username=${ username }&page=${ page }`)
+  const res = await fetch(url, {
+    method: "GET"
+  })
+
+  if (res.status === 200) {
+    return GetPaginedNftsByUsernameResponse.parse(await res.json())
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.PROFILE_NOT_FOUND:
+      return "profile_not_found"
+  }
+
+  throw new Error("Undefined error code from server")
+}
 
 export async function verifyUserPassword(req: VerifyPasswordRequest) {
   const res = await fetch("/api/auth/verify/password", {

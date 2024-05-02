@@ -13,9 +13,9 @@ import {z} from "zod"
 import {useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
-import {useVerifyTwoFactorAuthenticatorTotpCode} from "@/repository/hooks"
+import {useVerifyTwoFactorAuthenticatorTotpCode} from "@/hooks"
 import {toast} from "sonner"
-import {LoadingDots} from "@/components/ui/loading-dots"
+import {DefaultLoadingDots, LoadingDots} from "@/components/ui/loading-dots"
 import {signIn} from "next-auth/react"
 
 const FormSchema = z.object({
@@ -137,7 +137,7 @@ export default function TotpCodeLoginPage() {
               Validate
               {
                 isFetchingVerification ? <div className="ml-1">
-                  <LoadingDots size={12}/>
+                  <DefaultLoadingDots size={12}/>
                 </div> : null
               }
             </Button>

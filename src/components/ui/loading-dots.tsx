@@ -4,19 +4,31 @@ import React from "react"
 interface LoadingDotsProps {
   visible?: boolean,
   size: number,
-  color?: string,
+  lightThemeColor: string,
+  darkThemeColor: string
 }
 
-export function LoadingDots({visible = true, color = "white", size}: LoadingDotsProps) {
+export function DefaultLoadingDots({visible = true, size = 50}: {visible?: boolean, size?: number}) {
+  return (
+    <LoadingDots size={size} visible={visible} lightThemeColor={"fill-white"} darkThemeColor={"fill-black"}/>
+  )
+}
+
+export function BackgroundLoadingDots({visible = true, size = 50}: {visible?: boolean, size?: number}) {
+  return (
+    <LoadingDots size={size} visible={visible} lightThemeColor={"fill-black"} darkThemeColor={"fill-white"}/>
+  )
+}
+
+export function LoadingDots({visible = true, size, lightThemeColor, darkThemeColor}: LoadingDotsProps) {
   return (
     <ThreeDots
       visible={visible}
-      color={color}
+      color={""}
       width={size}
       height={size}
       ariaLabel="three-dots-loading"
-      wrapperStyle={{}}
-      wrapperClass=""
+      wrapperClass={`${lightThemeColor} dark:${darkThemeColor}`}
     />
   )
 }

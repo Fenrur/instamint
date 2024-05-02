@@ -2,7 +2,7 @@ import {NextResponse} from "next/server"
 import {auth, getSession} from "@/auth"
 import {
   invalidContentTypeProblem,
-  invalidRequestBodyProblem, invalidTwoFactorCodeProblem,
+  invalidBodyProblem, invalidTwoFactorCodeProblem,
   notAuthenticatedProblem,
   passwordIsInvalidProblem,
   problem, twoFactorNotEnabledProblem, twoFactorSetupRequiredProblem,
@@ -32,7 +32,7 @@ export const POST = auth(async (req: NextAuthRequest) => {
   try {
     parsedBody = TwoFactorAuthenticatorDisableRequest.parse(body)
   } catch (e: any) {
-    return problem({...invalidRequestBodyProblem, detail: e.errors})
+    return problem({...invalidBodyProblem, detail: e.errors})
   }
 
   const result = await userService.verifyPasswordAndTotpCodeByUid(session.uid, parsedBody.password, parsedBody.totpCode)

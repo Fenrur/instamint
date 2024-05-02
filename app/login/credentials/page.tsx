@@ -10,10 +10,10 @@ import {Badge} from "@/components/ui/badge"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
 import React, {Suspense, useEffect, useState} from "react"
 import {useLogin} from "@/store"
-import {useTwoFactorAuthenticatorUserType, useVerifyUserPasswordByEmail} from "@/repository/hooks"
+import {useTwoFactorAuthenticatorUserType, useVerifyUserPasswordByEmail} from "@/hooks"
 import {signIn} from "next-auth/react"
 import {toast} from "sonner"
-import {LoadingDots} from "@/components/ui/loading-dots"
+import {DefaultLoadingDots} from "@/components/ui/loading-dots"
 
 function useVerifyPasswordAndGetTwoFactorAuthenticatorType() {
   const {verifyUserPassword, isFetchingVerification, errorVerification} = useVerifyUserPasswordByEmail()
@@ -143,7 +143,7 @@ function ContentPage() {
             Login
             {
               isFetching ? <div className="ml-1">
-                <LoadingDots size={12}/>
+                <DefaultLoadingDots size={12}/>
               </div> : null
             }
           </Button>

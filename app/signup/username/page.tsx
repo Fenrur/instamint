@@ -7,7 +7,7 @@ import React, {Suspense, useEffect, useState} from "react"
 import {useSignup} from "@/store"
 import {Progress} from "@/components/ui/progress"
 import {useRouter} from "next/navigation"
-import {useVerifyExistUsername} from "@/repository/hooks"
+import {useVerifyExistUsername} from "@/hooks"
 import {usernameMaximumLength, usernameMinimumLength, usernameValidCharacter} from "@/utils/validator"
 import {RightPanel} from "../right-panel"
 

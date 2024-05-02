@@ -2,7 +2,7 @@ import {auth, getSession} from "@/auth"
 import {NextResponse} from "next/server"
 import {
   invalidContentTypeProblem,
-  invalidRequestBodyProblem,
+  invalidBodyProblem,
   notAuthenticatedProblem,
   passwordIsInvalidProblem,
   problem, twoFactorAlreadyEnabledProblem, uidNotFoundProblem
@@ -32,7 +32,7 @@ export const POST = auth(async (req: NextAuthRequest) => {
   try {
     parsedBody = TwoFactorAuthenticatorSetupRequest.parse(body)
   } catch (e: any) {
-    return problem({...invalidRequestBodyProblem, detail: e.errors})
+    return problem({...invalidBodyProblem, detail: e.errors})
   }
 
   const secret = authenticator().generateSecret(20)
