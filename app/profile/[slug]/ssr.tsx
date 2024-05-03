@@ -24,7 +24,7 @@ export interface NftContainerProps {
   comments: string
 }
 
-export function Ssr({url, type, mints, comments}: NftContainerProps) {
+export function NftContainer({url, type, mints, comments}: NftContainerProps) {
   return (
     <div className="relative pb-full cursor-pointer transition-opacity duration-200">
 
@@ -297,7 +297,7 @@ export function NftsSection({className, nfts}: ProfileNftsSectionProps) {
         nfts.map((nft, index) => {
           return (
             <React.Fragment key={`1-${index}`}>
-              <Ssr
+              <NftContainer
                 mints={nft.mintCount.toString()}
                 comments={nft.commentCount.toString()}
                 type="image"

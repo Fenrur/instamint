@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from "react"
 import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
 
-import {Ssr} from "./ssr"
+import {NftContainer} from "./ssr"
 import {NftType} from "../../domain/types"
 import InfiniteScroll from "react-infinite-scroll-component"
 import {getPaginedNftsByUsername} from "@/repository"
@@ -101,7 +101,7 @@ export function NftsSection({username}: TestButtonProps) {
           nfts.map((nft, index) => {
             return (
               <React.Fragment key={index}>
-                <Ssr
+                <NftContainer
                   mints={nft.mintCount.toString()}
                   comments={nft.commentCount.toString()}
                   type="image"
