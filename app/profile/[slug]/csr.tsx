@@ -104,7 +104,7 @@ export function NftsSection({username}: TestButtonProps) {
                 <NftContainer
                   mints={nft.mintCount.toString()}
                   comments={nft.commentCount.toString()}
-                  type="image"
+                  type={nft.type}
                   url={nft.contentUrl}
                 />
               </React.Fragment>
