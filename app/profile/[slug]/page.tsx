@@ -35,8 +35,10 @@ export default async function ProfilePage(props: ProfilePageProps) {
   }
 
   let myUser = null
+
   if (session) {
     myUser = await userService.findByUid(session.uid)
+
     if (! myUser) {
       return (
         <main>
@@ -76,6 +78,7 @@ export default async function ProfilePage(props: ProfilePageProps) {
     }
 
     const follow = await followService.getFollow(myProfile.id, profile.id)
+
     if (!follow) {
       return (
         <NotFollowPrivateProfile

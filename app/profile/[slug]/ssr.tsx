@@ -9,7 +9,6 @@ import {Pacifico} from "next/font/google"
 import Link from "next/link"
 import {createRedirectQueryParam} from "@/utils/url"
 import {Separator} from "@/components/ui/separator"
-import {NftsSection as NftsSectionCsr} from "./csr"
 
 export const dynamic = "force-dynamic"
 
