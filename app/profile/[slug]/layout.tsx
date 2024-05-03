@@ -1,6 +1,8 @@
 import React from "react"
 import {LoggedLayout} from "@/components/layout/logged-layout"
 import {getServerSession} from "@/auth"
+import {ConnectionHeader} from "./ssr"
+import {Separator} from "@/components/ui/separator"
 
 export const dynamic = "force-dynamic"
 
@@ -20,7 +22,15 @@ export default async function ProfileLayout(props: ProfilePageProps) {
       {
         session
           ? <LoggedLayout headerText={username} selectedNavigation={"search"}>{props.children}</LoggedLayout>
-          : props.children
+          : <>
+            <div className="flex justify-center">
+              <div className="grid max-w-[940px] w-full">
+                <ConnectionHeader username={username} className="max-w-[940px]"/>
+              </div>
+            </div>
+            <Separator/>
+            {props.children}
+          </>
       }
     </>
   )

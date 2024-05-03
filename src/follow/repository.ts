@@ -20,6 +20,17 @@ export class FollowRepository {
       })
   }
 
+  public getFollow(followerProfileId: number, followedProfileId: number) {
+    return this.pgClient.query
+      .FollowTable
+      .findFirst({
+        where: (follow, {eq, and}) => and(
+          eq(follow.followerProfileId, followerProfileId),
+          eq(follow.followedProfileId, followedProfileId)
+        )
+      })
+  }
+
   public async countFollowers(profileId: number) {
     const result = await this.pgClient
       .select({count: count()})

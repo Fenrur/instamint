@@ -20,4 +20,8 @@ export class DefaultFollowService {
   public countFollows(profileId: number) {
     return this.followRepository.countFollows(profileId)
   }
+
+  public getFollow(followerProfileId: number, followedProfileId: number) {
+    return this.followRepository.getFollow(followerProfileId, followedProfileId)
+  }
 }

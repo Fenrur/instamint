@@ -8,6 +8,8 @@ import {cn} from "@/lib/utils"
 import {Pacifico} from "next/font/google"
 import Link from "next/link"
 import {createRedirectQueryParam} from "@/utils/url"
+import {Separator} from "@/components/ui/separator"
+import {NftsSection as NftsSectionCsr} from "./csr"
 
 export const dynamic = "force-dynamic"
 
@@ -315,5 +317,120 @@ export function ProfileDoesNotExist() {
     <header className="flex w-full justify-center items-center h-40">
       <h1 className="md:font-bold">Profile does not exist</h1>
     </header>
+  )
+}
+
+function VisitorPrivateProfileConnectionSection({username} : {username: string}) {
+  return (
+    <section className="grid justify-center mt-10 gap-4">
+      <h2 className="text-center font-semibold text-sm">
+        This profile is private
+      </h2>
+      <div className="grid text-center text-sm gap-0.5">
+        <p>Already follow @{username} ?</p>
+        <p>
+          <Button className="p-0" variant="link" asChild>
+            <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`}>
+              login
+            </Link>
+          </Button>
+          {" "}to see its NFTs
+        </p>
+      </div>
+    </section>
+  )
+}
+
+interface VisitorPrivateProfileProps {
+  profile: {
+    bio: string,
+    link: string | null,
+    username: string,
+    displayName: string,
+    location: string | null,
+    avatarUrl: string
+  },
+  followersCount: number,
+  followsCount: number,
+  nftsCount: number
+}
+
+export function VisitorPrivateProfile(props: VisitorPrivateProfileProps) {
+  return (
+    <main>
+      <div className="flex justify-center">
+        <div className="grid max-w-[940px] w-full">
+          <ProfileHeaderSection
+            bio={props.profile.bio}
+            link={props.profile.link}
+            username={props.profile.username}
+            displayName={props.profile.displayName}
+            location={props.profile.location}
+            avatarUrl={props.profile.avatarUrl}
+          />
+          <Separator/>
+          <ProfileStatisticsSection
+            followers={props.followersCount}
+            follows={props.followsCount}
+            nfts={props.nftsCount}
+            username={props.profile.username}
+          />
+          <Separator/>
+          <VisitorPrivateProfileConnectionSection username={props.profile.username}/>
+        </div>
+      </div>
+    </main>
+  )
+}
+
+function NotFollowPrivateProfileSection() {
+  return (
+    <section className="grid justify-center mt-10 gap-4">
+      <h2 className="text-center font-semibold text-sm">
+        This profile is private
+      </h2>
+    </section>
+  )
+}
+
+interface VisitorPrivateProfileProps {
+  profile: {
+    bio: string,
+    link: string | null,
+    username: string,
+    displayName: string,
+    location: string | null,
+    avatarUrl: string
+  },
+  followersCount: number,
+  followsCount: number,
+  nftsCount: number
+}
+
+export function NotFollowPrivateProfile(props: VisitorPrivateProfileProps) {
+  return (
+    <main>
+      <div className="flex justify-center">
+        <div className="grid max-w-[940px] w-full">
+          <ProfileHeaderSection
+            bio={props.profile.bio}
+            link={props.profile.link}
+            username={props.profile.username}
+            displayName={props.profile.displayName}
+            location={props.profile.location}
+            avatarUrl={props.profile.avatarUrl}
+          />
+          <Separator/>
+          <ProfileStatisticsSection
+            followers={props.followersCount}
+            follows={props.followsCount}
+            nfts={props.nftsCount}
+            username={props.profile.username}
+          />
+          <Separator/>
+          <NotFollowPrivateProfileSection/>
+        </div>
+      </div>
+    </main>
   )
 }
