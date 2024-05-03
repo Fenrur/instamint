@@ -1,12 +1,24 @@
-import {NextRequest, NextResponse} from "next/server"
-import {invalidQueryParameterProblem, problem, profileNotFoundProblem} from "@/http/problem"
-import {nftService} from "@/services"
+import {NextResponse} from "next/server"
+import {
+  dontFollowProfileProblem,
+  invalidQueryParameterProblem,
+  notAuthenticatedProblem,
+  problem,
+  profileNotFoundProblem,
+  userNotFoundProblem
+} from "@/http/problem"
+import {followService, nftService, profileService, userService} from "@/services"
 import {usernameRegex} from "@/utils/validator"
+import {auth, getSession} from "@/auth"
+// @ts-expect-error TODO fix library not found
+import {NextAuthRequest} from "next-auth/lib"
+import {DateTime} from "luxon"
+import {NftType} from "../../../domain/types"
 
-export async function GET(req: NextRequest) {
+export const GET = auth(async (req: NextAuthRequest) => {
   const url = req.nextUrl.clone()
   const page = url.searchParams.get("page")
-  const username = url.searchParams.get("username")
+  const targetUsername = url.searchParams.get("username")
 
   if (page === null) {
     return problem({...invalidQueryParameterProblem, detail: "page is required"})
@@ -22,28 +34,65 @@ export async function GET(req: NextRequest) {
     return problem({...invalidQueryParameterProblem, detail: "page must be a minimum 1"})
   }
 
-  if (username === null) {
+  if (targetUsername === null) {
     return problem({...invalidQueryParameterProblem, detail: "username is required"})
   }
 
-  if (!usernameRegex.test(username)) {
+  if (!usernameRegex.test(targetUsername)) {
     return problem({...invalidQueryParameterProblem, detail: "username is invalid pattern"})
   }
 
-  const result = await nftService.findNftsPaginatedByUsernameWithMintCountAndCommentCount(username, parsedPage)
+  const targetProfile = await profileService.findByUsername(targetUsername)
 
-  if (result === "profile_not_found") {
+  if (!targetProfile) {
     return problem(profileNotFoundProblem)
   }
 
-  const nfts = result.map(({id, contentUrl, mintCount, commentCount, postedAt, type}) => ({
+  if (targetProfile.visibilityType === "public") {
+    const result = await nftService.findNftsPaginatedByProfileIdWithMintCountAndCommentCount(targetProfile.id, parsedPage)
+    const reponse = mapNftsToResponse(result)
+
+    return NextResponse.json(reponse)
+  }
+
+  const session = getSession(req)
+
+  if (!session) {
+    return problem({...notAuthenticatedProblem, detail: "you need to be authenticated to see this private profile"})
+  }
+
+  const myUserAndProfile = await profileService.findByUserUid(session.uid)
+
+  if (!myUserAndProfile) {
+    return problem({...userNotFoundProblem, detail: "my user not found"})
+  }
+
+  const follow = await followService.getFollow(myUserAndProfile.id, targetProfile.id)
+
+  if (!follow) {
+    return problem({...dontFollowProfileProblem, detail: `you don't follow @${targetUsername}`})
+  }
+
+  const result = await nftService.findNftsPaginatedByProfileIdWithMintCountAndCommentCount(targetProfile.id, parsedPage)
+  const reponse = mapNftsToResponse(result)
+
+  return NextResponse.json(reponse)
+})
+
+function mapNftsToResponse(nfts: {
+  id: number,
+  contentUrl: string,
+  mintCount: number,
+  commentCount: number,
+  postedAt: DateTime<true>,
+  type: NftType
+}[]) {
+  return nfts.map(({id, contentUrl, mintCount, commentCount, postedAt, type}) => ({
     id,
     contentUrl,
     mintCount,
     commentCount,
-    postedAt,
+    postedAt: postedAt.toISO(),
     type
   }))
-
-  return NextResponse.json(nfts)
 }

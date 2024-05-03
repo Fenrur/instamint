@@ -27,6 +27,15 @@ export async function getPaginedNftsByUsername(username: string, page: number) {
 
     case ErrorCode.PROFILE_NOT_FOUND:
       return "profile_not_found"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.DONT_FOLLOW_PROFILE:
+      return "dont_follow_profile"
   }
 
   throw new Error("Undefined error code from server")

@@ -55,6 +55,13 @@ export const UserTable = pgTable("User", {
   enabledNotificationTypes: NotificationTypeEnum("enabledNotificationTypes").array().notNull().default(["replies_comments", "thread_comment", "mint", "follow", "follow_request_accepted"]),
 })
 
+export const userRelations = relations(UserTable, ({ one }) => ({
+  profile: one(ProfileTable, {
+    fields: [UserTable.profileId],
+    references: [ProfileTable.id],
+  }),
+}))
+
 export const TeaBagTable = pgTable("TeaBag", {
   id: serial("id").notNull().primaryKey(),
   profileId: integer("profileId").notNull().references(() => ProfileTable.id, {onDelete: "cascade"})

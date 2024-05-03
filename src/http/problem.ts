@@ -51,6 +51,10 @@ export const usernameAlreadyUsedProblem = {title: "Username is already in use", 
 
 export const profileNotFoundProblem = {title: "Profile not found", errorCode: ErrorCode.PROFILE_NOT_FOUND, status: 404}
 
+export const userNotFoundProblem = {title: "User not found", errorCode: ErrorCode.USER_NOT_FOUND, status: 404}
+
+export const dontFollowProfileProblem = {title: "Don't follow profile", errorCode: ErrorCode.DONT_FOLLOW_PROFILE, status: 400}
+
 const GetCode = z.object({
   errorCode: z.number().int().positive()
 })

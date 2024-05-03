@@ -34,26 +34,20 @@ export default async function ProfilePage(props: ProfilePageProps) {
     )
   }
 
-  let myUser = null
-
-  if (session) {
-    myUser = await userService.findByUid(session.uid)
-
-    if (! myUser) {
-      return (
-        <main>
-          <MyUserAuthenticatedDoesntExist/>
-        </main>
-      )
-    }
-  }
-
-  const [followersCount, followsCount, nftsCount, myProfile] = await Promise.all([
+  const [followersCount, followsCount, nftsCount, myUserAndProfile] = await Promise.all([
     followService.countFollowers(profile.id),
     followService.countFollows(profile.id),
     nftService.countNfts(profile.id),
-    myUser ? await profileService.findByUid(myUser.uid) : null
+    session ? profileService.findByUserUid(session.uid) : null
   ])
+
+  if (session && !myUserAndProfile) {
+    return (
+      <main>
+        <MyUserAuthenticatedDoesntExist/>
+      </main>
+    )
+  }
 
   if (profile.visibilityType === "private") {
     if (!session) {
@@ -69,15 +63,11 @@ export default async function ProfilePage(props: ProfilePageProps) {
       )
     }
 
-    if (!myProfile) {
-      return (
-        <main>
-          <MyUserAuthenticatedDoesntExist/>
-        </main>
-      )
+    if (!myUserAndProfile) {
+      throw new Error("This should never happen")
     }
 
-    const follow = await followService.getFollow(myProfile.id, profile.id)
+    const follow = await followService.getFollow(myUserAndProfile.profile.id, profile.id)
 
     if (!follow) {
       return (

@@ -16,7 +16,7 @@ export class DefaultProfileService {
     return this.profilePgRepository.findByUsername(username)
   }
 
-  public findByUid(uid: string) {
-    return this.profilePgRepository.findByUid(uid)
+  public findByUserUid(uid: string) {
+    return this.profilePgRepository.findByUserUid(uid)
   }
 }

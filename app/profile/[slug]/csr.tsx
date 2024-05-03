@@ -8,6 +8,8 @@ import {NftType} from "../../domain/types"
 import InfiniteScroll from "react-infinite-scroll-component"
 import {getPaginedNftsByUsername} from "@/repository"
 import {toast} from "sonner"
+import {useRouter} from "next/navigation"
+import {createRedirectQueryParam} from "@/utils/url"
 
 interface TestButtonProps {
   username: string
@@ -25,6 +27,7 @@ export function NftsSection({username}: TestButtonProps) {
   }[]>([])
   const [hasMore, setHasMore] = useState(true)
   const [init, setInit] = useState(true)
+  const router = useRouter()
   const loadNextPage = () => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     setTimeout(async () => {
@@ -35,11 +38,19 @@ export function NftsSection({username}: TestButtonProps) {
       }
 
       if (!Array.isArray(n)) {
-        if (n === "profile_not_found") {
-          toast.error("Profile not found", {description: "Please try again later."})
+        switch (n) {
+          case "profile_not_found":
+            toast.error("Profile not found", {description: "Please try again later."})
+            return
+          case "not_authenticated":
+            router.push(`/login${createRedirectQueryParam(username)}`)
+            return
+          case "dont_follow_profile":
+            router.refresh()
+            return
+          default:
+            return
         }
-
-        return
       }
 
       if (n.length === 0) {
