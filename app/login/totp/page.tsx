@@ -1,7 +1,7 @@
 "use client"
 
 import {Button} from "@/components/ui/button"
-import {useRouter} from "next/navigation"
+import {useRouter, useSearchParams} from "next/navigation"
 import Link from "next/link"
 import {Badge} from "@/components/ui/badge"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
@@ -15,8 +15,9 @@ import {zodResolver} from "@hookform/resolvers/zod"
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
 import {useVerifyTwoFactorAuthenticatorTotpCode} from "@/repository/hooks"
 import {toast} from "sonner"
-import {LoadingDots} from "@/components/ui/loading-dots"
+import {DefaultLoadingDots} from "@/components/ui/loading-dots"
 import {signIn} from "next-auth/react"
+import {createRedirectQueryParam} from "@/utils/url"
 
 const FormSchema = z.object({
   pin: z.string().min(6, {
@@ -27,11 +28,13 @@ const FormSchema = z.object({
 export default function TotpCodeLoginPage() {
   const {credentials, resetCredentials} = useLogin()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const {verifyTwoFactorAuthenticatorTotpCode, isFetchingVerification, errorVerification} = useVerifyTwoFactorAuthenticatorTotpCode()
 
   useEffect(() => {
     if (!credentials) {
-      router.push("/login")
+      const redirect = searchParams.get("redirect")
+      router.push(`/login${createRedirectQueryParam(redirect)}`)
     }
   }, [credentials, router])
 
@@ -50,6 +53,7 @@ export default function TotpCodeLoginPage() {
   const handleFormSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (! credentials) {return}
 
+    const redirect = searchParams.get("redirect")
     const result = await verifyTwoFactorAuthenticatorTotpCode({
       email: credentials.email,
       password: credentials.password,
@@ -59,31 +63,44 @@ export default function TotpCodeLoginPage() {
     switch (result) {
       case "code_valid":
         resetCredentials()
-        await signIn("credentials", {
-          email: credentials.email,
-          password: credentials.password,
-          twoFactorAuthentification: data.pin
-        })
+
+        if (redirect) {
+          await signIn("credentials", {
+            email: credentials.email,
+            password: credentials.password,
+            twoFactorAuthentification: data.pin,
+            redirect: true,
+            callbackUrl: decodeURI(redirect)
+          })
+        } else {
+          await signIn("credentials", {
+            email: credentials.email,
+            password: credentials.password,
+            twoFactorAuthentification: data.pin,
+            redirect: true,
+            callbackUrl: "/"
+          })
+        }
 
         break
 
       case "email_not_found":
-        router.push("/login")
+        router.push(`/login${createRedirectQueryParam(redirect)}`)
 
         break
 
       case "password_invalid":
-        router.push("/login")
+        router.push(`/login${createRedirectQueryParam(redirect)}`)
 
         break
 
       case "two_factor_not_enabled":
-        router.push("/login")
+        router.push(`/login${createRedirectQueryParam(redirect)}`)
 
         break
 
       case "two_factor_setup_required":
-        router.push("/login")
+        router.push(`/login${createRedirectQueryParam(redirect)}`)
 
         break
 
@@ -137,7 +154,7 @@ export default function TotpCodeLoginPage() {
               Validate
               {
                 isFetchingVerification ? <div className="ml-1">
-                  <LoadingDots size={12}/>
+                  <DefaultLoadingDots size={12}/>
                 </div> : null
               }
             </Button>

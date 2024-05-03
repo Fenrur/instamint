@@ -1,9 +1,10 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import {Inter} from "next/font/google"
 import "./globals.css"
 import React from "react"
 import {Toaster} from "@/components/ui/sonner"
 import {SessionProvider} from "next-auth/react"
+import {cn} from "@/lib/utils"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -19,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={cn(inter.className, "light")}>
       <Toaster richColors/>
       <SessionProvider>
         {children}

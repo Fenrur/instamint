@@ -30,6 +30,8 @@ export async function up(knex) {
 
     CREATE TYPE "NotificationType" AS ENUM ('replies_comments', 'thread_comment', 'mint', 'follow', 'follow_request_accepted');
 
+    CREATE TYPE "NftType" AS ENUM ('image', 'video', 'audio');
+
     CREATE TABLE "Profile"
     (
       "id"             SERIAL                         NOT NULL PRIMARY KEY,
@@ -101,7 +103,8 @@ export async function up(knex) {
       "price"           DOUBLE PRECISION               NOT NULL,
       "currencyType"    "CurrencyType"                 NOT NULL,
       "contentUrl"      VARCHAR(255)                   NOT NULL,
-      "postedAt"        TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL DEFAULT now()
+      "postedAt"        TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      "type"            "NftType"                      NOT NULL
     );
 
     CREATE TABLE "Mint"
@@ -361,7 +364,7 @@ export async function up(knex) {
 export async function down(knex) {
   await knex.raw(`
     DROP TABLE "Profile", "User", "TeaBag", "Nft", "Mint", "HashtagNft", "Comment", "ReportComment", "ReportNft", "ReportProfile", "Whitelist", "ViewProfile", "ScheduleDeletionUser", "DraftNft", "WhitelistUser", "ViewNft", "UserTeaBag", "PrivateMessage", "Follow", "PasswordReset", "RequestFollow", "EmailVerification";
-    DROP TYPE "LanguageType", "UserRole", "ProfileVisibilityType", "CurrencyType", "UserTeaBagRole", "NotificationType";
+    DROP TYPE "LanguageType", "UserRole", "ProfileVisibilityType", "CurrencyType", "UserTeaBagRole", "NotificationType", "NftType";
     DROP FUNCTION check_hashtags;
     DROP EXTENSION "uuid-ossp";
   `)

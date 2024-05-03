@@ -17,7 +17,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 DROP TABLE IF EXISTS "Profile", "User", "TeaBag", "Nft", "Mint", "HashtagNft", "Comment", "ReportComment", "ReportNft", "ReportUser", "Whitelist", "ViewProfile", "ScheduleDeletionUser", "DraftNft", "WhitelistUser", "ViewNft", "UserTeaBag", "PrivateMessage", "Follow", "PasswordReset", "RequestFollow", "EmailVerification";
-DROP TYPE IF EXISTS "LanguageType", "UserRole", "ProfileVisibilityType", "CurrencyType", "UserTeaBagRole", "NotificationType";
+DROP TYPE IF EXISTS "LanguageType", "UserRole", "ProfileVisibilityType", "CurrencyType", "UserTeaBagRole", "NotificationType", "NftType";
 
 CREATE TYPE "LanguageType" AS ENUM ('en', 'fr', 'es');
 
@@ -30,6 +30,8 @@ CREATE TYPE "CurrencyType" AS ENUM ('usd', 'eur', 'eth', 'sol');
 CREATE TYPE "UserTeaBagRole" AS ENUM ('user', 'cooker');
 
 CREATE TYPE "NotificationType" AS ENUM ('replies_comments', 'thread_comment', 'mint', 'follow', 'follow_request_accepted');
+
+CREATE TYPE "NftType" AS ENUM ('image', 'video', 'audio');
 
 CREATE TABLE "Profile"
 (
@@ -102,12 +104,13 @@ CREATE TABLE "Nft"
   "price"           DOUBLE PRECISION               NOT NULL,
   "currencyType"    "CurrencyType"                 NOT NULL,
   "contentUrl"      VARCHAR(255)                   NOT NULL,
-  "postedAt"        TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL DEFAULT now()
+  "postedAt"        TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+  "type"            "NftType"                      NOT NULL
 );
 
 CREATE TABLE "Mint"
 (
-  "nftId"  INTEGER                        NOT NULL
+  "nftId"     INTEGER                        NOT NULL
     CONSTRAINT "mintNftFk"
       REFERENCES "Nft" ("id")
       ON DELETE CASCADE,
@@ -115,7 +118,7 @@ CREATE TABLE "Mint"
     CONSTRAINT "mintProfileFk"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "mintAt" TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+  "mintAt"    TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   PRIMARY KEY ("nftId", "profileId")
 );
 
@@ -169,27 +172,27 @@ CREATE TABLE "ReportNft"
     CONSTRAINT "reporterProfileFk"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "reportedNftId"  INTEGER                        NOT NULL
+  "reportedNftId"     INTEGER                        NOT NULL
     CONSTRAINT "reportedNftFk"
       REFERENCES "Nft" ("id")
       ON DELETE CASCADE,
-  "reason"         VARCHAR(1000)                  NULL,
-  "reportAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+  "reason"            VARCHAR(1000)                  NULL,
+  "reportAt"          TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   PRIMARY KEY ("reporterProfileId", "reportedNftId")
 );
 
 CREATE TABLE "ReportProfile"
 (
-  "reporterProfileId" INTEGER                        NOT NULL
+  "reporterProfileId" INTEGER                     NOT NULL
     CONSTRAINT "reporterProfileFk"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "reportedProfileId" INTEGER                        NOT NULL
+  "reportedProfileId" INTEGER                     NOT NULL
     CONSTRAINT "reportedProfileFk"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "reason"         VARCHAR(1000)               NULL,
-  "reportAt"       TIMESTAMP(3) WITH TIME ZONE NOT NULL,
+  "reason"            VARCHAR(1000)               NULL,
+  "reportAt"          TIMESTAMP(3) WITH TIME ZONE NOT NULL,
   PRIMARY KEY ("reporterProfileId", "reportedProfileId")
 );
 
@@ -260,16 +263,16 @@ CREATE TABLE "WhitelistUser"
 
 CREATE TABLE "ViewNft"
 (
-  "id"     SERIAL                         NOT NULL PRIMARY KEY,
+  "id"        SERIAL                         NOT NULL PRIMARY KEY,
   "profileId" INTEGER                        NOT NULL
     CONSTRAINT "viewNftProfileFk"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
-  "nftId"  INTEGER                        NOT NULL
+  "nftId"     INTEGER                        NOT NULL
     CONSTRAINT "viewNftNftFk"
       REFERENCES "Nft" ("id")
       ON DELETE CASCADE,
-  "viewAt" TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL
+  "viewAt"    TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL
 );
 
 CREATE TABLE "UserTeaBag"

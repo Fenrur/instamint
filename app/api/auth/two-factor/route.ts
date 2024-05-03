@@ -3,7 +3,7 @@ import {TwoFactorAuthenticatorTypeRequest, TwoFactorAuthenticatorTypeResponse} f
 import {
   emailNotFoundProblem,
   invalidContentTypeProblem,
-  invalidRequestBodyProblem,
+  invalidBodyProblem,
   passwordIsInvalidProblem,
   problem
 } from "@/http/problem"
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   try {
     parsedBody = TwoFactorAuthenticatorTypeRequest.parse(body)
   } catch (e: any) {
-    return problem({...invalidRequestBodyProblem, detail: e.errors})
+    return problem({...invalidBodyProblem, detail: e.errors})
   }
 
   const user = await userService.findByEmail(parsedBody.email)

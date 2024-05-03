@@ -21,7 +21,7 @@ export const emailNotFoundProblem = {title: "Email not found", errorCode: ErrorC
 
 export const passwordIsInvalidProblem = {title: "Password is invalid", errorCode: ErrorCode.PASSWORD_IS_INVALID, status: 403}
 
-export const invalidRequestBodyProblem = {title: "Invalid request body", errorCode: ErrorCode.INVALID_REQUEST_BODY, status: 400}
+export const invalidBodyProblem = {title: "Invalid request body", errorCode: ErrorCode.INVALID_BODY, status: 400}
 
 export const notAuthenticatedProblem = {title: "Not authenticated", errorCode: ErrorCode.NOT_AUTHENTICATED, status: 401}
 
@@ -48,6 +48,12 @@ export const emailVerificationExpiredProblem = {title: "Email verification expir
 export const emailAlreadyUsedProblem = {title: "Email is already in use", errorCode: ErrorCode.EMAIL_ALREADY_USED, status: 400}
 
 export const usernameAlreadyUsedProblem = {title: "Username is already in use", errorCode: ErrorCode.USERNAME_ALREADY_USED, status: 400}
+
+export const profileNotFoundProblem = {title: "Profile not found", errorCode: ErrorCode.PROFILE_NOT_FOUND, status: 404}
+
+export const userNotFoundProblem = {title: "User not found", errorCode: ErrorCode.USER_NOT_FOUND, status: 404}
+
+export const dontFollowProfileProblem = {title: "Don't follow profile", errorCode: ErrorCode.DONT_FOLLOW_PROFILE, status: 400}
 
 const GetCode = z.object({
   errorCode: z.number().int().positive()

@@ -1,6 +1,7 @@
 import {z} from "zod"
 import {zfd} from "zod-form-data"
 import {passwordRegex, usernameRegex} from "@/utils/validator"
+import {nftTypeArray} from "../../../app/domain/types"
 
 export const LoginCredentials = zfd.formData({
   email: zfd.text(z.string().email())
@@ -96,3 +97,16 @@ export const VerifyExistUsernameResponse = z.object({
 })
 
 export type VerifyExistUsernameResponse = z.infer<typeof VerifyExistUsernameResponse>
+
+export const GetPaginedNftsByUsernameResponse = z.array(
+  z.object({
+    id: z.number(),
+    contentUrl: z.string(),
+    mintCount: z.number(),
+    commentCount: z.number(),
+    postedAt: z.string(),
+    type: z.enum(nftTypeArray)
+  })
+)
+
+export type GetPaginedNftsByUsernameResponse = z.infer<typeof GetPaginedNftsByUsernameResponse>

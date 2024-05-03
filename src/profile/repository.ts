@@ -39,4 +39,17 @@ export class ProfilePgRepository {
 
     return createdProfile[0]
   }
+
+  public findByUserUid(uid: string) {
+    return this.pgClient.query.UserTable
+      .findFirst({
+        where: (user, {eq}) => eq(user.uid, uid),
+        columns: {
+          id: true,
+        },
+        with: {
+          profile: true,
+        }
+      })
+  }
 }

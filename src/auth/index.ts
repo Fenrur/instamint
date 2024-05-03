@@ -9,7 +9,7 @@ import {symmetricDecrypt} from "@/utils/crypto"
 import {authenticator} from "@/two-factor/otp"
 import {userService} from "@/services"
 
-export const {handlers, auth, signIn, signOut} = NextAuth({
+const {handlers, auth, signIn, signOut} = NextAuth({
   providers: [
     CredentialsProvider({
       id: "credentials",
@@ -68,8 +68,15 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
     strategy: "jwt"
   },
   callbacks: {
-    async redirect() {
-      return "/"
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`
+      }
+      else if (new URL(url).origin === baseUrl) {
+        return url
+      }
+
+      return baseUrl
     },
     async jwt({token, user}) {
       if (user) {
@@ -125,4 +132,19 @@ export function getSession(req: NextAuthRequest) {
   } catch (e) {
     return null
   }
+}
+
+async function getServerSession() {
+  const authSession = await auth()
+  const session = Session.safeParse(authSession)
+
+  return session.success ? session.data : null
+}
+
+export {
+  handlers,
+  auth,
+  getServerSession,
+  signIn,
+  signOut
 }

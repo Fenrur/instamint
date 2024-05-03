@@ -10,6 +10,8 @@ import {
   uuid,
   varchar
 } from "drizzle-orm/pg-core"
+import {relations} from "drizzle-orm"
+import {nftTypeArray} from "../../app/domain/types"
 
 export const LanguageTypeEnum = pgEnum("LanguageType", ["en", "fr", "es"])
 
@@ -22,6 +24,8 @@ export const CurrencyTypeEnum = pgEnum("CurrencyType", ["usd", "eur", "eth", "so
 export const UserTeaBagRoleEnum = pgEnum("UserTeaBagRole", ["user", "cooker"])
 
 export const NotificationTypeEnum = pgEnum("NotificationType", ["replies_comments", "thread_comment", "mint", "follow", "follow_request_accepted"])
+
+export const NftTypeEnum = pgEnum("NftType", nftTypeArray)
 
 export const ProfileTable = pgTable("Profile", {
   id: serial("id").notNull().primaryKey(),
@@ -51,6 +55,13 @@ export const UserTable = pgTable("User", {
   enabledNotificationTypes: NotificationTypeEnum("enabledNotificationTypes").array().notNull().default(["replies_comments", "thread_comment", "mint", "follow", "follow_request_accepted"]),
 })
 
+export const userRelations = relations(UserTable, ({ one }) => ({
+  profile: one(ProfileTable, {
+    fields: [UserTable.profileId],
+    references: [ProfileTable.id],
+  }),
+}))
+
 export const TeaBagTable = pgTable("TeaBag", {
   id: serial("id").notNull().primaryKey(),
   profileId: integer("profileId").notNull().references(() => ProfileTable.id, {onDelete: "cascade"})
@@ -67,13 +78,25 @@ export const NftTable = pgTable("Nft", {
   currencyType: CurrencyTypeEnum("currencyType").notNull(),
   contentUrl: varchar("contentUrl", {length: 255}).notNull(),
   postedAt: timestamp("postedAt", {withTimezone: false, mode: "string", precision: 3}).notNull().defaultNow(),
+  type: NftTypeEnum("type").notNull(),
 })
+
+export const nftRelations = relations(NftTable, ({ many }) => ({
+  mints: many(MintTable),
+}))
 
 export const MintTable = pgTable("Mint", {
   nftId: integer("nftId").notNull().references(() => NftTable.id, {onDelete: "cascade"}),
   profileId: integer("profileId").notNull().references(() => ProfileTable.id, {onDelete: "cascade"}),
   mintAt: timestamp("mintAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
 })
+
+export const mintRelations = relations(MintTable, ({ one }) => ({
+  author: one(NftTable, {
+    fields: [MintTable.nftId],
+    references: [NftTable.id],
+  }),
+}))
 
 export const HashtagNftTable = pgTable("HashtagNft", {
   hashtag: varchar("hashtag", {length: 255}).notNull().primaryKey(),

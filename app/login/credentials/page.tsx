@@ -13,7 +13,8 @@ import {useLogin} from "@/store"
 import {useTwoFactorAuthenticatorUserType, useVerifyUserPasswordByEmail} from "@/repository/hooks"
 import {signIn} from "next-auth/react"
 import {toast} from "sonner"
-import {LoadingDots} from "@/components/ui/loading-dots"
+import {DefaultLoadingDots} from "@/components/ui/loading-dots"
+import {createRedirectQueryParam} from "@/utils/url"
 
 function useVerifyPasswordAndGetTwoFactorAuthenticatorType() {
   const {verifyUserPassword, isFetchingVerification, errorVerification} = useVerifyUserPasswordByEmail()
@@ -70,6 +71,7 @@ function ContentPage() {
     e.preventDefault()
 
     const email = searchParams.get("email")
+    const redirect = searchParams.get("redirect")
 
     if (!email) {
       return
@@ -86,7 +88,7 @@ function ContentPage() {
     const result = await trigger({email, password})
 
     if (result === "email_not_found") {
-      router.push("/login")
+      router.push(`/login${createRedirectQueryParam(redirect)}`)
     } else if (result === "password_invalid") {
       toast.error("Invalid password", {description: "Please try again..."})
     } else if (result.type === "totp") {
@@ -94,13 +96,25 @@ function ContentPage() {
         email,
         password
       })
-      router.push("/login/totp")
+      router.push(`/login/totp${createRedirectQueryParam(redirect)}`)
     } else {
       resetCredentials()
-      await signIn("credentials", {
-        email,
-        password
-      })
+
+      if (redirect) {
+        await signIn("credentials", {
+          email,
+          password,
+          redirect: true,
+          callbackUrl: decodeURI(redirect)
+        })
+      } else {
+        await signIn("credentials", {
+          email,
+          password,
+          redirect: true,
+          callbackUrl: "/"
+        })
+      }
     }
   }
 
@@ -112,9 +126,10 @@ function ContentPage() {
 
   useEffect(() => {
     const email = searchParams.get("email")
+    const redirect = searchParams.get("redirect")
 
     if (!email || !z.string().email().safeParse(email).success) {
-      router.push("/login")
+      router.push(`/login${createRedirectQueryParam(redirect)}`)
     }
   }, [searchParams, router])
 
@@ -143,7 +158,7 @@ function ContentPage() {
             Login
             {
               isFetching ? <div className="ml-1">
-                <LoadingDots size={12}/>
+                <DefaultLoadingDots size={12}/>
               </div> : null
             }
           </Button>

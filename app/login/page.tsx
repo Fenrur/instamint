@@ -6,6 +6,7 @@ import {Label} from "@/components/ui/label"
 import {Separator} from "@/components/ui/separator"
 import {cn} from "@/lib/utils"
 import {useMemo} from "react"
+import {createRedirectQueryParam} from "@/utils/url"
 
 export const dynamic = "force-dynamic"
 
@@ -13,7 +14,8 @@ type LoginPageError = "email_not_found"
 
 interface LoginPageProps {
   searchParams: {
-    error?: string
+    error?: string,
+    redirect?: string
   }
 }
 
@@ -40,7 +42,7 @@ export default async function LoginPage(props: LoginPageProps) {
 
   return (
     <>
-      <form method="post" action="/api/login">
+      <form method="post" action={props.searchParams.redirect ? `/api/login${createRedirectQueryParam(props.searchParams.redirect)}` : "/api/login"}>
         <div className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email" className={error ? "text-destructive" : ""}>Email</Label>
