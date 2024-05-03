@@ -1,6 +1,6 @@
 import {Separator} from "@/components/ui/separator"
 import {getServerSession} from "@/auth"
-import {followService, nftService, profileService, userService} from "@/services"
+import {followService, nftService, profileService} from "@/services"
 import React from "react"
 import {NftsSection as NftsSectionCsr} from "./csr"
 import {

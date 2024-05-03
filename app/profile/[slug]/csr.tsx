@@ -41,13 +41,19 @@ export function NftsSection({username}: TestButtonProps) {
         switch (n) {
           case "profile_not_found":
             toast.error("Profile not found", {description: "Please try again later."})
+
             return
+
           case "not_authenticated":
             router.push(`/login${createRedirectQueryParam(username)}`)
+
             return
+
           case "dont_follow_profile":
             router.refresh()
+
             return
+
           default:
             return
         }

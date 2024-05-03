@@ -7,7 +7,7 @@ import {
   profileNotFoundProblem,
   userNotFoundProblem
 } from "@/http/problem"
-import {followService, nftService, profileService, userService} from "@/services"
+import {followService, nftService, profileService} from "@/services"
 import {usernameRegex} from "@/utils/validator"
 import {auth, getSession} from "@/auth"
 // @ts-expect-error TODO fix library not found
@@ -17,10 +17,10 @@ import {NftType} from "../../../domain/types"
 
 export const GET = auth(async (req: NextAuthRequest) => {
   const url = req.nextUrl.clone()
-  const page = url.searchParams.get("page")
-  const targetUsername = url.searchParams.get("username")
+  const page = url.searchParams.get("page") as string | null
+  const targetUsername = url.searchParams.get("username") as string | null
 
-  if (page === null) {
+  if (!page) {
     return problem({...invalidQueryParameterProblem, detail: "page is required"})
   }
 
@@ -34,7 +34,7 @@ export const GET = auth(async (req: NextAuthRequest) => {
     return problem({...invalidQueryParameterProblem, detail: "page must be a minimum 1"})
   }
 
-  if (targetUsername === null) {
+  if (!targetUsername) {
     return problem({...invalidQueryParameterProblem, detail: "username is required"})
   }
 
