@@ -29,6 +29,20 @@ export default async function ProfilePage(props: ProfilePageProps) {
   if (!profile) {
     return (
       <main>
+        {
+          !session
+            ?
+            <>
+              <div className="flex justify-center">
+                <div className="grid max-w-[940px] w-full">
+                  <ConnectionHeader username={username} className="max-w-[940px]"/>
+                </div>
+              </div>
+              <Separator/>
+            </>
+            : null
+        }
+
         <ProfileDoesNotExist/>
       </main>
     )
@@ -45,18 +59,18 @@ export default async function ProfilePage(props: ProfilePageProps) {
     <main>
       {
         !session
-          ? <div className="flex justify-center">
-            <div className="grid max-w-[940px] w-full">
-              <ConnectionHeader username={username} className="max-w-[940px]"/>
+          ?
+          <>
+            <div className="flex justify-center">
+              <div className="grid max-w-[940px] w-full">
+                <ConnectionHeader username={username} className="max-w-[940px]"/>
+              </div>
             </div>
-          </div>
+            <Separator/>
+          </>
           : null
       }
-      {
-        !session
-          ? <Separator/>
-          : null
-      }
+
       <div className="flex justify-center">
         <div className="grid max-w-[940px] w-full">
           <ProfileHeaderSection

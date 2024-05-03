@@ -253,7 +253,13 @@ interface ProfileStatisticsSectionProps {
   username: string
 }
 
-export function ProfileStatisticsSection({className, nfts, followers, follows, username}: ProfileStatisticsSectionProps) {
+export function ProfileStatisticsSection({
+                                           className,
+                                           nfts,
+                                           followers,
+                                           follows,
+                                           username
+                                         }: ProfileStatisticsSectionProps) {
   return (
     <section className={cn("flex h-16 justify-around items-center", className)}>
       <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`} className="hover:text-primary">
@@ -306,8 +312,8 @@ export function NftsSection({className, nfts}: ProfileNftsSectionProps) {
 
 export function ProfileDoesNotExist() {
   return (
-    <div>
-      <h1>Profile does not exist</h1>
-    </div>
+    <header className="flex w-full justify-center items-center h-40">
+      <h1 className="md:font-bold">Profile does not exist</h1>
+    </header>
   )
 }
