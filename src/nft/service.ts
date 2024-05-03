@@ -23,6 +23,7 @@ export class DefaultNftService {
 
   public async findNftsPaginatedByUsernameWithMintCountAndCommentCount(username: string, page: number) {
     const profile = await this.profilePgRepository.findByUsername(username)
+
     if (!profile) {
       return "profile_not_found"
     }

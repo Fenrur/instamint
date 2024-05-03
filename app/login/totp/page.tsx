@@ -15,7 +15,7 @@ import {zodResolver} from "@hookform/resolvers/zod"
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
 import {useVerifyTwoFactorAuthenticatorTotpCode} from "@/repository/hooks"
 import {toast} from "sonner"
-import {DefaultLoadingDots, LoadingDots} from "@/components/ui/loading-dots"
+import {DefaultLoadingDots} from "@/components/ui/loading-dots"
 import {signIn} from "next-auth/react"
 import {createRedirectQueryParam} from "@/utils/url"
 
@@ -63,6 +63,7 @@ export default function TotpCodeLoginPage() {
     switch (result) {
       case "code_valid":
         resetCredentials()
+
         if (redirect) {
           await signIn("credentials", {
             email: credentials.email,

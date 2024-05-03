@@ -20,15 +20,6 @@ export class FollowRepository {
       })
   }
 
-  // public unfollow(followerProfileId: number, followedProfileId: number) {
-  //   return this.pgClient
-  //     .delete(FollowTable)
-  //     .where({
-  //       followerProfileId,
-  //       followedProfileId
-  //     })
-  // }
-
   public async countFollowers(profileId: number) {
     const result = await this.pgClient
       .select({count: count()})

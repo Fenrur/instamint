@@ -1,12 +1,13 @@
 "use client"
 
-import React, {useEffect, useMemo, useState} from "react"
-import {BackgroundLoadingDots, LoadingDots} from "@/components/ui/loading-dots"
+import React, {useEffect, useState} from "react"
+import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
 
 import {Ssr} from "./ssr"
 import {NftType} from "../../domain/types"
 import InfiniteScroll from "react-infinite-scroll-component"
 import {getPaginedNftsByUsername} from "@/repository"
+import {toast} from "sonner"
 
 interface TestButtonProps {
   username: string
@@ -24,31 +25,26 @@ export function NftsSection({username}: TestButtonProps) {
   }[]>([])
   const [hasMore, setHasMore] = useState(true)
   const [init, setInit] = useState(true)
-
-  useEffect(() => {
-    if (init) {
-      setInit(false)
-      loadNextPage()
-
-      const nftSection = document.getElementById("nfts-section-ssr")
-      if (nftSection) {
-        nftSection.classList.add("hidden")
-      }
-    }
-  }, [init])
-
   const loadNextPage = () => {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     setTimeout(async () => {
       const n = await getPaginedNftsByUsername(username, page)
+
       if (!n) {
         return
       }
+
       if (!Array.isArray(n)) {
+        if (n === "profile_not_found") {
+          toast.error("Profile not found", {description: "Please try again later."})
+        }
+
         return
       }
 
-      if (n.length == 0) {
+      if (n.length === 0) {
         setHasMore(false)
+
         return
       }
 
@@ -56,6 +52,19 @@ export function NftsSection({username}: TestButtonProps) {
       setPage(page + 1)
     })
   }
+
+  useEffect(() => {
+    if (init) {
+      setInit(false)
+      loadNextPage()
+
+      const nftSection = document.getElementById("nfts-section-ssr")
+
+      if (nftSection) {
+        nftSection.classList.add("hidden")
+      }
+    }
+  }, [init, loadNextPage])
 
   return (
     <InfiniteScroll

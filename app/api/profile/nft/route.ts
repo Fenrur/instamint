@@ -11,10 +11,13 @@ export async function GET(req: NextRequest) {
   if (page === null) {
     return problem({...invalidQueryParameterProblem, detail: "page is required"})
   }
-  const parsedPage = parseInt(page)
+
+  const parsedPage = parseInt(page, 10)
+
   if (isNaN(parsedPage)) {
     return problem({...invalidQueryParameterProblem, detail: "page must be a number"})
   }
+
   if (parsedPage <= 0) {
     return problem({...invalidQueryParameterProblem, detail: "page must be a minimum 1"})
   }
@@ -22,11 +25,13 @@ export async function GET(req: NextRequest) {
   if (username === null) {
     return problem({...invalidQueryParameterProblem, detail: "username is required"})
   }
+
   if (!usernameRegex.test(username)) {
     return problem({...invalidQueryParameterProblem, detail: "username is invalid pattern"})
   }
 
   const result = await nftService.findNftsPaginatedByUsernameWithMintCountAndCommentCount(username, parsedPage)
+
   if (result === "profile_not_found") {
     return problem(profileNotFoundProblem)
   }

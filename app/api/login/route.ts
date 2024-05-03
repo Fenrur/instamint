@@ -33,7 +33,5 @@ export async function POST(req: NextRequest) {
   url.pathname = "/login/credentials"
   url.searchParams.set("email", parsedFormData.email)
 
-  console.log(url.searchParams.get("redirect"))
-
   return NextResponse.redirect(url)
 }

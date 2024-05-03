@@ -21,7 +21,6 @@ interface ProfilePageProps {
 
 export default async function ProfilePage(props: ProfilePageProps) {
   const username = props.params.slug
-
   const [session, profile] = await Promise.all([
     getServerSession(),
     profileService.findByUsername(username)

@@ -86,7 +86,7 @@ export function ConnectionHeader({className, username}: ConnectionHeaderProps) {
     <header className={cn("flex items-center justify-between h-14 px-5", className)}>
       <Link className={cn("font-black text-3xl", pacifico.className)} href="/">Instamint</Link>
       <div className="flex gap-1">
-        <Link href={`/login${createRedirectQueryParam("/profile/" + username)}`}>
+        <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`}>
           <Button className="h-8 w-28">Login</Button>
         </Link>
         <Link href="/signup">
@@ -174,12 +174,12 @@ function MediumScreenProfileSection({
           <div className="flex items-center">
             <h2 className="text-lg font-medium w-mi">{username}</h2>
             <Button variant="secondary" className="h-8 w-32 ml-14 font-semibold" asChild>
-              <Link href={`/login${createRedirectQueryParam("/profile/" + username)}`}>
+              <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`}>
                 Follow
               </Link>
             </Button>
             <Button variant="secondary" className="h-8 w-32 ml-2 font-semibold" asChild>
-              <Link href={`/login${createRedirectQueryParam("/profile/" + username)}`}>
+              <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`}>
                 Contact
               </Link>
             </Button>
@@ -256,15 +256,15 @@ interface ProfileStatisticsSectionProps {
 export function ProfileStatisticsSection({className, nfts, followers, follows, username}: ProfileStatisticsSectionProps) {
   return (
     <section className={cn("flex h-16 justify-around items-center", className)}>
-      <Link href={`/login${createRedirectQueryParam("/profile/" + username)}`} className="hover:text-primary">
+      <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`} className="hover:text-primary">
         <div className="font-semibold text-sm text-center">{nfts}</div>
         <div className="text-sm text-neutral-500 text-center">ntfs</div>
       </Link>
-      <Link href={`/login${createRedirectQueryParam("/profile/" + username)}`} className="hover:text-primary">
+      <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`} className="hover:text-primary">
         <div className="font-semibold text-sm text-center">{followers}</div>
         <div className="text-sm text-neutral-500 text-center">followers</div>
       </Link>
-      <Link href={`/login${createRedirectQueryParam("/profile/" + username)}`} className="hover:text-primary">
+      <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`} className="hover:text-primary">
         <div className="font-semibold text-sm text-center">{follows}</div>
         <div className="text-sm text-neutral-500 text-center">follows</div>
       </Link>

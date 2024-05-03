@@ -12,6 +12,7 @@ export class NftPgRepository {
     contentUrl: z.string(),
     postedAt: z.string().transform(dateSql => {
       const pAt = DateTime.fromSQL(dateSql, {zone: "utc"})
+
       if (pAt.isValid) {
         return pAt
       }
@@ -21,11 +22,11 @@ export class NftPgRepository {
     showOnProfileId: z.number().int().positive(),
     commentCount: z
       .string()
-      .transform(str => parseInt(str))
+      .transform(str => parseInt(str, 10))
       .refine((num) => !isNaN(num) && Number.isInteger(num), { message: "commentCount must be an integer" }),
     mintCount: z
       .string()
-      .transform(str => parseInt(str))
+      .transform(str => parseInt(str, 10))
       .refine((num) => !isNaN(num) && Number.isInteger(num), { message: "mintCount must be an integer" }),
     type: z.enum(nftTypeArray)
   }))
@@ -65,7 +66,6 @@ export class NftPgRepository {
       ORDER BY ${NftTable.postedAt} DESC
       OFFSET ${offset} LIMIT ${limit}
     `
-
     const result = await this.pgClient.execute(query)
 
     return this.FindNftsPaginatedByProfileIdWithMintCountCommentCountSchema.parse(result)

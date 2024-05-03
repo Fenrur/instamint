@@ -1,6 +1,6 @@
 import {PgClient} from "@/db/db-client"
-import {NftTable, ProfileTable} from "@/db/schema"
-import {eq, ilike} from "drizzle-orm"
+import {ProfileTable} from "@/db/schema"
+import {ilike} from "drizzle-orm"
 import {DateTime} from "luxon"
 
 export class ProfilePgRepository {
@@ -39,6 +39,4 @@ export class ProfilePgRepository {
 
     return createdProfile[0]
   }
-
-
 }

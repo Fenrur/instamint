@@ -9,7 +9,7 @@ import {Checkbox} from "@/components/ui/checkbox"
 import {ScrollArea} from "@/components/ui/scroll-area"
 import {CheckedState} from "@radix-ui/react-checkbox"
 import {useRegisterUser} from "@/repository/hooks"
-import {DefaultLoadingDots, LoadingDots} from "@/components/ui/loading-dots"
+import {DefaultLoadingDots} from "@/components/ui/loading-dots"
 import {toast} from "sonner"
 import {RightPanel} from "../right-panel"
 

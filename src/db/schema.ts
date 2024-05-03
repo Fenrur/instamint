@@ -74,7 +74,7 @@ export const NftTable = pgTable("Nft", {
   type: NftTypeEnum("type").notNull(),
 })
 
-export const nftRelations = relations(NftTable, ({ one, many }) => ({
+export const nftRelations = relations(NftTable, ({ many }) => ({
   mints: many(MintTable),
 }))
 
@@ -89,7 +89,7 @@ export const mintRelations = relations(MintTable, ({ one }) => ({
     fields: [MintTable.nftId],
     references: [NftTable.id],
   }),
-}));
+}))
 
 export const HashtagNftTable = pgTable("HashtagNft", {
   hashtag: varchar("hashtag", {length: 255}).notNull().primaryKey(),

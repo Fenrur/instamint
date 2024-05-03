@@ -99,6 +99,7 @@ function ContentPage() {
       router.push(`/login/totp${createRedirectQueryParam(redirect)}`)
     } else {
       resetCredentials()
+
       if (redirect) {
         await signIn("credentials", {
           email,

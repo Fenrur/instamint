@@ -1,7 +1,6 @@
 import React from "react"
 import {LoggedLayout} from "@/components/layout/logged-layout"
 import {getServerSession} from "@/auth"
-import {cookies} from "next/headers"
 
 export const dynamic = "force-dynamic"
 

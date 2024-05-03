@@ -20,6 +20,7 @@ export async function getPaginedNftsByUsername(username: string, page: number) {
   }
 
   const errorCode = getErrorCodeFromProblem(await res.json())
+
   switch (errorCode) {
     case ErrorCode.INVALID_QUERY_PARAMETER:
       return "invalid_query_parameter"

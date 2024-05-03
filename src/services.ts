@@ -3,7 +3,6 @@ import { env } from "./env"
 import {DefaultUserService} from "@/user/service"
 import {DefaultEmailVerificationService} from "@/email-verification/service"
 import {DefaultProfileService} from "@/profile/service"
-import exp from "node:constants"
 import {DefaultNftService} from "@/nft/service"
 import {DefaultFollowService} from "@/follow/service"
 
