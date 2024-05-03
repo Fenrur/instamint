@@ -8,6 +8,8 @@ interface LoadingDotsProps {
   darkThemeColor: string
 }
 
+export const dynamic = "force-dynamic"
+
 export function DefaultLoadingDots({visible = true, size = 50}: {visible?: boolean, size?: number}) {
   return (
     <LoadingDots size={size} visible={visible} lightThemeColor={"fill-white"} darkThemeColor={"fill-black"}/>

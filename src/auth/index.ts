@@ -68,8 +68,10 @@ const {handlers, auth, signIn, signOut} = NextAuth({
     strategy: "jwt"
   },
   callbacks: {
-    async redirect() {
-      return "/"
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      else if (new URL(url).origin === baseUrl) return url
+      return baseUrl
     },
     async jwt({token, user}) {
       if (user) {

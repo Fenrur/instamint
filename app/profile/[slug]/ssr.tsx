@@ -7,6 +7,7 @@ import {DotsHorizontalIcon} from "@radix-ui/react-icons"
 import {cn} from "@/lib/utils"
 import {Pacifico} from "next/font/google"
 import Link from "next/link"
+import {createRedirectQueryParam} from "@/utils/url"
 
 export const dynamic = "force-dynamic"
 
@@ -76,15 +77,16 @@ export function Ssr({url, type, mints, comments}: NftContainerProps) {
 }
 
 interface ConnectionHeaderProps {
-  className?: string
+  className?: string,
+  username: string
 }
 
-export function ConnectionHeader({className}: ConnectionHeaderProps) {
+export function ConnectionHeader({className, username}: ConnectionHeaderProps) {
   return (
     <header className={cn("flex items-center justify-between h-14 px-5", className)}>
       <Link className={cn("font-black text-3xl", pacifico.className)} href="/">Instamint</Link>
       <div className="flex gap-1">
-        <Link href="/login">
+        <Link href={`/login${createRedirectQueryParam("/profile/" + username)}`}>
           <Button className="h-8 w-28">Login</Button>
         </Link>
         <Link href="/signup">
@@ -172,12 +174,12 @@ function MediumScreenProfileSection({
           <div className="flex items-center">
             <h2 className="text-lg font-medium w-mi">{username}</h2>
             <Button variant="secondary" className="h-8 w-32 ml-14 font-semibold" asChild>
-              <Link href="/login">
+              <Link href={`/login${createRedirectQueryParam("/profile/" + username)}`}>
                 Follow
               </Link>
             </Button>
             <Button variant="secondary" className="h-8 w-32 ml-2 font-semibold" asChild>
-              <Link href="/login">
+              <Link href={`/login${createRedirectQueryParam("/profile/" + username)}`}>
                 Contact
               </Link>
             </Button>
@@ -247,21 +249,22 @@ interface ProfileStatisticsSectionProps {
   className?: string,
   nfts: number,
   followers: number,
-  follows: number
+  follows: number,
+  username: string
 }
 
-export function ProfileStatisticsSection({className, nfts, followers, follows}: ProfileStatisticsSectionProps) {
+export function ProfileStatisticsSection({className, nfts, followers, follows, username}: ProfileStatisticsSectionProps) {
   return (
     <section className={cn("flex h-16 justify-around items-center", className)}>
-      <Link href="/login" className="hover:text-primary">
+      <Link href={`/login${createRedirectQueryParam("/profile/" + username)}`} className="hover:text-primary">
         <div className="font-semibold text-sm text-center">{nfts}</div>
         <div className="text-sm text-neutral-500 text-center">ntfs</div>
       </Link>
-      <Link href="/login" className="hover:text-primary">
+      <Link href={`/login${createRedirectQueryParam("/profile/" + username)}`} className="hover:text-primary">
         <div className="font-semibold text-sm text-center">{followers}</div>
         <div className="text-sm text-neutral-500 text-center">followers</div>
       </Link>
-      <Link href="/login" className="hover:text-primary">
+      <Link href={`/login${createRedirectQueryParam("/profile/" + username)}`} className="hover:text-primary">
         <div className="font-semibold text-sm text-center">{follows}</div>
         <div className="text-sm text-neutral-500 text-center">follows</div>
       </Link>

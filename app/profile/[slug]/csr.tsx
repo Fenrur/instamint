@@ -1,10 +1,6 @@
 "use client"
 
-import {Button} from "@/components/ui/button"
 import React, {useEffect, useMemo, useState} from "react"
-import {cn} from "@/lib/utils"
-import {useBottomScrollListener} from "react-bottom-scroll-listener"
-import {useFetPaginedNftsByUsername} from "@/repository/hooks"
 import {BackgroundLoadingDots, LoadingDots} from "@/components/ui/loading-dots"
 
 import {Ssr} from "./ssr"

@@ -2,7 +2,7 @@ import {Separator} from "@/components/ui/separator"
 import {getServerSession} from "@/auth"
 import {followService, nftService, profileService} from "@/services"
 import React from "react"
-import {A, NftsSection as NftsSectionCsr} from "./csr"
+import {NftsSection as NftsSectionCsr} from "./csr"
 import {
   ConnectionHeader,
   NftsSection as NftsSectionSsr,
@@ -48,7 +48,7 @@ export default async function ProfilePage(props: ProfilePageProps) {
         !session
           ? <div className="flex justify-center">
             <div className="grid max-w-[940px] w-full">
-              <ConnectionHeader className="max-w-[940px]"/>
+              <ConnectionHeader username={username} className="max-w-[940px]"/>
             </div>
           </div>
           : null
@@ -73,6 +73,7 @@ export default async function ProfilePage(props: ProfilePageProps) {
             followers={followersCount}
             follows={followsCount}
             nfts={nftsCount}
+            username={username}
           />
           <Separator/>
           <NftsSectionSsr nfts={nfts}/>
