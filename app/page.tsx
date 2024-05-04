@@ -21,6 +21,14 @@ export default function Home() {
     router.push("/signup")
   }
 
+  const routingToSearch = () => {
+    router.push("/search");
+  };
+
+  const routingToMe = () => {
+    router.push("/me");
+  };
+
   return (
     <main>
       <div className="flex flex-col gap-4">
@@ -37,6 +45,13 @@ export default function Home() {
         <Button className="w-24" onClick={() => signOut()}>
           Logout
         </Button>
+        <Button className="w-24" onClick={routingToSearch}>
+          Search
+        </Button>
+        <Button className="w-24" onClick={routingToMe}>
+          Me
+        </Button>
+
         <div>{status}</div>
         <div>{session?.uid}</div>
       </div>
