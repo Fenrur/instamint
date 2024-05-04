@@ -20,6 +20,7 @@ interface VerificationEmailProps {
   instamintImageUrl: string;
   verificationLink: string;
   contactEmail: string;
+  bodyMassage: string;
 }
 
 export const VerificationEmail = ({
@@ -27,6 +28,7 @@ export const VerificationEmail = ({
                                     instamintImageUrl,
                                     verificationLink,
                                     contactEmail,
+                                    bodyMassage
                                   }: VerificationEmailProps) => {
   const previewText = `Verify your mail on Instamint`
 
@@ -46,7 +48,7 @@ export const VerificationEmail = ({
               />
             </Section>
             <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
-              <strong>Verify your email on <Link href={baseUrl}
+              <strong>{bodyMassage} <Link href={baseUrl}
                                                  className="text-green-400 underline">Instamint</Link></strong>
             </Heading>
             <Section className="text-center mt-[32px] mb-[32px]">
@@ -54,7 +56,7 @@ export const VerificationEmail = ({
                 className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
                 href={verificationLink}
               >
-                Verify Email
+                  Verify
               </Button>
             </Section>
             <Text className="text-black text-[14px] leading-[24px]">
