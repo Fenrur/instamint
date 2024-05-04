@@ -25,6 +25,10 @@ export default function Home() {
     router.push("/search");
   };
 
+  const routingToMe = () => {
+    router.push("/me");
+  };
+
   return (
     <main>
       <div className="flex flex-col gap-4">
@@ -43,6 +47,9 @@ export default function Home() {
         </Button>
         <Button className="w-24" onClick={routingToSearch}>
           Search
+        </Button>
+        <Button className="w-24" onClick={routingToMe}>
+          Me
         </Button>
 
         <div>{status}</div>
