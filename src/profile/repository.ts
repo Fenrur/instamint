@@ -1,6 +1,6 @@
 import {PgClient} from "@/db/db-client"
 import {ProfileTable} from "@/db/schema"
-import {ilike} from "drizzle-orm"
+import {ilike, sql} from "drizzle-orm"
 import {DateTime} from "luxon"
 
 export class ProfilePgRepository {
@@ -51,5 +51,33 @@ export class ProfilePgRepository {
           profile: true,
         }
       })
+  }
+
+  public async findUsersOrTeaPaginatedByUsernameOrLocation(username:string, location:string, offset: number, limit: number) {
+    const sqlQuery = sql`
+              SELECT ${ProfileTable.id},
+                     ${ProfileTable.username},
+                     ${ProfileTable.createdAt},
+                     ${ProfileTable.bio},
+                     ${ProfileTable.link},
+                     ${ProfileTable.avatarUrl},
+                     ${ProfileTable.canBeSearched},
+                     ${ProfileTable.visibilityType},
+                     ${ProfileTable.location},
+                     ${ProfileTable.displayName}
+              FROM ${ProfileTable} WHERE 1=1 `;
+
+    // Add search criteria dynamically based on provided parameters
+    if (username) {
+      sqlQuery.append(sql` AND ${ProfileTable.username} ILIKE '%' || ${username} || '%'`);
+    }
+
+    if (location) {
+      sqlQuery.append(sql` AND ${ProfileTable.location} ILIKE '%' || ${location} || '%'`);
+    }
+
+    sqlQuery.append(sql` ORDER BY ${ProfileTable.createdAt} DESC OFFSET ${offset} LIMIT ${limit}`);
+
+    return this.pgClient.execute(sqlQuery);
   }
 }

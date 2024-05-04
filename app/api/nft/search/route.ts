@@ -8,7 +8,8 @@ import {
 import {nftService, profileService} from "@/services";
 import {auth, getSession} from "@/auth";
 import {DateTime} from "luxon";
-import {NftType} from "../../domain/types";
+import {NftType} from "../../../domain/types";
+// @ts-ignore
 import {NextAuthRequest} from "next-auth/lib";
 
 export const GET = auth(async (req: NextAuthRequest) => {
@@ -41,10 +42,8 @@ export const GET = auth(async (req: NextAuthRequest) => {
     }
   */
 
-
   const result = await nftService.findNftsPaginatedByUsernameOrHashtagOrDescriptionOrLocationOrPriceRange(query, location, minPrice, maxPrice, 1);
-  //const result = await nftService.findUsersOrTeaPaginatedByUsernameOrLocation(query, location, 1);
-  //const reponse = mapNftsToResponse(result)
+
   return NextResponse.json(result)
 })
 

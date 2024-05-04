@@ -1,7 +1,7 @@
 import {PgClient} from "@/db/db-client"
 import {env} from "@/env"
-import {UserTable} from "@/db/schema"
-import {eq} from "drizzle-orm"
+import {ProfileTable, UserTable} from "@/db/schema"
+import {eq, sql} from "drizzle-orm"
 import {symmetricEncrypt} from "@/utils/crypto"
 
 export class UserPgRepository {

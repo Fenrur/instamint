@@ -1,13 +1,12 @@
-export interface NFTData {
+export interface ProfileData {
   id: number;
-
 }
 
-export const NFTList = ({data}: { data: NFTData[] }) => {
+export const ProfileList = ({data}: { data: ProfileData[] }) => {
 
   return (
     <div>
-      <h1>NFT List</h1>
+      <h1>Profile List</h1>
       <ul>
         {data.map((item, index) => (
           <li key={index}>{item.id}</li>

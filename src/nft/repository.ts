@@ -1,5 +1,5 @@
 import {PgClient} from "@/db/db-client"
-import {CommentTable, HashtagNftTable, MintTable, NftTable, ProfileTable, TeaBagTable, UserTable} from "@/db/schema"
+import {CommentTable, HashtagNftTable, MintTable, NftTable, ProfileTable, UserTable} from "@/db/schema"
 import {count, eq, sql} from "drizzle-orm"
 import {z} from "zod"
 import {DateTime} from "luxon"
@@ -112,38 +112,6 @@ export class NftPgRepository {
       DESC OFFSET ${offset} LIMIT ${limit}
     `);
 
-    const result = await this.pgClient.execute(sqlQuery);
-
-    return result;
-  }
-
-  public async findUsersOrTeaPaginatedByUsernameOrLocation(username:string, location:string, offset: number, limit: number) {
-
-    const sqlQuery = sql`
-              SELECT ${ProfileTable.id},
-                     ${ProfileTable.username},
-                     ${ProfileTable.createdAt},
-                     ${ProfileTable.bio},
-                     ${ProfileTable.link},
-                     ${ProfileTable.avatarUrl},
-                     ${ProfileTable.canBeSearched},
-                     ${ProfileTable.visibilityType},
-                     ${ProfileTable.location},
-                     ${ProfileTable.displayName}
-              FROM ${ProfileTable} WHERE 1=1 `;
-
-    // Add search criteria dynamically based on provided parameters
-    if (username) {
-      sqlQuery.append(sql` WHERE ${ProfileTable.username} ILIKE '%' || ${username} || '%'`);
-    }
-
-    if (location) {
-      sqlQuery.append(sql` AND ${ProfileTable.location} ILIKE '%' || ${location} || '%'`);
-    }
-
-    sqlQuery.append(sql` ORDER BY ${ProfileTable.createdAt} DESC OFFSET ${offset} LIMIT ${limit}`);
-
-    const result = await this.pgClient.execute(sqlQuery);
-    return result;
+    return this.pgClient.execute(sqlQuery);
   }
 }
