@@ -82,6 +82,15 @@ export class UserPgRepository {
       .where(eq(UserTable.uid, uid))
   }
 
+  public async updatePassword(uid: string, hashedPassword: string) {
+    return this.pgClient
+      .update(UserTable)
+      .set({
+         hashedPassword
+      })
+      .where(eq(UserTable.uid, uid))
+  }
+
   public async create(email: string, hashedPassword: string, profileId: number) {
     const createdUser = await this.pgClient
       .insert(UserTable)

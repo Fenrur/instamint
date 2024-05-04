@@ -204,4 +204,15 @@ export class DefaultUserService {
 
     return "invalid"
   }
+
+  public async updateUserPasswordByEmail(email: string, password: string) {
+    const user = await this.findByEmail(email)
+    if (!user) {
+      return "uid_not_found"
+    }
+
+    const hashedPassword = await hashPassword(password, this.pepperPasswordSecret)
+    return await this.userPgRepository().updatePassword(user.uid, hashedPassword)
+  }
+
 }
