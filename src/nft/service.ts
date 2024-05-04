@@ -21,6 +21,13 @@ export class DefaultNftService {
     return this.nftPgRepository.findNftsPaginatedByProfileIdWithMintCountAndCommentCount(profileId, this.pageSize * (page - 1), this.pageSize)
   }
 
+  public findNftsPaginatedByUsernameOrHashtagOrDescriptionOrLocationOrPriceRange(query:string, location:string, minPrice:string, maxPrice:string, page: number) {
+    return this.nftPgRepository.findNftsPaginatedByUsernameOrHashtagOrDescriptionOrLocationOrPriceRange(query, location, minPrice, maxPrice, this.pageSize * (page - 1), this.pageSize);
+  }
+  public findUsersOrTeaPaginatedByUsernameOrLocation(username:string, location:string, page: number) {
+    return this.nftPgRepository.findUsersOrTeaPaginatedByUsernameOrLocation(username, location, this.pageSize * (page - 1), this.pageSize);
+  }
+
   public async findNftsPaginatedByUsernameWithMintCountAndCommentCount(username: string, page: number) {
     const profile = await this.profilePgRepository.findByUsername(username)
 
@@ -30,4 +37,5 @@ export class DefaultNftService {
 
     return this.nftPgRepository.findNftsPaginatedByProfileIdWithMintCountAndCommentCount(profile.id, this.pageSize * (page - 1), this.pageSize)
   }
+
 }
