@@ -326,3 +326,10 @@ minio_data
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+/.idea/.gitignore
+/.idea/cody_history.xml
+/.idea/instamint.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/package-lock.json
+/.idea/vcs.xml
