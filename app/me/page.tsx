@@ -4,10 +4,9 @@ import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import React, {useEffect, useState} from "react"
 
-import {RightPanel} from "../search/right-panel"
 import {Button} from "@/components/ui/button"
-import {profileService} from "@/services"
 import {useQuery} from "@tanstack/react-query"
+import {RightPanel} from "../signup/right-panel";
 
 type SignupPageError = "email_verification_limit_exceeded" | "email_exists";
 
@@ -61,7 +60,7 @@ export default function MePage(props: SignupPageProps) {
             setFormData({
                 username: profile.username,
                 bio: profile.bio,
-                uniqueLink: profile.link
+                link: profile.link
             })
         }
     }, [data])
@@ -80,25 +79,30 @@ export default function MePage(props: SignupPageProps) {
             reader.readAsDataURL(file)
         }
     }
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const formDataWithImage = {
-            ...formData,
-            profileImage
-        }
 
-        // Send formDataWithImage to your API endpoint using fetch or axios
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        // Assume profileImage is already in base64 format if it's included in formData
+        const formDataWithImage = new FormData();
+        formDataWithImage.append("username", formData.username);
+        formDataWithImage.append("bio", formData.bio);
+        formDataWithImage.append("link", formData.link);
+        formDataWithImage.append("avatar", btoa(profileImage as string));
+
         try {
             const response = await fetch("/api/profile", {
                 method: "POST",
-                body: JSON.stringify(formDataWithImage),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            console.log("Success:", response)
+                body: formDataWithImage // no need to stringify
+                // no Content-Type header needed, browser will set the correct multipart/form-data boundary
+            });
+            if (response.ok) {
+                console.log("Success:", await response.json());
+            } else {
+                throw new Error('Failed to update profile');
+            }
         } catch (error) {
-            console.error("Error:", error)
+            console.error("Error:", error);
         }
     }
 
