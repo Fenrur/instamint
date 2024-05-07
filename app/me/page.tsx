@@ -40,28 +40,57 @@ async function fetchProfileData(): Promise<any> {
 interface ProfileData {
     username: string;
     bio: string;
-    profileImage: string;
+    avatarUrl: string;
     link: string;
 }
 
 export default function MePage(props: SignupPageProps) {
     const error = parseError(props)
     const [profileImage, setProfileImage] = useState<string | null>(null)
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<ProfileData>({
         username: "",
         bio: "",
-        link: ""
+        link: "",
+        avatarUrl: ""
     })
     const {data, isLoading, isError} = useQuery(["profileData"], fetchProfileData)
 
     useEffect(() => {
         if (data && data.profile) {
-            const profile = data.profile as ProfileData
-            setFormData({
+            const profile = data.profile;
+            const updatedFormData = {
                 username: profile.username,
                 bio: profile.bio,
-                link: profile.link
-            })
+                link: profile.link,
+                avatarUrl: profile.avatarUrl || "https://api.dicebear.com/8.x/fun-emoji/svg?seed=Willow"
+            };
+
+            if (profile.avatarUrl) {
+                // Check if avatarUrl exists
+                fetch(profile.avatarUrl, {method: 'HEAD'})
+                    .then(response => {
+                        if (response.ok) {
+                            setFormData(updatedFormData);
+                        } else {
+                            // If avatarUrl doesn't exist, set default
+                            setFormData({
+                                ...updatedFormData,
+                                avatarUrl: "https://api.dicebear.com/8.x/fun-emoji/svg?seed=Willow"
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error checking avatar URL:", error);
+                        // If there's an error, set default
+                        setFormData({
+                            ...updatedFormData,
+                            avatarUrl: "https://api.dicebear.com/8.x/fun-emoji/svg?seed=Willow"
+                        });
+                    });
+            } else {
+                // If avatarUrl doesn't exist, set default
+                setFormData(updatedFormData);
+            }
         }
     }, [data])
 
@@ -88,7 +117,7 @@ export default function MePage(props: SignupPageProps) {
         formDataWithImage.append("username", formData.username);
         formDataWithImage.append("bio", formData.bio);
         formDataWithImage.append("link", formData.link);
-        formDataWithImage.append("avatar", btoa(profileImage as string));
+        formDataWithImage.append("avatar", profileImage as string);
 
         try {
             const response = await fetch("/api/profile", {
@@ -105,27 +134,20 @@ export default function MePage(props: SignupPageProps) {
             console.error("Error:", error);
         }
     }
-
     return (
         <RightPanel title="Profile" text="You can edit your profile details" width="w-[350px]">
             <form onSubmit={handleSubmit}>
                 <div className="grid gap-4">
                     <div className="flex justify-center items-center flex-col">
-                        {profileImage && (
-                            <div className="rounded-full overflow-hidden border-2 border-gray-300 w-36 h-36">
-                                <img
-                                    alt="profile image"
-                                    src={profileImage}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                        )}
-                        {!profileImage && (
-                            <div
-                                className="rounded-full overflow-hidden border-2 border-gray-300 w-36 h-36 flex justify-center items-center">
-                                <span className="text-gray-400">No image selected</span>
-                            </div>
-                        )}
+
+                        <div className="rounded-full overflow-hidden border-2 border-gray-300 w-36 h-36">
+                            <img
+                                src={profileImage ?? formData.avatarUrl}
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+
+
                         <input
                             type="file"
                             accept="image/*"
