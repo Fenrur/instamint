@@ -1,32 +1,28 @@
 import {NextRequest, NextResponse} from "next/server";
-import {emailVerificationService, userService} from "@/services";
-import {isContentType} from "@/http/content-type";
-import {invalidContentTypeProblem, problem} from "@/http/problem";
-import {RegisterUserRequest} from "@/http/rest/types";
+import {passwordResetService, userService} from "@/services";
 
 export const dynamic = "force-dynamic";
-
 
 export const POST = async (req: NextRequest) => {
     const url = req.nextUrl.clone();
 
-    const verificationId = url.searchParams.get("vid");
-    if (!verificationId) {
+    const resetId = url.searchParams.get("resetId");
+    if (!resetId) {
         url.pathname = "/verification-email/invalid/url";
         return NextResponse.redirect(url);
     }
 
-    const emailVerification = await emailVerificationService.findByVerificationId(verificationId)
-    if (!emailVerification) {
+    const passwordReset = await passwordResetService.findByResetId(resetId)
+    if (!passwordReset) {
         url.pathname = "/verification-email/invalid/url"
         return NextResponse.redirect(url)
     }
 
     const body = await req.formData();
     const pass  = body.get('password') as string
-    await userService.updateUserPasswordByEmail(emailVerification.email, pass)
+    await userService.updateUserById(passwordReset.userId+'', pass)
 
     url.pathname = "/login"
-    url.searchParams.set("email", emailVerification.email)
+    //url.searchParams.set("email", passwordReset.email)
     return NextResponse.redirect(url)
 }

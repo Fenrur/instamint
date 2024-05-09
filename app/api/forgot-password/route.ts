@@ -8,10 +8,11 @@ import {render} from "@react-email/render"
 import VerificationEmail from "@/mail/templates/verification-email"
 import {env} from "@/env"
 import * as u from "node:url"
-import {emailVerificationService, userService} from "@/services"
+import {emailVerificationService, passwordResetService, userService} from "@/services"
+import ResetPassword from "@/mail/templates/reset-password";
 
 async function createVerificationAndSendEmail(formData: SignupCredentials, createdAt: DateTime<true>) {
-  const verificationId = await emailVerificationService.create(formData.email, createdAt)
+  const verificationId = await passwordResetService.create(formData.email, createdAt)
 
   const verificationLink = u.format({
     host: env.BASE_URL,
@@ -19,12 +20,11 @@ async function createVerificationAndSendEmail(formData: SignupCredentials, creat
     query: {vid: verificationId},
   })
 
-  const emailHtml = render(VerificationEmail({
+  const emailHtml = render(ResetPassword({
     baseUrl: env.BASE_URL,
     contactEmail: env.CONTACT_EMAIL,
     instamintImageUrl: `${env.BASE_URL}/instamint.svg`,
     verificationLink,
-    bodyMassage: "Reset your password Instamint",
   }))
 
   await transporter.sendMail({
@@ -58,11 +58,6 @@ export async function POST(req: NextRequest) {
     url.searchParams.set("error", "email_not_exists");
     return NextResponse.redirect(url);
   }
-
-  const emailVerifications = await emailVerificationService.findUnverifiedAndBeforeExpirationByEmail(
-    parsedFormData.email,
-    createdAt
-  )
 
   url.pathname = "/verification-email/sent"
   url.searchParams.set("email", parsedFormData.email)

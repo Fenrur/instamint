@@ -215,4 +215,14 @@ export class DefaultUserService {
     return await this.userPgRepository().updatePassword(user.uid, hashedPassword)
   }
 
+  public async updateUserById(userId: string, password: string) {
+    const user = await this.findByUid(userId)
+    if (!user) {
+      return "uid_not_found"
+    }
+
+    const hashedPassword = await hashPassword(password, this.pepperPasswordSecret)
+    return await this.userPgRepository().updatePassword(user.uid, hashedPassword)
+  }
+
 }

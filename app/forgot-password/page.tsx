@@ -19,7 +19,7 @@ interface forgotPasswordPageProps {
   }
 }
 
-function parseError(props: forgotPasswordPageProps): LoginPageError | null {
+function parseError(props: forgotPasswordPageProps): string | null {
   if (props.searchParams.error) {
     const error = props.searchParams.error
 

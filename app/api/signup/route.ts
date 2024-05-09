@@ -22,7 +22,6 @@ async function createVerificationAndSendEmail(formData: SignupCredentials, creat
     contactEmail: env.CONTACT_EMAIL,
     instamintImageUrl: `${env.BASE_URL}/instamint.svg`,
     verificationLink,
-    bodyMassage: "Verify your email Instamint",
   }))
 
   await transporter.sendMail({
