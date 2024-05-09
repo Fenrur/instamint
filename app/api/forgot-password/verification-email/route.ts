@@ -9,19 +9,19 @@ export async function GET(req: NextRequest) {
   const resetId = url.searchParams.get("resetId");
 
   if (!resetId) {
-    url.pathname = "/verification-email/invalid/url";
+    url.pathname = "/verification-email-reset-password/invalid/url";
     return NextResponse.redirect(url);
   }
 
   const passwordReset = await passwordResetService.findByResetId(resetId)
-
   if (!passwordReset) {
-    url.pathname = "/verification-email/invalid/url"
+    url.pathname = "/verification-email-reset-password/invalid/url"
     return NextResponse.redirect(url)
   }
 
-  if (passwordReset.active) {
-    url.pathname = "/verification-email/invalid/deactivated"
+
+  if (!passwordReset.active) {
+    url.pathname = "/verification-email-reset-password/invalid/deactivated"
 
     return NextResponse.redirect(url)
   }
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
   const now = DateTime.now();
 
   if (now > expireAt) {
-    url.pathname = "/verification-email/invalid/expired"
+    url.pathname = "/verification-email-reset-password/invalid/expired"
     return NextResponse.redirect(url)
   }
 

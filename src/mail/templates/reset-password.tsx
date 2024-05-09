@@ -54,7 +54,7 @@ export const ResetPassword = ({
                 className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
                 href={verificationLink}
               >
-                  Verify
+                  Reset
               </Button>
             </Section>
             <Text className="text-black text-[14px] leading-[24px]">

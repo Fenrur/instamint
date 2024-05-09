@@ -6,6 +6,7 @@ import {EmailVerificationPgRepository} from "@/email-verification/repository"
 import {PgClient} from "@/db/db-client"
 import {symmetricDecrypt} from "@/utils/crypto"
 import {authenticator} from "@/two-factor/otp"
+import {passwordResetService} from "@/services";
 
 type CreateUserResult =
   "email_verification_not_found"
@@ -36,6 +37,9 @@ export class DefaultUserService {
 
   public findByUid(uid: string) {
     return this.userPgRepository().findByUid(uid)
+  }
+  public findById(uid: string) {
+    return this.userPgRepository().findById(uid)
   }
 
   public existUsername(username: string) {
@@ -216,13 +220,13 @@ export class DefaultUserService {
   }
 
   public async updateUserById(userId: string, password: string) {
-    const user = await this.findByUid(userId)
+    const user = await this.findById(userId)
     if (!user) {
       return "uid_not_found"
     }
 
     const hashedPassword = await hashPassword(password, this.pepperPasswordSecret)
-    return await this.userPgRepository().updatePassword(user.uid, hashedPassword)
+    await this.userPgRepository().updatePassword(user.uid, hashedPassword)
   }
 
 }
