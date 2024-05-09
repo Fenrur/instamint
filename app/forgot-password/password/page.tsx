@@ -56,11 +56,11 @@ function ContentPage() {
   }
 
   useEffect(() => {
-    const vid = searchParams.get("vid")
+    const resetId = searchParams.get("resetId")
 
     if (!init) {
-      if (vid) {
-        setVid(vid);
+      if (resetId) {
+        setVid(resetId);
         if (signupPassword) {
           const pRef = passwordRef.current;
 
@@ -85,7 +85,7 @@ function ContentPage() {
 
 
   return (
-      <form action={`/api/forgot-password/reset?vid=${currentVid}`} method='POST'>
+      <form action={`/api/forgot-password/reset?resetId=${currentVid}`} method='POST'>
         <div className="grid gap-4">
           <Label htmlFor="password">Password</Label>
           <Input
