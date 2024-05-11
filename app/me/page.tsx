@@ -7,6 +7,7 @@ import React, {useEffect, useState} from "react"
 import {Button} from "@/components/ui/button"
 import {useQuery} from "@tanstack/react-query"
 import {RightPanel} from "../signup/right-panel";
+import {toast} from "sonner";
 
 type SignupPageError = "email_verification_limit_exceeded" | "email_exists";
 
@@ -126,8 +127,10 @@ export default function MePage(props: SignupPageProps) {
                 // no Content-Type header needed, browser will set the correct multipart/form-data boundary
             });
             if (response.ok) {
+                toast.success("Successfully updated", {description: "Your profile has been updated."});
                 console.log("Success:", await response.json());
             } else {
+                toast.error("Error", {description: "Failed to update profile"});
                 throw new Error('Failed to update profile');
             }
         } catch (error) {
@@ -192,11 +195,8 @@ export default function MePage(props: SignupPageProps) {
                     </div>
 
                     <div className="justify-around" style={{display: "flex", justifyContent: "space-around"}}>
-                        <Button type="submit" className="w-1/3">
+                        <Button type="submit" className="w-1/2">
                             Validate
-                        </Button>
-                        <Button className="w-1/3">
-                            Cancel
                         </Button>
                     </div>
                 </div>
