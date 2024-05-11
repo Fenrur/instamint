@@ -1,6 +1,6 @@
 import {PgClient} from "@/db/db-client"
 import {FollowTable, ProfileTable, TeaBagTable} from "@/db/schema"
-import {sql} from "drizzle-orm";
+import {sql} from "drizzle-orm"
 
 export class TeaBagPgRepository {
     private readonly pgClient: PgClient
@@ -31,7 +31,18 @@ export class TeaBagPgRepository {
                                 GROUP BY "followerProfileId") followers
                                ON ${ProfileTable.id} = followers."followerProfileId"`;
 
-        return this.pgClient.execute(sqlQuery);
+        return this.pgClient.execute(sqlQuery)
+    }
+
+    public async getByProfileId(profileId: number) {
+        const sqlQuery = sql`
+            SELECT ${ProfileTable.id},
+                   ${ProfileTable.username},
+                   ${ProfileTable.link},
+                   ${ProfileTable.bio},
+            FROM ${ProfileTable} `
+
+        return this.pgClient.execute(sqlQuery)
     }
 
     public async create(profileId: number) {
@@ -40,8 +51,8 @@ export class TeaBagPgRepository {
             .values({
                 profileId,
             })
-            .returning({id: TeaBagTable.id});
-        return createdTeaBag[0];
+            .returning({id: TeaBagTable.id})
+        return createdTeaBag[0]
     }
 
 

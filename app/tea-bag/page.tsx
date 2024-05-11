@@ -2,7 +2,7 @@
 
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
-import React, {useEffect, useState} from "react"
+import React, {useState} from "react"
 
 import {Button} from "@/components/ui/button"
 import {useQuery} from "@tanstack/react-query"
@@ -14,11 +14,12 @@ import {
     DialogPortal,
     DialogTitle,
     DialogTrigger
-} from "@/components/ui/dialog";
-import {Table, TableBody, TableCell, TableHeader, TableRow} from "@/components/ui/table";
-import {DateTime} from "luxon";
-import {toast} from "sonner";
-import MultiSelect from "@/components/ui/multi-select";
+} from "@/components/ui/dialog"
+import {Table, TableBody, TableCell, TableHeader, TableRow} from "@/components/ui/table"
+import {DateTime} from "luxon"
+import {toast} from "sonner"
+import MultiSelect from "@/components/ui/multi-select"
+import {EditIcon, FlagTriangleRight, Trash} from "lucide-react"
 
 type SignupPageError = "email_verification_limit_exceeded" | "email_exists";
 
@@ -39,19 +40,22 @@ function parseError(props: SignupPageProps): SignupPageError | null {
     return null
 }
 
-async function fetchProfileData(): Promise<any> {
-    const response = await fetch("/api/profile")
+
+async function fetchTeaBags(): Promise<TeaBag[]> {
+    const response = await fetch("/api/tea-bag")
+
     if (response.ok) {
-        return response.json()
+        return await response.json() as Promise<TeaBag[]>
     }
 
     throw new Error("Network response was not ok")
 }
 
-async function fetchTeaBags(): Promise<TeaBag[]> {
-    const response = await fetch("/api/tea-bag")
+async function fetchTeaBag(id: number): Promise<TeaBag> {
+    const response = await fetch(`/api/tea-bag/${id}`)
+
     if (response.ok) {
-        return response.json()
+        return await response.json() as Promise<TeaBag>
     }
 
     throw new Error("Network response was not ok")
@@ -59,8 +63,9 @@ async function fetchTeaBags(): Promise<TeaBag[]> {
 
 async function fetchUsers(): Promise<ValueLabel[]> {
     const response = await fetch("/api/user")
+
     if (response.ok) {
-        return response.json()
+        return await response.json() as Promise<ValueLabel[]>
     }
 
     throw new Error("Network response was not ok")
@@ -68,8 +73,9 @@ async function fetchUsers(): Promise<ValueLabel[]> {
 
 async function fetchNFTs(): Promise<ValueLabel[]> {
     const response = await fetch("/api/tea-bag/nft")
+
     if (response.ok) {
-        return response.json()
+        return await response.json() as Promise<ValueLabel[]>
     }
 
     throw new Error("Network response was not ok")
@@ -82,11 +88,12 @@ interface ValueLabel {
 
 export interface TeaBag {
     id?: number;
-    username: string;
-    bio: string;
     cooks_count?: number;
     followed_count?: number;
     followers_count?: number;
+
+    username: string;
+    bio: string;
     link: string;
     nftIds: number[];
     whitelistUserIds: number[];
@@ -96,7 +103,6 @@ export interface TeaBag {
 
 export default function MePage(props: SignupPageProps) {
     const error = parseError(props)
-    const [profileImage, setProfileImage] = useState<string | null>(null)
     const [formData, setFormData] = useState<TeaBag>({
         username: "",
         bio: "",
@@ -104,27 +110,24 @@ export default function MePage(props: SignupPageProps) {
         nftIds: [],
         whitelistUserIds: [],
         whitelistStart: DateTime.now(),
-        whitelistEnd: DateTime.now()
+        whitelistEnd: DateTime.now(),
     })
-    const {
-        data: profileData,
-        isSuccess: isProfileDataLoaded
-    } = useQuery(["profileData"], fetchProfileData, {enabled: false})
+    const [selectedId, setSelectedId] = useState<number>()
     const {data: teaBags, isSuccess: isTeaBagsLoaded} = useQuery(["teaBags"], fetchTeaBags)
+    const {data: teaBag, isSuccess: isTeaBagLoaded} = useQuery(["teaBag", selectedId],
+        () => fetchTeaBag(selectedId!),
+        {
+            enabled: selectedId !== undefined && selectedId !== null,
+            onSuccess: (data) => {
+                setFormData(data)
+                setIsOpen(true)
+            }
+        })
     const {data: users, isSuccess: isUsersLoaded} = useQuery(["users"], fetchUsers)
     const {data: NFTs, isSuccess: isNFTsLoaded} = useQuery(["NFTs"], fetchNFTs)
-    const [isOpen, setIsOpen] = useState(false);
-
-    useEffect(() => {
-        if (profileData && profileData.profile) {
-            const profile = profileData.profile;
-            setFormData(profile);
-        }
-    }, [profileData])
-
-
+    const [isOpen, setIsOpen] = useState(false)
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+        e.preventDefault()
         const response = await fetch("/api/tea-bag", {
             method: "POST",
             headers: {
@@ -134,22 +137,57 @@ export default function MePage(props: SignupPageProps) {
         })
 
         if (response.ok) {
-            toast.success("Successfully created", {description: "Your Tea Bag has been created."});
-            setIsOpen(false);
-            console.log("Success:", await response.json());
+            toast.success("Successfully created", {description: "Your Tea Bag has been created."})
+            setIsOpen(false)
         } else {
-            toast.error("Error", {description: "Failed to create Tea Bag"});
-            throw new Error('Failed to create Tea Bag');
+            toast.error("Error", {description: "Failed to create Tea Bag"})
+            throw new Error("Failed to create Tea Bag")
         }
-
     }
-
     const handleFormOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+        const {name, value} = e.target
         setFormData(prevState => ({
             ...prevState,
             [name]: value
         }))
+    }
+
+    async function handleOnClickDelete(id: number) {
+        try {
+            const response = await fetch(`/api/tea-bag/delete?id=${id}`, {
+                method: "POST",
+            })
+
+            if (response.ok) {
+                toast.success("Successfully deleted", {description: "The Tea Bag has been deleted."})
+            } else {
+                toast.error("Error", {description: "Failed to delete Tea Bag"})
+                throw new Error("Failed to delete Tea Bag")
+            }
+        } catch (error) {
+            console.error("Error:", error)
+        }
+    }
+
+     async function handleOnClickReport(id: number) {
+        try {
+            const response = await fetch(`/api/tea-bag/report?id=${id}`, {
+                method: "POST",
+            })
+
+            if (response.ok) {
+                toast.success("Successfully Reported", {description: "The Tea Bag has been Reported."})
+            } else {
+                toast.error("Error", {description: "Failed to report Tea Bag"})
+                throw new Error("Failed to report Tea Bag")
+            }
+        } catch (error) {
+            console.error("Error:", error)
+        }
+    }
+
+    function handleOnClickEdite(id: number) {
+        setSelectedId(id)
     }
 
     return (
@@ -204,7 +242,7 @@ export default function MePage(props: SignupPageProps) {
                                 {isNFTsLoaded && <MultiSelect name={"nftIds"} onValueChange={(values) => {
                                     setFormData(prevState => ({
                                         ...prevState,
-                                        nftIds: values.map(item => +item)
+                                        nftIds: values.map(item => Number(item))
                                     }))
                                 }}
                                                               options={NFTs.map(item => ({
@@ -221,7 +259,7 @@ export default function MePage(props: SignupPageProps) {
                                 {isUsersLoaded && <MultiSelect name={"whitelistUserIds"} onValueChange={(values) => {
                                     setFormData(prevState => ({
                                         ...prevState,
-                                        whitelistUserIds: values.map(item => +item)
+                                        whitelistUserIds: values.map(item => Number(item))
                                     }))
                                 }}
                                                                options={users.map(item => ({
@@ -288,8 +326,19 @@ export default function MePage(props: SignupPageProps) {
                                 <TableCell>{item.followers_count}</TableCell>
                                 <TableCell>{item.cooks_count}</TableCell>
                                 <TableCell>
-                                    <Button>Delete</Button>
-                                    <Button>Report</Button>
+
+                                    <EditIcon className={"hover:cursor-pointer"} color="green" size={20} onClick={() => {
+                                        handleOnClickEdite(item.id!)
+                                    }}/>
+
+                                    <FlagTriangleRight className={"hover:cursor-pointer"} color="blue" size={20} onClick={() => {
+                                        void handleOnClickReport(item.id!)
+                                    }}/>
+
+                                    <Trash className={"hover:cursor-pointer"} color="red" size={20} onClick={() => {
+                                        void handleOnClickDelete(item.id!)
+                                    }}/>
+
                                 </TableCell>
                             </TableRow>
                         ))}

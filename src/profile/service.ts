@@ -2,7 +2,6 @@ import {PgClient} from "@/db/db-client"
 import {S3Client} from "@aws-sdk/client-s3"
 import {ProfilePgRepository} from "@/profile/repository"
 import {AvatarProfileS3Repository} from "@/profile/avatar/repository"
-import {getServerSession} from "@/auth"
 
 export class DefaultProfileService {
   private readonly profilePgRepository: ProfilePgRepository
@@ -25,6 +24,10 @@ export class DefaultProfileService {
 
   public findByUserUid(uid: string) {
     return this.profilePgRepository.findByUserUid(uid)
+  }
+
+  public findByProfileId(profileId: number) {
+    return this.profilePgRepository.findByProfileId(profileId)
   }
 
   public findUsersOrTeaPaginatedByUsernameOrLocation(username:string, location:string, page: number) {

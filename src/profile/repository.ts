@@ -17,6 +17,13 @@ export class ProfilePgRepository {
             })
     }
 
+    public findByProfileId(profileId: number) {
+        return this.pgClient.query.ProfileTable
+            .findFirst({
+                where: (profile, {eq}) => eq(profile.id, profileId)
+            })
+    }
+
     public updateAvatarUrl(username: string, avatarUrl: string) {
         return this.pgClient
             .update(ProfileTable)
