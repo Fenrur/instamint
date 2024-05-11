@@ -139,6 +139,7 @@ export default function MePage(props: SignupPageProps) {
     }
     return (
         <RightPanel title="Profile" text="You can edit your profile details" width="w-[350px]">
+
             <form onSubmit={handleSubmit}>
                 <div className="grid gap-4">
                     <div className="flex justify-center items-center flex-col">
