@@ -1,7 +1,6 @@
 "use client"
 import React from "react"
 import {LoggedLayout} from "@/components/layout/logged-layout"
-import {SessionProvider} from "next-auth/react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 export const dynamic = "force-dynamic"
@@ -14,7 +13,7 @@ interface SearchPageProps {
   }
 }
 
-export default async function LayoutSearchPage(props: SearchPageProps) {
+export default function LayoutSearchPage(props: SearchPageProps) {
   const username = props.params.slug;
   const queryClient = new QueryClient();
 

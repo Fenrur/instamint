@@ -29,11 +29,9 @@ function parseError(props: SignupPageProps): SignupPageError | null {
 
 async function fetchProfileData(): Promise<any> {
     const response = await fetch("/api/profile")
-
     if (response.ok) {
         return response.json()
     }
-
     throw new Error("Network response was not ok")
 }
 
