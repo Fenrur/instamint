@@ -62,6 +62,7 @@ function ContentPage() {
         if (!init) {
             if (resetId) {
                 setVid(resetId)
+
                 if (signupPassword) {
                     const pRef = passwordRef.current
 

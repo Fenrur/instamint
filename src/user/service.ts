@@ -211,16 +211,20 @@ export class DefaultUserService {
 
     public async updateUserPasswordByEmail(email: string, password: string) {
         const user = await this.findByEmail(email)
+
         if (!user) {
             return "uid_not_found"
         }
 
         const hashedPassword = await hashPassword(password, this.pepperPasswordSecret)
-        return await this.userPgRepository().updatePassword(user.uid, hashedPassword)
+
+        
+return await this.userPgRepository().updatePassword(user.uid, hashedPassword)
     }
 
     public async updateUserById(userId: string, password: string) {
         const user = await this.findById(userId)
+
         if (!user) {
             return "uid_not_found"
         }
@@ -228,5 +232,4 @@ export class DefaultUserService {
         const hashedPassword = await hashPassword(password, this.pepperPasswordSecret)
         await this.userPgRepository().updatePassword(user.uid, hashedPassword)
     }
-
 }
