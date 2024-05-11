@@ -8,17 +8,15 @@ import {render} from "@react-email/render"
 import {env} from "@/env"
 import * as u from "node:url"
 import {passwordResetService, userService} from "@/services"
-import ResetPassword from "@/mail/templates/reset-password";
+import ResetPassword from "@/mail/templates/reset-password"
 
 async function createVerificationAndSendEmail(formData: SignupCredentials, createdAt: DateTime<true>, userId: number) {
     const resetId = await passwordResetService.create(userId, createdAt)
-
     const verificationLink = u.format({
         host: env.BASE_URL,
-        pathname: "/api/forgot-password/verification-email",
-        query: {resetId: resetId},
+        pathname: "/api/forgot-password/reset-password-email",
+        query: {resetId},
     })
-
     const emailHtml = render(ResetPassword({
         baseUrl: env.BASE_URL,
         contactEmail: env.CONTACT_EMAIL,
@@ -38,27 +36,31 @@ export async function POST(req: NextRequest) {
         return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/x-www-form-urlencoded"})
     }
 
-    const createdAt = DateTime.now();
-    const formData = await req.formData();
-    let parsedFormData = null;
-    const url = req.nextUrl.clone();
+    const createdAt = DateTime.now()
+    const formData = await req.formData()
+    let parsedFormData = null
+    const url = req.nextUrl.clone()
 
     try {
-        parsedFormData = SignupCredentials.parse(formData);
+        parsedFormData = SignupCredentials.parse(formData)
     } catch (e: any) {
-        url.pathname = "/signup";
-        return NextResponse.redirect(url);
+        url.pathname = "/signup"
+
+
+        return NextResponse.redirect(url)
     }
 
-    const user = await userService.findByEmail(parsedFormData.email);
+    const user = await userService.findByEmail(parsedFormData.email)
 
     if (!user) {
-        url.pathname = "/forgot-password";
-        url.searchParams.set("error", "email_not_exists");
-        return NextResponse.redirect(url);
+        url.pathname = "/forgot-password"
+        url.searchParams.set("error", "email_not_exists")
+
+
+        return NextResponse.redirect(url)
     }
 
-    url.pathname = "/verification-email-reset-password/sent"
+    url.pathname = "/reset-password/sent"
     url.searchParams.set("email", parsedFormData.email)
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises

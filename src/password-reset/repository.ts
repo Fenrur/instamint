@@ -1,8 +1,7 @@
 import {PgClient} from "@/db/db-client"
 import {DateTime, Duration} from "luxon"
 import {eq} from "drizzle-orm"
-import {PasswordResetTable} from "@/db/schema";
-import {undefined} from "zod";
+import {PasswordResetTable} from "@/db/schema"
 
 export class PasswordResetPgRepository {
   private readonly pgClient: PgClient
@@ -23,7 +22,7 @@ export class PasswordResetPgRepository {
     const createAtSql = createdAt.toSQL({includeZone: false, includeOffset: false})
     const expireAtSql = expireAt.toSQL({includeZone: false, includeOffset: false})
     const result = await this.pgClient.insert(PasswordResetTable).values({
-      userId: userId,
+      userId,
       createdAt: createAtSql,
       expireAt: expireAtSql,
       active: true

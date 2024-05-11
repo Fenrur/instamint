@@ -1,6 +1,6 @@
 import {PgClient} from "@/db/db-client"
 import {DateTime} from "luxon"
-import {PasswordResetPgRepository} from "@/password-reset/repository";
+import {PasswordResetPgRepository} from "@/password-reset/repository"
 
 export class DefaultPasswordResetService {
     private readonly passwordResetPgRepository: PasswordResetPgRepository
@@ -20,5 +20,4 @@ export class DefaultPasswordResetService {
     public deactivateResetById(id: number) {
         return this.passwordResetPgRepository.deactivateResetById(id)
     }
-
 }

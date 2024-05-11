@@ -1,16 +1,14 @@
-import Link from "next/link";
+import Link from "next/link"
 
-import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
-import {Separator} from "@/components/ui/separator";
-import {cn} from "@/lib/utils";
-import {useMemo} from "react";
-import {createRedirectQueryParam} from "@/utils/url";
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
+import {Separator} from "@/components/ui/separator"
+import {cn} from "@/lib/utils"
+import {useMemo} from "react"
+import {createRedirectQueryParam} from "@/utils/url"
 
-export const dynamic = "force-dynamic";
-
-type LoginPageError = "email_not_found";
+export const dynamic = "force-dynamic"
 
 interface forgotPasswordPageProps {
   searchParams: {
@@ -24,7 +22,7 @@ function parseError(props: forgotPasswordPageProps): string | null {
     const error = props.searchParams.error
 
     if (error === "email_not_exists") {
-      return "email_not_exists";
+      return "email_not_exists"
     }
   }
 

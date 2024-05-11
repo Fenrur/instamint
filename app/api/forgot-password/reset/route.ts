@@ -1,31 +1,38 @@
-import {NextRequest, NextResponse} from "next/server";
-import {passwordResetService, userService} from "@/services";
+import {NextRequest, NextResponse} from "next/server"
+import {passwordResetService, userService} from "@/services"
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"
 
 export const POST = async (req: NextRequest) => {
-    const url = req.nextUrl.clone();
-    const resetId = url.searchParams.get("resetId");
+    const url = req.nextUrl.clone()
+    const resetId = url.searchParams.get("resetId")
 
     if (!resetId) {
-        url.pathname = "/verification-email-reset-password/invalid/url";
-        return NextResponse.redirect(url);
+        url.pathname = "/reset-password/invalid/url"
+
+        
+return NextResponse.redirect(url)
     }
 
     const passwordReset = await passwordResetService.findByResetId(resetId)
+
     if (!passwordReset) {
-        url.pathname = "/verification-email-reset-password/invalid/url"
-        return NextResponse.redirect(url)
+        url.pathname = "/reset-password/invalid/url"
+
+        
+return NextResponse.redirect(url)
     }
 
-    const body = await req.formData();
-    const pass  = body.get('password') as string
-    await userService.updateUserById(passwordReset.userId+'', pass)
+    const body = await req.formData()
+    const pass = body.get("password") as string
+    await userService.updateUserById(`${passwordReset.userId  }`, pass)
 
     await passwordResetService.deactivateResetById(passwordReset.id)
 
-    //TODO: set active column to false
+    // eslint-disable-next-line no-warning-comments
+    //Todo: set active column to false
     url.pathname = "/login"
-    //url.searchParams.set("email", passwordReset.email)
+
+    //Url.searchParams.set("email", passwordReset.email)
     return NextResponse.redirect(url)
 }
