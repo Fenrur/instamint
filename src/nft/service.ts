@@ -30,4 +30,8 @@ export class DefaultNftService {
 
     return this.nftPgRepository.findNftsPaginatedByProfileIdWithMintCountAndCommentCount(profile.id, this.pageSize * (page - 1), this.pageSize)
   }
+
+  public async getAll(){
+      return this.nftPgRepository.getAll()
+  }
 }

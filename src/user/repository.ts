@@ -18,6 +18,20 @@ export class UserPgRepository {
       })
   }
 
+    public async getAll() {
+        return this.pgClient.query.UserTable
+            .findMany({
+                columns: {
+                    id: true,
+                },
+                with: {
+                    profile: true,
+                }
+            })
+    }
+
+
+
   public findByUid(uid: string) {
     return this.pgClient.query.UserTable
       .findFirst({

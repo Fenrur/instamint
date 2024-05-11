@@ -43,6 +43,10 @@ export class NftPgRepository {
 
     return result[0].count
   }
+  public async getAll() {
+    const sqlQuery = sql` SELECT id AS _value, title  AS _label FROM ${NftTable} `;
+    return this.pgClient.execute(sqlQuery);
+  }
 
   public async findNftsPaginatedByProfileIdWithMintCountAndCommentCount(profileId: number, offset: number, limit: number) {
     const query = sql`

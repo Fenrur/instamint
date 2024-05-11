@@ -34,6 +34,10 @@ export class DefaultUserService {
     return this.userPgRepository().findByEmail(email)
   }
 
+  public getAll() {
+    return this.userPgRepository().getAll()
+  }
+
   public findByUid(uid: string) {
     return this.userPgRepository().findByUid(uid)
   }

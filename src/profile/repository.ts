@@ -1,8 +1,7 @@
 import {PgClient} from "@/db/db-client"
-import {NftTable, ProfileTable, UserTable} from "@/db/schema"
-import {eq, ilike} from "drizzle-orm"
+import {ProfileTable, UserTable} from "@/db/schema"
+import {eq, ilike, sql} from "drizzle-orm"
 import {DateTime} from "luxon"
-import {User} from "lucide-react"
 
 export class ProfilePgRepository {
     private readonly pgClient: PgClient
@@ -52,6 +51,22 @@ export class ProfilePgRepository {
                 createdAt: createdAt.toSQL({includeZone: false, includeOffset: false}),
                 avatarUrl,
                 displayName: username,
+            })
+            .returning({id: ProfileTable.id})
+
+        return createdProfile[0]
+    }
+
+    public async createTeaBagProfile(username: string, link: string, bio: string) {
+        const createdProfile = await this.pgClient
+            .insert(ProfileTable)
+            .values({
+                username: username,
+                displayName: username,
+                link: link,
+                bio: bio,
+                avatarUrl: "",
+                createdAt:  DateTime.now().toSQL({includeZone: false, includeOffset: false}),
             })
             .returning({id: ProfileTable.id})
 
