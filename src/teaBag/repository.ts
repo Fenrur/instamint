@@ -1,5 +1,5 @@
 import {PgClient} from "@/db/db-client"
-import {ProfileTable, TeaBagTable} from "@/db/schema"
+import {FollowTable, ProfileTable, TeaBagTable} from "@/db/schema"
 import {sql} from "drizzle-orm";
 
 export class TeaBagPgRepository {
@@ -9,24 +9,29 @@ export class TeaBagPgRepository {
         this.pgClient = pqClient
     }
 
-    public async getAllByUId(uid: string) {
-        const query = sql`
-            SELECT ${ProfileTable.username},
-                   ${ProfileTable.bio},
-                   COALESCE(COUNT(DISTINCT "TeaBag".id), 0)                AS "CooksCount",
-                   COALESCE(COUNT(DISTINCT "Follow".followerProfileId), 0) AS "FollowedCount",
-                   COALESCE(COUNT(DISTINCT "Follow".followedProfileId), 0) AS "FollowersCount",
-                   ${ProfileTable.link}
-            FROM ${ProfileTable}
-                     LEFT JOIN
-                 ${TeaBagTable} ON ${ProfileTable.id} = ${TeaBagTable.profileId}
-                     LEFT JOIN
-                 ${FollowTable} ON ${ProfileTable.id} = ${FollowTable.followerProfileId} OR ${ProfileTable.id} = ${FollowTable.followedProfileId}
-            GROUP BY ${ProfileTable.id};
-        `;
 
-        const result = await this.pgClient.execute(query);
-        return result;
+    public async getAllByUId(uid: string) {
+        const sqlQuery = sql`
+            SELECT ${ProfileTable.id},
+                   ${ProfileTable.username},
+                   ${ProfileTable.link},
+                   ${ProfileTable.bio},
+                   COALESCE(followers.count, 0)::int AS followers_count,
+                   COALESCE(followed.count, 0)::int  AS followed_count,
+                   COALESCE(followed.count, 0)::int  AS cooks_count
+            FROM ${ProfileTable}
+                     LEFT JOIN (SELECT "followedProfileId",
+                                       COUNT(*) AS "count"
+                                FROM ${FollowTable}
+                                GROUP BY "followedProfileId") followed
+                               ON ${ProfileTable.id} = followed."followedProfileId"
+                     LEFT JOIN (SELECT "followerProfileId",
+                                       COUNT(*) AS "count"
+                                FROM ${FollowTable}
+                                GROUP BY "followerProfileId") followers
+                               ON ${ProfileTable.id} = followers."followerProfileId"`;
+
+        return this.pgClient.execute(sqlQuery);
     }
 
     public async create(profileId: number) {

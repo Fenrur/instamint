@@ -6,7 +6,6 @@ import React, {useEffect, useState} from "react"
 
 import {Button} from "@/components/ui/button"
 import {useQuery} from "@tanstack/react-query"
-import {RightPanel} from "../signup/right-panel";
 import {
     Dialog,
     DialogContent,
@@ -82,11 +81,12 @@ interface ValueLabel {
 }
 
 export interface TeaBag {
+    id?: number;
     username: string;
     bio: string;
-    nCooks: number;
-    nFollowed: number;
-    nFollowers: number;
+    cooks_count?: number;
+    followed_count?: number;
+    followers_count?: number;
     link: string;
     nftIds: number[];
     whitelistUserIds: number[];
@@ -101,9 +101,6 @@ export default function MePage(props: SignupPageProps) {
         username: "",
         bio: "",
         link: "",
-        nCooks: 10,
-        nFollowed: 10,
-        nFollowers: 10,
         nftIds: [],
         whitelistUserIds: [],
         whitelistStart: DateTime.now(),
@@ -157,32 +154,6 @@ export default function MePage(props: SignupPageProps) {
 
     return (
         <>
-            <RightPanel title="Profile" text="You can edit your profile details" width="w-[350px]">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>nFollowed</TableCell>
-                            <TableCell>nFollowers</TableCell>
-                            <TableCell>nCooks</TableCell>
-                        </TableRow>
-                    </TableHeader>
-
-                    <TableBody>
-                        {isTeaBagsLoaded &&
-                            teaBags.map(item => (
-                                    <TableRow key={item.username}>
-                                        <TableCell>{item.username}</TableCell>
-                                        <TableCell>{item.nFollowed}</TableCell>
-                                        <TableCell>{item.nFollowers}</TableCell>
-                                        <TableCell>{item.nCooks}</TableCell>
-                                    </TableRow>
-                        ))}
-                    </TableBody>
-
-                </Table>
-            </RightPanel>
-
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
                     <Button className="Button violet">Create Tea Bag</Button>
@@ -225,42 +196,6 @@ export default function MePage(props: SignupPageProps) {
                                     name="bio"
                                     id="bio"
                                     defaultValue={formData.bio}
-                                />
-                            </div>
-
-                            <div className="grid gap-1">
-                                <Label htmlFor="nFollowed" className={error ? "text-destructive" : ""}>Number of
-                                    followed</Label>
-                                <Input
-                                    name="nFollowed"
-                                    id="nFollowed"
-                                    type="number"
-                                    required
-                                    defaultValue={formData.nFollowed}
-                                />
-                            </div>
-
-                            <div className="grid gap-1">
-                                <Label htmlFor="nFollowers" className={error ? "text-destructive" : ""}>Number of
-                                    followers</Label>
-                                <Input
-                                    name="nFollowers"
-                                    id="nFollowers"
-                                    type="number"
-                                    required
-                                    defaultValue={formData.nFollowers}
-                                />
-                            </div>
-
-                            <div className="grid gap-1">
-                                <Label htmlFor="nCooks" className={error ? "text-destructive" : ""}>Number of
-                                    Cook's</Label>
-                                <Input
-                                    name="nCooks"
-                                    id="nCooks"
-                                    type="text"
-                                    required
-                                    defaultValue={formData.nCooks}
                                 />
                             </div>
 
@@ -332,6 +267,36 @@ export default function MePage(props: SignupPageProps) {
                     </DialogContent>
                 </DialogPortal>
             </Dialog>
+
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Followed number</TableCell>
+                        <TableCell>Followers number</TableCell>
+                        <TableCell>Cooks number</TableCell>
+                        <TableCell>Actions</TableCell>
+                    </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                    {isTeaBagsLoaded &&
+                        teaBags.map(item => (
+                            <TableRow key={item.id}>
+                                <TableCell>{item.username}</TableCell>
+                                <TableCell>{item.followed_count}</TableCell>
+                                <TableCell>{item.followers_count}</TableCell>
+                                <TableCell>{item.cooks_count}</TableCell>
+                                <TableCell>
+                                    <Button>Delete</Button>
+                                    <Button>Report</Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                </TableBody>
+
+            </Table>
+
         </>
 
     )

@@ -15,9 +15,6 @@ export class DefaultTeaBagService {
         this.pgClient= pgClient
     }
     public async getAll(uid: string){
-
-
-
         return await this.teaBagPgRepository.getAllByUId(uid);
     }
     public async create(data: TeaBag) {

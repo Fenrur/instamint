@@ -19,7 +19,7 @@ export const GET = auth(async (req: NextAuthRequest) => {
 export const POST = auth(async (req: NextAuthRequest) => {
     const data = await req.json();
 
-    const {username, bio, link, nCooks, nFollowed,nFollowers, nftIds, whitelistUserIds, whitelistStart, whitelistEnd} = data;
+    const {username, bio, link, nftIds, whitelistUserIds, whitelistStart, whitelistEnd} = data;
 
     if (!username || !bio || !link) {
         return problem({...invalidQueryParameterProblem, detail: "username, bio, and link are required"});
@@ -40,9 +40,6 @@ export const POST = auth(async (req: NextAuthRequest) => {
         username,
         bio,
         link,
-        nCooks,
-        nFollowers,
-        nFollowed,
         nftIds,
         whitelistUserIds,
         whitelistStart,
