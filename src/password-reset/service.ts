@@ -17,7 +17,7 @@ export class DefaultPasswordResetService {
         return this.passwordResetPgRepository.findByResetId(resetId)
     }
 
-    public deactivateResetById(id: number) {
-        return this.passwordResetPgRepository.deactivateResetById(id)
+    public deactivateResetById(resetId: number) {
+        return this.passwordResetPgRepository.deactivateResetById(resetId)
     }
 }

@@ -31,12 +31,12 @@ export class PasswordResetPgRepository {
     return result[0].resetId
   }
 
-  public deactivateResetById(id: number) {
+  public deactivateResetById(resetId: number) {
     return this.pgClient
       .update(PasswordResetTable)
       .set({
         active: false
       })
-      .where(eq(PasswordResetTable.id, id))
+      .where(eq(PasswordResetTable.id, resetId))
   }
 }

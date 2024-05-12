@@ -10,8 +10,7 @@ export const POST = async (req: NextRequest) => {
     if (!resetId) {
         url.pathname = "/reset-password/invalid/url"
 
-        
-return NextResponse.redirect(url)
+        return NextResponse.redirect(url)
     }
 
     const passwordReset = await passwordResetService.findByResetId(resetId)
@@ -19,18 +18,16 @@ return NextResponse.redirect(url)
     if (!passwordReset) {
         url.pathname = "/reset-password/invalid/url"
 
-        
-return NextResponse.redirect(url)
+        return NextResponse.redirect(url)
     }
 
     const body = await req.formData()
     const pass = body.get("password") as string
-    await userService.updateUserById(`${passwordReset.userId  }`, pass)
+    await userService.updateUserById(`${passwordReset.userId}`, pass)
 
     await passwordResetService.deactivateResetById(passwordReset.id)
 
     // eslint-disable-next-line no-warning-comments
-    //Todo: set active column to false
     url.pathname = "/login"
 
     //Url.searchParams.set("email", passwordReset.email)

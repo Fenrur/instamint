@@ -10,8 +10,7 @@ import * as u from "node:url"
 import {passwordResetService, userService} from "@/services"
 import ResetPassword from "@/mail/templates/reset-password"
 
-async function createVerificationAndSendEmail(formData: SignupCredentials, createdAt: DateTime<true>, userId: number) {
-    const resetId = await passwordResetService.create(userId, createdAt)
+async function sendPasswordResetEmail(formData: SignupCredentials, createdAt: DateTime<true>, userId: number, resetId: string) {
     const verificationLink = u.format({
         host: env.BASE_URL,
         pathname: "/api/forgot-password/reset-password-email",
@@ -46,7 +45,6 @@ export async function POST(req: NextRequest) {
     } catch (e: any) {
         url.pathname = "/signup"
 
-
         return NextResponse.redirect(url)
     }
 
@@ -56,15 +54,15 @@ export async function POST(req: NextRequest) {
         url.pathname = "/forgot-password"
         url.searchParams.set("error", "email_not_exists")
 
-
         return NextResponse.redirect(url)
     }
 
     url.pathname = "/reset-password/sent"
     url.searchParams.set("email", parsedFormData.email)
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    createVerificationAndSendEmail(parsedFormData, createdAt, user.id)
+    const passwordResetId = await passwordResetService.create(user.id, createdAt)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    await sendPasswordResetEmail(parsedFormData, createdAt, user.id, passwordResetId)
 
     return NextResponse.redirect(url)
 }
