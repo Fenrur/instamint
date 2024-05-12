@@ -1,23 +1,16 @@
-import {NextResponse} from "next/server";
-import {
-    invalidQueryParameterProblem,
-    notAuthenticatedProblem,
-    problem,
-    userNotFoundProblem
-} from "@/http/problem";
-import {nftService, profileService, userService} from "@/services";
-import {auth, getSession} from "@/auth";
-import {DateTime} from "luxon";
-import {NftType} from "../../../domain/types";
+import {NextResponse} from "next/server"
+import {invalidQueryParameterProblem, notAuthenticatedProblem, problem, userNotFoundProblem} from "@/http/problem"
+import {profileService} from "@/services"
+import {auth, getSession} from "@/auth"
 // @ts-ignore
-import {NextAuthRequest} from "next-auth/lib";
+import {NextAuthRequest} from "next-auth/lib"
 
 export const POST = auth(async (req: NextAuthRequest) => {
     const url = req.nextUrl.clone();
     const username = url.searchParams.get("username") as string;
     const bio = url.searchParams.get("bio") as string;
     const uniqueLink = url.searchParams.get("uniqueLink") as string;
-
+    //Todo: check if not taken
     if (!username) {
         return problem({...invalidQueryParameterProblem, detail: "username is required"});
     }
