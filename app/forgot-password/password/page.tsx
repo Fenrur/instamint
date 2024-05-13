@@ -87,7 +87,7 @@ function ContentPage() {
 
 
     return (
-        <form action={`/api/forgot-password/reset?resetId=${currentVid}`} method='POST'>
+        <form action={`/api/forgot-password/reset?resetId=${currentVid}`} method="POST">
             <div className="grid gap-4">
                 <Label htmlFor="password">Password</Label>
                 <Input
