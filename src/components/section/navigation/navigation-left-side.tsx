@@ -1,10 +1,11 @@
 import {Button} from "@/components/ui/button"
-import {FlowerIcon, HeartIcon, HomeIcon, MenuIcon, PlusIcon, SearchIcon, SendIcon, UserIcon} from "lucide-react"
+import {HomeIcon, MenuIcon, PlusIcon, SearchIcon, SendIcon, UserIcon} from "lucide-react"
 import {cn} from "@/lib/utils"
 import {Separator} from "@/components/ui/separator"
 import React from "react"
 import {SelectedNavigation} from "@/components/section/navigation/index"
 import Link from "next/link"
+import {MintIcon} from "@/components/ui/icons"
 
 interface NavigationLeftSideProps {
   className?: string,
@@ -36,14 +37,8 @@ export function NavigationLeftSide({className, selectedNavigation}: NavigationLe
             </Button>
 
             <Button className="size-12" variant="ghost" asChild>
-              <Link href="/home">
-                <HeartIcon className={cn("absolute", selectedNavigation === "love" && "text-primary")} size={28}/>
-              </Link>
-            </Button>
-
-            <Button className="size-12" variant="ghost" asChild>
-              <Link href="/home">
-                <FlowerIcon className={cn("absolute", selectedNavigation === "minter" && "text-primary")} size={26}/>
+              <Link href="/mints">
+                <MintIcon className={cn("text-black", "absolute", selectedNavigation === "new" ? "stroke-primary" : "stroke-black dark:stroke-white", "size-7")}/>
               </Link>
             </Button>
 

@@ -1,5 +1,5 @@
 import {AudioLinesIcon, ImageIcon, MapPin, SquarePlayIcon} from "lucide-react"
-import {CommentIcon, MintIcon} from "@/components/ui/icons"
+import {CommentFilledIcon, MintFilledIcon} from "@/components/ui/icons"
 import React from "react"
 import {NftType} from "../../domain/types"
 import {Button} from "@/components/ui/button"
@@ -65,8 +65,8 @@ export function NftContainer({url, type, mints, comments}: NftContainerProps) {
       <div
         className="absolute inset-0 bg-black opacity-0 hover:opacity-50 transition-opacity duration-200 text-white flex gap-2 justify-center items-center">
         <div>
-          <MintIcon className="size-6 text-white" color="#FFFFFF"/>
-          <CommentIcon className="size-6 text-white mt-2" color="#FFFFFF"/>
+          <MintFilledIcon className="size-6 fill-white"/>
+          <CommentFilledIcon className="size-6 mt-2" color="#FFFFFF"/>
         </div>
         <div>
           <div className="font-extrabold">{mints}</div>
