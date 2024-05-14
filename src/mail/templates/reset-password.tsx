@@ -23,11 +23,11 @@ interface VerificationEmailProps {
 }
 
 export const ResetPassword = ({
-                                    baseUrl,
-                                    instamintImageUrl,
-                                    verificationLink,
-                                    contactEmail,
-                                  }: VerificationEmailProps) => {
+                                baseUrl,
+                                instamintImageUrl,
+                                verificationLink,
+                                contactEmail,
+                              }: VerificationEmailProps) => {
   const previewText = `Verify your mail on Instamint`
 
   return (
@@ -47,14 +47,14 @@ export const ResetPassword = ({
             </Section>
             <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
               <strong>Reset your password Instamint <Link href={baseUrl}
-                                                 className="text-green-400 underline">Instamint</Link></strong>
+                                                          className="text-green-400 underline">Instamint</Link></strong>
             </Heading>
             <Section className="text-center mt-[32px] mb-[32px]">
               <Button
                 className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
                 href={verificationLink}
               >
-                  Reset
+                Reset
               </Button>
             </Section>
             <Text className="text-black text-[14px] leading-[24px]">
