@@ -9,13 +9,11 @@ import {
 } from "@/http/problem"
 import qrcode from "qrcode"
 import {TwoFactorAuthenticatorSetupRequest, TwoFactorAuthenticatorSetupResponse} from "@/http/rest/types"
-// @ts-expect-error TODO fix library not found
-import {NextAuthRequest} from "next-auth/lib"
 import {isContentType} from "@/http/content-type"
 import {authenticator} from "@/two-factor/otp"
 import {userService} from "@/services"
 
-export const POST = auth(async (req: NextAuthRequest) => {
+export const POST = auth(async (req) => {
   if (!isContentType(req, "json")) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
   }
