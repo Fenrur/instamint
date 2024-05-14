@@ -19,19 +19,19 @@ export class DefaultUserService {
     private readonly pgClient: PgClient
     private readonly pepperPasswordSecret: string
     private readonly totpEncryptionKey: string
+  private readonly userPgRepository: UserPgRepository
+  private readonly profilePgRepository: ProfilePgRepository
 
     constructor(pgClient: PgClient, pepperPasswordSecret: string, totpEncryptionKey: string) {
         this.pgClient = pgClient
         this.pepperPasswordSecret = pepperPasswordSecret
         this.totpEncryptionKey = totpEncryptionKey
-    }
-
-    private userPgRepository() {
-        return new UserPgRepository(this.pgClient)
+    this.userPgRepository = new UserPgRepository(this.pgClient)
+        this.profilePgRepository = new ProfilePgRepository(this.pgClient)
     }
 
     public findByEmail(email: string) {
-        return this.userPgRepository().findByEmail(email)
+        return this.userPgRepository.findByEmail(email)
     }
 
     public findByUid(uid: string) {
@@ -45,21 +45,24 @@ export class DefaultUserService {
     public existUsername(username: string) {
         return this.userPgRepository().existUsername(username)
     }
+  public findByUid(uid: string) {
+    return this.userPgRepository.findByUid(uid)
+  }
 
     public resetTwoFactorAuthentification(id: number) {
-        return this.userPgRepository().resetTwoFactorAuthentification(id)
+        return this.userPgRepository.resetTwoFactorAuthentification(id)
     }
 
     public enableTwoFactorAuthentification(uid: string) {
-        return this.userPgRepository().enableTwoFactorAuthentification(uid)
+        return this.userPgRepository.enableTwoFactorAuthentification(uid)
     }
 
     public disableTwoFactorAuthentification(uid: string) {
-        return this.userPgRepository().disableTwoFactorAuthentification(uid)
+        return this.userPgRepository.disableTwoFactorAuthentification(uid)
     }
 
     public setTwoFactorSecret(uid: string, secret: string) {
-        return this.userPgRepository().setTwoFactorSecret(uid, secret)
+        return this.userPgRepository.setTwoFactorSecret(uid, secret)
     }
 
     public async setupTwoFactorAuthentification(uid: string, password: string, secret: string) {
@@ -153,26 +156,26 @@ export class DefaultUserService {
             return "email_verification_expired"
         }
 
-        const user = await this.userPgRepository().findByEmail(email)
+        const user = await this.userPgRepository.findByEmail(email)
 
         if (user) {
             return "email_already_used"
         }
 
-        if (await this.userPgRepository().existUsername(username)) {
+        if (await this.profilePgRepository.existUsername(username)) {
             return "username_already_used"
         }
 
         const uid = await this.pgClient.transaction(async (tx) => {
-            const emailVerificationRepository = new EmailVerificationPgRepository(tx)
-            const profilePgRepository = new ProfilePgRepository(tx)
-            const userPgRepository = new UserPgRepository(tx)
+            const transactionalEmailVerificationRepository = new EmailVerificationPgRepository(tx)
+            const transactionalProfilePgRepository = new ProfilePgRepository(tx)
+            const transactionalUserPgRepository = new UserPgRepository(tx)
 
-            await emailVerificationRepository.verify(emailVerificationId)
+            await transactionalEmailVerificationRepository.verify(emailVerificationId)
 
-            const createdProfile = await profilePgRepository.create(username, createdAt, avatarUrl)
+            const createdProfile = await transactionalProfilePgRepository.create(username, createdAt, avatarUrl)
             const profileId = createdProfile.id
-            const createdUser = await userPgRepository.create(email, hashedPassword, profileId)
+            const createdUser = await transactionalUserPgRepository.create(email, hashedPassword, profileId)
             const {uid} = createdUser
 
             return uid
@@ -218,7 +221,7 @@ export class DefaultUserService {
 
         const hashedPassword = await hashPassword(password, this.pepperPasswordSecret)
 
-        
+
 return await this.userPgRepository().updatePassword(user.uid, hashedPassword)
     }
 

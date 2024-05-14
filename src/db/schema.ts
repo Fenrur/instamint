@@ -4,6 +4,7 @@ import {
   integer,
   pgEnum,
   pgTable,
+  primaryKey,
   serial,
   text,
   timestamp,
@@ -11,19 +12,27 @@ import {
   varchar
 } from "drizzle-orm/pg-core"
 import {relations} from "drizzle-orm"
-import {nftTypeArray} from "../../app/domain/types"
+import {
+  currencyTypeArray,
+  languageTypeArray,
+  nftTypeArray,
+  notificationTypeArray,
+  profileVisibilityTypeArray,
+  userRoleArray,
+  userTeaBagRoleArray
+} from "@/domain/types"
 
-export const LanguageTypeEnum = pgEnum("LanguageType", ["en", "fr", "es"])
+export const LanguageTypeEnum = pgEnum("LanguageType", languageTypeArray)
 
-export const UserRoleEnum = pgEnum("UserRole", ["user", "admin"])
+export const UserRoleEnum = pgEnum("UserRole", userRoleArray)
 
-export const ProfileVisibilityTypeEnum = pgEnum("ProfileVisibilityType", ["public", "private"])
+export const ProfileVisibilityTypeEnum = pgEnum("ProfileVisibilityType", profileVisibilityTypeArray)
 
-export const CurrencyTypeEnum = pgEnum("CurrencyType", ["usd", "eur", "eth", "sol"])
+export const CurrencyTypeEnum = pgEnum("CurrencyType", currencyTypeArray)
 
-export const UserTeaBagRoleEnum = pgEnum("UserTeaBagRole", ["user", "cooker"])
+export const UserTeaBagRoleEnum = pgEnum("UserTeaBagRole", userTeaBagRoleArray)
 
-export const NotificationTypeEnum = pgEnum("NotificationType", ["replies_comments", "thread_comment", "mint", "follow", "follow_request_accepted"])
+export const NotificationTypeEnum = pgEnum("NotificationType", notificationTypeArray)
 
 export const NftTypeEnum = pgEnum("NftType", nftTypeArray)
 
@@ -40,6 +49,18 @@ export const ProfileTable = pgTable("Profile", {
   displayName: varchar("displayName", {length: 40}).notNull()
 })
 
+export const profileRelations = relations(ProfileTable, ({ many }) => ({
+  followers: many(FollowTable, {
+    relationName: "followerUserFk"
+  }),
+  following: many(FollowTable, {
+    relationName: "followedUserFk"
+  }),
+  requesters: many(RequestFollowTable, {
+    relationName: "requesterUserFk"
+  }),
+}))
+
 export const UserTable = pgTable("User", {
   id: serial("id").notNull().primaryKey(),
   email: varchar("email", {length: 255}).notNull().unique(),
@@ -52,10 +73,10 @@ export const UserTable = pgTable("User", {
   languageType: LanguageTypeEnum("languageType").notNull().default("en"),
   role: UserRoleEnum("role").notNull().default("user"),
   profileId: integer("profileId").notNull().references(() => ProfileTable.id, {onDelete: "cascade"}),
-  enabledNotificationTypes: NotificationTypeEnum("enabledNotificationTypes").array().notNull().default(["replies_comments", "thread_comment", "mint", "follow", "follow_request_accepted"]),
+  enabledNotificationTypes: NotificationTypeEnum("enabledNotificationTypes").array().notNull().default(["comments_replies", "comments_threads", "mints", "follow_requests", "follow_requests_accepted"]),
 })
 
-export const userRelations = relations(UserTable, ({ one }) => ({
+export const userRelations = relations(UserTable, ({one}) => ({
   profile: one(ProfileTable, {
     fields: [UserTable.profileId],
     references: [ProfileTable.id],
@@ -81,7 +102,7 @@ export const NftTable = pgTable("Nft", {
   type: NftTypeEnum("type").notNull(),
 })
 
-export const nftRelations = relations(NftTable, ({ many }) => ({
+export const nftRelations = relations(NftTable, ({many}) => ({
   mints: many(MintTable),
 }))
 
@@ -91,7 +112,7 @@ export const MintTable = pgTable("Mint", {
   mintAt: timestamp("mintAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
 })
 
-export const mintRelations = relations(MintTable, ({ one }) => ({
+export const mintRelations = relations(MintTable, ({one}) => ({
   author: one(NftTable, {
     fields: [MintTable.nftId],
     references: [NftTable.id],
@@ -191,10 +212,25 @@ export const PrivateMessageTable = pgTable("PrivateMessage", {
 })
 
 export const FollowTable = pgTable("Follow", {
-  followerProfileId: integer("followerProfileId").notNull().references(() => ProfileTable.id, {onDelete: "cascade"}).primaryKey(),
-  followedProfileId: integer("followedProfileId").notNull().references(() => ProfileTable.id, {onDelete: "cascade"}).primaryKey(),
+  followerProfileId: integer("followerProfileId").notNull().references(() => ProfileTable.id, {onDelete: "cascade"}),
+  followedProfileId: integer("followedProfileId").notNull().references(() => ProfileTable.id, {onDelete: "cascade"}),
   followAt: timestamp("followAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
+}, (table) => {
+  return {
+    pk: primaryKey({name: "Follow_pkey", columns: [table.followerProfileId, table.followedProfileId]})
+  }
 })
+
+export const followRelations = relations(FollowTable, ({one}) => ({
+  follower: one(ProfileTable, {
+    fields: [FollowTable.followerProfileId],
+    references: [ProfileTable.id],
+  }),
+  followed: one(ProfileTable, {
+    fields: [FollowTable.followedProfileId],
+    references: [ProfileTable.id],
+  }),
+}))
 
 export const PasswordResetTable = pgTable("PasswordReset", {
   id: serial("id").notNull().primaryKey(),
@@ -220,3 +256,10 @@ export const RequestFollowTable = pgTable("RequestFollow", {
   requestAt: timestamp("requestAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
   isIgnored: boolean("isIgnored").notNull().default(false),
 })
+
+export const requestFollowRelations = relations(RequestFollowTable, ({one}) => ({
+  requester: one(ProfileTable, {
+    fields: [RequestFollowTable.requesterProfileId],
+    references: [ProfileTable.id],
+  }),
+}))

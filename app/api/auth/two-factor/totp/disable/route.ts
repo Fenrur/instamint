@@ -9,12 +9,10 @@ import {
   uidNotFoundProblem
 } from "@/http/problem"
 import {TwoFactorAuthenticatorDisableRequest} from "@/http/rest/types"
-// @ts-expect-error TODO fix library not found
-import {NextAuthRequest} from "next-auth/lib"
 import {isContentType} from "@/http/content-type"
 import {userService} from "@/services"
 
-export const POST = auth(async (req: NextAuthRequest) => {
+export const POST = auth(async (req) => {
   if (!isContentType(req, "json")) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
   }

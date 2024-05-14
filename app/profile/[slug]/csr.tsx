@@ -4,12 +4,14 @@ import React, {useCallback, useEffect, useState} from "react"
 import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
 
 import {NftContainer} from "./ssr"
-import {NftType} from "../../domain/types"
+import {NftType} from "@/domain/types"
 import InfiniteScroll from "react-infinite-scroll-component"
-import {getPaginedNftsByUsername} from "@/repository"
+import {getPaginatedNfts} from "@/repository"
 import {toast} from "sonner"
 import {useRouter} from "next/navigation"
 import {createRedirectQueryParam} from "@/utils/url"
+import {DateTime} from "luxon"
+import {nftsPageSize} from "@/services/constants"
 
 interface TestButtonProps {
   username: string
@@ -20,7 +22,7 @@ export function NftsSection({username}: TestButtonProps) {
   const [nfts, setNfts] = useState<{
     mintCount: number,
     commentCount: number,
-    postedAt: string,
+    postedAt: DateTime<true>,
     contentUrl: string,
     id: number,
     type: NftType
@@ -28,29 +30,27 @@ export function NftsSection({username}: TestButtonProps) {
   const [hasMore, setHasMore] = useState(true)
   const [init, setInit] = useState(true)
   const router = useRouter()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadNextPage =useCallback(() => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     setTimeout(async () => {
-      const n = await getPaginedNftsByUsername(username, page)
+      const paginatedNfts = await getPaginatedNfts(username, page)
 
-      if (!n) {
-        return
-      }
+      if (typeof paginatedNfts === "string") {
+        setHasMore(false)
 
-      if (!Array.isArray(n)) {
-        switch (n) {
+        switch (paginatedNfts) {
           case "profile_not_found":
             toast.error("Profile not found", {description: "Please try again later."})
 
             return
 
           case "not_authenticated":
-            router.push(`/login${createRedirectQueryParam(username)}`)
+            router.push(`/login${createRedirectQueryParam(`/profile/${username}`)}`)
 
             return
 
           case "dont_follow_profile":
-            router.refresh()
 
             return
 
@@ -59,13 +59,11 @@ export function NftsSection({username}: TestButtonProps) {
         }
       }
 
-      if (n.length === 0) {
+      if (paginatedNfts.length < nftsPageSize) {
         setHasMore(false)
-
-        return
       }
 
-      setNfts([...nfts, ...n])
+      setNfts([...nfts, ...paginatedNfts])
       setPage(page + 1)
     })
   }, [nfts, page, router, username])
@@ -104,7 +102,7 @@ export function NftsSection({username}: TestButtonProps) {
                 <NftContainer
                   mints={nft.mintCount.toString()}
                   comments={nft.commentCount.toString()}
-                  type="image"
+                  type={nft.type}
                   url={nft.contentUrl}
                 />
               </React.Fragment>

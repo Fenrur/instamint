@@ -7,12 +7,10 @@ import {
   twoFactorSetupRequiredProblem,
   uidNotFoundProblem
 } from "@/http/problem"
-// @ts-expect-error TODO fix library not found
-import {NextAuthRequest} from "next-auth/lib"
 import {isContentType} from "@/http/content-type"
 import {userService} from "@/services"
 
-export const POST = auth(async (req: NextAuthRequest) => {
+export const POST = auth(async (req) => {
   if (!isContentType(req, "no_body")) {
     return problem({...invalidContentTypeProblem, detail: "Expected no body in the request"})
   }

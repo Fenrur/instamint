@@ -12,6 +12,8 @@ export const passwordContainsSpecial = /[#?!@$%^&*-]/
 
 export const usernameRegex = /^[a-zA-Z0-9_]{3,18}$/
 
+export const usernameCharactersRegex = /^[a-zA-Z0-9_]+$/
+
 export const usernameMinimumLength = 3
 
 export const usernameMaximumLength = 18

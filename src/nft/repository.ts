@@ -2,32 +2,24 @@ import {PgClient} from "@/db/db-client"
 import {CommentTable, MintTable, NftTable} from "@/db/schema"
 import {count, eq, sql} from "drizzle-orm"
 import {z} from "zod"
-import {DateTime} from "luxon"
-import {nftTypeArray} from "../../app/domain/types"
+import {nftTypeArray} from "@/domain/types"
+import {datetimeSql} from "@/utils/zod"
 
 export class NftPgRepository {
   private readonly pgClient: PgClient
   private readonly FindNftsPaginatedByProfileIdWithMintCountCommentCountSchema = z.array(z.object({
     id: z.number().int().positive(),
     contentUrl: z.string(),
-    postedAt: z.string().transform(dateSql => {
-      const pAt = DateTime.fromSQL(dateSql, {zone: "utc"})
-
-      if (pAt.isValid) {
-        return pAt
-      }
-
-      throw new Error("Invalid date")
-    }),
+    postedAt: datetimeSql(),
     showOnProfileId: z.number().int().positive(),
     commentCount: z
       .string()
       .transform(str => parseInt(str, 10))
-      .refine((num) => !isNaN(num) && Number.isInteger(num), { message: "commentCount must be an integer" }),
+      .refine((num) => !isNaN(num) && Number.isInteger(num), {message: "commentCount must be an integer"}),
     mintCount: z
       .string()
       .transform(str => parseInt(str, 10))
-      .refine((num) => !isNaN(num) && Number.isInteger(num), { message: "mintCount must be an integer" }),
+      .refine((num) => !isNaN(num) && Number.isInteger(num), {message: "mintCount must be an integer"}),
     type: z.enum(nftTypeArray)
   }))
 
@@ -44,14 +36,14 @@ export class NftPgRepository {
     return result[0].count
   }
 
-  public async findNftsPaginatedByProfileIdWithMintCountAndCommentCount(profileId: number, offset: number, limit: number) {
+  public async findNftsPaginatedAndSorted(profileId: number, offset: number, limit: number) {
     const query = sql`
       SELECT ${NftTable.id},
              ${NftTable.contentUrl},
              ${NftTable.postedAt},
              ${NftTable.showOnProfileId},
              ${NftTable.type},
-             COALESCE(m."mintCount", 0) AS "mintCount",
+             COALESCE(m."mintCount", 0)    AS "mintCount",
              COALESCE(c."commentCount", 0) AS "commentCount"
       FROM ${NftTable}
              LEFT JOIN (SELECT ${MintTable.nftId}, COUNT(*) AS "mintCount"

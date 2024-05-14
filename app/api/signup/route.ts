@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/x-www-form-urlencoded"})
   }
 
-  const createdAt = DateTime.now()
+  const createdAt = DateTime.utc()
   const formData = await req.formData()
   let parsedFormData = null
   const url = req.nextUrl.clone()

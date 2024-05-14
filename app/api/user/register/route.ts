@@ -4,7 +4,7 @@ import {
   emailAlreadyUsedProblem,
   emailVerificationAlreadyVerifiedProblem,
   emailVerificationExpiredProblem,
-  emailVerificationNotFoundProblem,
+  emailVerificationNotFoundProblem, invalidBodyProblem,
   invalidContentTypeProblem,
   problem, usernameAlreadyUsedProblem
 } from "@/http/problem"
@@ -37,7 +37,7 @@ export const POST = async (req: NextRequest) => {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
   }
 
-  const createdAt = DateTime.now()
+  const createdAt = DateTime.utc()
   const body = await req.json()
 
   let parsedBody = null
@@ -45,7 +45,7 @@ export const POST = async (req: NextRequest) => {
   try {
     parsedBody = RegisterUserRequest.parse(body)
   } catch (e: any) {
-    return NextResponse.json({message: e.errors}, {status: 400})
+    return problem({...invalidBodyProblem, detail: e.errors})
   }
 
   const result = await userService.create(

@@ -105,7 +105,7 @@ export class UserPgRepository {
       .values({
         email,
         hashedPassword,
-        profileId
+        profileId,
       })
       .returning({uid: UserTable.uid})
 

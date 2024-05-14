@@ -36,7 +36,7 @@ export default function TotpCodeLoginPage() {
       const redirect = searchParams.get("redirect")
       router.push(`/login${createRedirectQueryParam(redirect)}`)
     }
-  }, [searchParams,credentials, router])
+  }, [searchParams,credentials, router, searchParams])
 
   useEffect(() => {
     if (errorVerification) {

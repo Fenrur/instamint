@@ -28,8 +28,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  const expireAt = DateTime.fromSQL(emailVerification.expireAt, {zone: "utc"})
-  const now = DateTime.now()
+  const expireAt = DateTime.fromSQL(emailVerification.expireAt, {zone: "UTC"})
+  const now = DateTime.utc()
 
   if (now > expireAt) {
     url.pathname = "/verification-email/invalid/expired"
