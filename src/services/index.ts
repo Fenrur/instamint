@@ -6,6 +6,7 @@ import {DefaultNftService} from "@/nft/service"
 import {DefaultFollowService} from "@/follow/service"
 import {env} from "@/env"
 import {
+  durationExpireOffset,
   followersPageSize,
   followRequestIgnoredPageSize,
   followRequestPageSize,
@@ -18,7 +19,7 @@ import {
 
 export const userService = new DefaultUserService(pgClient, env.PEPPER_PASSWORD_SECRET, env.TOTP_ENCRYPTION_KEY)
 
-export const emailVerificationService = new DefaultEmailVerificationService(pgClient)
+export const emailVerificationService = new DefaultEmailVerificationService(pgClient, durationExpireOffset)
 
 export const profileService = new DefaultProfileService(pgClient, s3client, env.S3_BUCKET_NAME)
 
