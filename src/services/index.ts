@@ -1,5 +1,4 @@
 import {pgClient, s3client} from "@/db/db-client"
-import { env } from "./env"
 import {DefaultUserService} from "@/user/service"
 import {DefaultEmailVerificationService} from "@/email-verification/service"
 import {DefaultProfileService} from "@/profile/service"
@@ -29,12 +28,12 @@ export const profileService = new DefaultProfileService(pgClient, s3client, env.
 export const nftService = new DefaultNftService(pgClient, nftsPageSize)
 
 export const followService = new DefaultFollowService(
-  pgClient,
-  followersPageSize,
-  followsPageSize,
-  followRequestPageSize,
-  followRequestIgnoredPageSize,
-  searchRequesterProfileSize,
-  searchFollowsProfileSize,
-  searchFollowersProfileSize
+    pgClient,
+    followersPageSize,
+    followsPageSize,
+    followRequestPageSize,
+    followRequestIgnoredPageSize,
+    searchRequesterProfileSize,
+    searchFollowsProfileSize,
+    searchFollowersProfileSize
 )

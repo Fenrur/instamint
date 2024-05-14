@@ -28,7 +28,6 @@ export class UserPgRepository {
   public findById(id: string) {
     return this.pgClient.query.UserTable
       .findFirst({
-
         where: (user, {eq}) => (eq(user.id, Number(id))),
       })
   }

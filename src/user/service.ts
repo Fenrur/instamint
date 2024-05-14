@@ -19,14 +19,14 @@ export class DefaultUserService {
     private readonly pgClient: PgClient
     private readonly pepperPasswordSecret: string
     private readonly totpEncryptionKey: string
-  private readonly userPgRepository: UserPgRepository
-  private readonly profilePgRepository: ProfilePgRepository
+    private readonly userPgRepository: UserPgRepository
+    private readonly profilePgRepository: ProfilePgRepository
 
     constructor(pgClient: PgClient, pepperPasswordSecret: string, totpEncryptionKey: string) {
         this.pgClient = pgClient
         this.pepperPasswordSecret = pepperPasswordSecret
         this.totpEncryptionKey = totpEncryptionKey
-    this.userPgRepository = new UserPgRepository(this.pgClient)
+        this.userPgRepository = new UserPgRepository(this.pgClient)
         this.profilePgRepository = new ProfilePgRepository(this.pgClient)
     }
 
@@ -35,19 +35,16 @@ export class DefaultUserService {
     }
 
     public findByUid(uid: string) {
-        return this.userPgRepository().findByUid(uid)
+        return this.userPgRepository.findByUid(uid)
     }
 
     public findById(uid: string) {
-        return this.userPgRepository().findById(uid)
+        return this.userPgRepository.findById(uid)
     }
 
     public existUsername(username: string) {
-        return this.userPgRepository().existUsername(username)
+        return this.userPgRepository.existUsername(username)
     }
-  public findByUid(uid: string) {
-    return this.userPgRepository.findByUid(uid)
-  }
 
     public resetTwoFactorAuthentification(id: number) {
         return this.userPgRepository.resetTwoFactorAuthentification(id)
@@ -221,8 +218,7 @@ export class DefaultUserService {
 
         const hashedPassword = await hashPassword(password, this.pepperPasswordSecret)
 
-
-return await this.userPgRepository().updatePassword(user.uid, hashedPassword)
+        return await this.userPgRepository.updatePassword(user.uid, hashedPassword)
     }
 
     public async updateUserById(userId: string, password: string) {
@@ -233,6 +229,6 @@ return await this.userPgRepository().updatePassword(user.uid, hashedPassword)
         }
 
         const hashedPassword = await hashPassword(password, this.pepperPasswordSecret)
-        await this.userPgRepository().updatePassword(user.uid, hashedPassword)
+        await this.userPgRepository.updatePassword(user.uid, hashedPassword)
     }
 }
