@@ -1,45 +1,43 @@
 import {NextResponse} from "next/server"
 import {
+  badSessionProblem,
   dontFollowProfileProblem,
   invalidQueryParameterProblem,
   notAuthenticatedProblem,
   problem,
   profileNotFoundProblem,
-  userNotFoundProblem
 } from "@/http/problem"
 import {followService, nftService, profileService} from "@/services"
 import {usernameRegex} from "@/utils/validator"
 import {auth, getSession} from "@/auth"
-// @ts-expect-error TODO fix library not found
-import {NextAuthRequest} from "next-auth/lib"
 import {DateTime} from "luxon"
-import {NftType} from "../../../domain/types"
+import {NftType} from "@/domain/types"
 
-export const GET = auth(async (req: NextAuthRequest) => {
+export const GET = auth(async (req) => {
   const url = req.nextUrl.clone()
-  const page = url.searchParams.get("page") as string | null
-  const targetUsername = url.searchParams.get("username") as string | null
+  const page = url.searchParams.get("page")
+  const targetUsername = url.searchParams.get("username")
 
   if (!page) {
-    return problem({...invalidQueryParameterProblem, detail: "page is required"})
+    return problem({...invalidQueryParameterProblem, detail: "page query parameter is required"})
   }
 
   const parsedPage = parseInt(page, 10)
 
   if (isNaN(parsedPage)) {
-    return problem({...invalidQueryParameterProblem, detail: "page must be a number"})
+    return problem({...invalidQueryParameterProblem, detail: "page query parameter must be a number"})
   }
 
   if (parsedPage <= 0) {
-    return problem({...invalidQueryParameterProblem, detail: "page must be a minimum 1"})
+    return problem({...invalidQueryParameterProblem, detail: "page query parameter must be a minimum 1"})
   }
 
   if (!targetUsername) {
-    return problem({...invalidQueryParameterProblem, detail: "username is required"})
+    return problem({...invalidQueryParameterProblem, detail: "username query parameter is required"})
   }
 
   if (!usernameRegex.test(targetUsername)) {
-    return problem({...invalidQueryParameterProblem, detail: "username is invalid pattern"})
+    return problem({...invalidQueryParameterProblem, detail: "username query parameter is invalid"})
   }
 
   const targetProfile = await profileService.findByUsername(targetUsername)
@@ -49,7 +47,11 @@ export const GET = auth(async (req: NextAuthRequest) => {
   }
 
   if (targetProfile.visibilityType === "public") {
-    const result = await nftService.findNftsPaginatedByProfileIdWithMintCountAndCommentCount(targetProfile.id, parsedPage)
+    const result = await nftService
+      .findNftsPaginatedAndSorted(
+        targetProfile.id,
+        parsedPage
+      )
     const reponse = mapNftsToResponse(result)
 
     return NextResponse.json(reponse)
@@ -64,19 +66,26 @@ export const GET = auth(async (req: NextAuthRequest) => {
   const myUserAndProfile = await profileService.findByUserUid(session.uid)
 
   if (!myUserAndProfile) {
-    return problem({...userNotFoundProblem, detail: "my user not found"})
+    return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
   }
 
-  const follow = await followService.getFollow(myUserAndProfile.id, targetProfile.id)
+  if (myUserAndProfile.profile.id === targetProfile.id) {
+    const result = await nftService.findNftsPaginatedAndSorted(targetProfile.id, parsedPage)
+    const response = mapNftsToResponse(result)
 
-  if (!follow) {
+    return NextResponse.json(response)
+  }
+
+  const followState = await followService.getFollowState(myUserAndProfile.profile.id, targetProfile.id)
+
+  if (followState !== "following") {
     return problem({...dontFollowProfileProblem, detail: `you don't follow @${targetUsername}`})
   }
 
-  const result = await nftService.findNftsPaginatedByProfileIdWithMintCountAndCommentCount(targetProfile.id, parsedPage)
-  const reponse = mapNftsToResponse(result)
+  const result = await nftService.findNftsPaginatedAndSorted(targetProfile.id, parsedPage)
+  const response = mapNftsToResponse(result)
 
-  return NextResponse.json(reponse)
+  return NextResponse.json(response)
 })
 
 function mapNftsToResponse(nfts: {

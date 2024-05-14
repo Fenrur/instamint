@@ -3,6 +3,7 @@ import {LoggedLayout} from "@/components/layout/logged-layout"
 import {getServerSession} from "@/auth"
 import {ConnectionHeader} from "./ssr"
 import {Separator} from "@/components/ui/separator"
+import {profileService} from "@/services"
 
 export const dynamic = "force-dynamic"
 
@@ -16,12 +17,31 @@ interface ProfilePageProps {
 export default async function ProfileLayout(props: ProfilePageProps) {
   const username = props.params.slug
   const session = await getServerSession()
+  const getUserAndProfile = async () => {
+    if (session) {
+      return await profileService.findByUserUid(session.uid)
+    }
+
+    
+return null
+  }
+  const userAndProfile = await getUserAndProfile()
 
   return (
     <>
       {
         session
-          ? <LoggedLayout headerText={username} selectedNavigation={"search"}>{props.children}</LoggedLayout>
+          ? <LoggedLayout
+            avatarUrl={userAndProfile ? userAndProfile.profile.avatarUrl : ""}
+            headerText={username}
+            selectedNavigation="search"
+            username={userAndProfile ? userAndProfile.profile.username : ""}
+            navigationHeader={true}
+          >
+            {
+              props.children
+            }
+          </LoggedLayout>
           : <>
             <div className="flex justify-center">
               <div className="grid max-w-[940px] w-full">

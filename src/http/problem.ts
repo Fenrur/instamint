@@ -55,6 +55,26 @@ export const userNotFoundProblem = {title: "User not found", errorCode: ErrorCod
 
 export const dontFollowProfileProblem = {title: "Don't follow profile", errorCode: ErrorCode.DONT_FOLLOW_PROFILE, status: 400}
 
+export const badSessionProblem = {title: "Bad session", errorCode: ErrorCode.BAD_SESSION, status: 400}
+
+export const alreadyFollowProfileProblem = {title: "Already following profile", errorCode: ErrorCode.ALREADY_FOLLOW_PROFILE, status: 400}
+
+export const internalServerErrorProblem = {title: "Internal server error", errorCode: ErrorCode.INTERNAL_SERVER_ERROR, status: 500}
+
+export const cantFollowYourselfProblem = {title: "Can't following yourself", errorCode: ErrorCode.CANT_FOLLOW_YOURSELF, status: 400}
+
+export const alreadyRequestProfileProblem = {title: "Already requesting follow profile", errorCode: ErrorCode.ALREADY_REQUEST_PROFILE, status: 400}
+
+export const cantUnfollowYourselfProblem = {title: "Can't unfollowing yourself", errorCode: ErrorCode.CANT_UNFOLLOW_YOURSELF, status: 400}
+
+export const cantIgnoreYourselfProblem = {title: "Can't ignoring yourself", errorCode: ErrorCode.CANT_IGNORE_YOURSELF, status: 400}
+
+export const dontRequestProfileProblem = {title: "Don't requesting profile", errorCode: ErrorCode.DONT_REQUEST_PROFILE, status: 400}
+
+export const cantAcceptYourselfProblem = {title: "Can't accept yourself", errorCode: ErrorCode.CANT_ACCEPT_YOURSELF, status: 400}
+
+export const cantDeleteFollowerYourselfProblem = {title: "Can't delete follower yourself", errorCode: ErrorCode.CANT_DELETE_FOLLOWER_YOURSELF, status: 400}
+
 const GetCode = z.object({
   errorCode: z.number().int().positive()
 })

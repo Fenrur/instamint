@@ -25,26 +25,6 @@ export class UserPgRepository {
       })
   }
 
-  public async existUsername(username: string) {
-    const result = await this.pgClient.query.ProfileTable
-      .findFirst({
-        where: (profile, {ilike}) => (ilike(profile.username, username)),
-        columns: {
-          id: false,
-          createdAt: false,
-          avatarUrl: false,
-          link: false,
-          displayName: false,
-          bio: false,
-          location: false,
-          canBeSearched: false,
-          visibilityType: false,
-        }
-      })
-
-    return Boolean(result)
-  }
-
   public async resetTwoFactorAuthentification(id: number) {
     return this.pgClient
       .update(UserTable)
@@ -88,7 +68,7 @@ export class UserPgRepository {
       .values({
         email,
         hashedPassword,
-        profileId
+        profileId,
       })
       .returning({uid: UserTable.uid})
 
