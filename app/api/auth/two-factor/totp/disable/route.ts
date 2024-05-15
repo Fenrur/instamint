@@ -25,6 +25,7 @@ export const POST = auth(async (req) => {
   }
 
   const bodyParsedResult = TwoFactorAuthenticatorDisableRequest.safeParse(await req.json())
+
   if (!bodyParsedResult.success) {
     return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }

@@ -11,6 +11,7 @@ export async function POST(req: NextRequest) {
 
   const url = req.nextUrl.clone()
   const formDataParsedResult = LoginCredentials.safeParse(await req.formData())
+
   if (!formDataParsedResult.success) {
     url.pathname = "/login"
 

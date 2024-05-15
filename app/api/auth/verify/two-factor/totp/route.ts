@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
   }
 
   const bodyParsedResult = VerifyTotpCodeRequest.safeParse(await req.json())
+
   if (!bodyParsedResult.success) {
     return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }

@@ -26,6 +26,7 @@ export const PUT = auth(async (req) => {
   }
 
   const bodyParsedResult = AcceptAllFollowProfileRequest.safeParse(await req.json())
+
   if (!bodyParsedResult.success) {
     return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }

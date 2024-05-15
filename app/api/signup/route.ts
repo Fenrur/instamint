@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
   if (!formDataParsedResult.success) {
     url.pathname = "/signup"
 
-    return NextResponse.redirect
+    return NextResponse.redirect(url)
   }
 
   const formData = formDataParsedResult.data

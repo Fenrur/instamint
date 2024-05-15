@@ -40,6 +40,7 @@ export const POST = async (req: NextRequest) => {
 
   const createdAt = DateTime.utc()
   const bodyParsedResult = RegisterUserRequest.safeParse(await req.json())
+
   if (!bodyParsedResult.success) {
     return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
