@@ -10,6 +10,7 @@ import {followService, profileService} from "@/services"
 import {FollowProfileStateResponse} from "@/http/rest/types"
 import {NextResponse} from "next/server"
 import {usernameRegex} from "@/utils/validator"
+import {StatusCodes} from "http-status-codes"
 
 export const GET = auth(async (req) => {
   const session = getSession(req)
@@ -50,5 +51,5 @@ export const GET = auth(async (req) => {
     state: followState === "ignored_request_follow" ? "requesting_follow" : followState
   }
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, {status: StatusCodes.OK})
 })

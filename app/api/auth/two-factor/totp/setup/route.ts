@@ -12,6 +12,7 @@ import {TwoFactorAuthenticatorSetupRequest, TwoFactorAuthenticatorSetupResponse}
 import {isContentType} from "@/http/content-type"
 import {authenticator} from "@/two-factor/otp"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
 export const POST = auth(async (req) => {
   if (!isContentType(req, "json")) {
@@ -24,17 +25,15 @@ export const POST = auth(async (req) => {
     return problem(notAuthenticatedProblem)
   }
 
-  const body = await req.json()
-  let parsedBody = null
+  const bodyParsedResult = TwoFactorAuthenticatorSetupRequest.safeParse(await req.json())
 
-  try {
-    parsedBody = TwoFactorAuthenticatorSetupRequest.parse(body)
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
+  const body = bodyParsedResult.data
   const secret = authenticator().generateSecret(20)
-  const result = await userService.setupTwoFactorAuthentification(session.uid, parsedBody.password, secret)
+  const result = await userService.setupTwoFactorAuthentification(session.uid, body.password, secret)
 
   switch (result) {
     case "uid_not_found":
@@ -55,7 +54,7 @@ export const POST = auth(async (req) => {
         dataUri
       }
 
-      return NextResponse.json(response)
+      return NextResponse.json(response, {status: StatusCodes.OK})
     }
   }
 })

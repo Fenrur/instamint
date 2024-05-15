@@ -9,6 +9,7 @@ import {
 } from "@/http/problem"
 import {isContentType} from "@/http/content-type"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
 export const POST = auth(async (req) => {
   if (!isContentType(req, "no_body")) {
@@ -37,5 +38,5 @@ export const POST = auth(async (req) => {
 
   await userService.enableTwoFactorAuthentification(session.uid)
 
-  return NextResponse.json({message: "Two-factor authentication has been enabled"})
+  return NextResponse.json({message: "Two-factor authentication has been enabled"}, {status: StatusCodes.OK})
 })

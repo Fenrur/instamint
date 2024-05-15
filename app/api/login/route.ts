@@ -9,19 +9,17 @@ export async function POST(req: NextRequest) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/x-www-form-urlencoded"})
   }
 
-  const formData = await req.formData()
-  let parsedFormData = null
   const url = req.nextUrl.clone()
+  const formDataParsedResult = LoginCredentials.safeParse(await req.formData())
 
-  try {
-    parsedFormData = LoginCredentials.parse(formData)
-  } catch (e: any) {
+  if (!formDataParsedResult.success) {
     url.pathname = "/login"
 
     return NextResponse.redirect(url)
   }
 
-  const user = await userService.findByEmail(parsedFormData.email)
+  const formData = formDataParsedResult.data
+  const user = await userService.findByEmail(formData.email)
 
   if (!user) {
     url.pathname = "/login"
@@ -31,7 +29,7 @@ export async function POST(req: NextRequest) {
   }
 
   url.pathname = "/login/credentials"
-  url.searchParams.set("email", parsedFormData.email)
+  url.searchParams.set("email", formData.email)
 
   return NextResponse.redirect(url)
 }

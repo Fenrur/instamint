@@ -11,6 +11,7 @@ import {followService, profileService} from "@/services"
 import {AcceptAllFollowProfileRequest} from "@/http/rest/types"
 import {NextResponse} from "next/server"
 import {isContentType} from "@/http/content-type"
+import {StatusCodes} from "http-status-codes"
 
 export const PUT = auth(async (req) => {
   if (!isContentType(req, "json")) {
@@ -24,21 +25,20 @@ export const PUT = auth(async (req) => {
     return problem(notAuthenticatedProblem)
   }
 
-  let parsedBody = null
+  const bodyParsedResult = AcceptAllFollowProfileRequest.safeParse(await req.json())
 
-  try {
-    parsedBody = AcceptAllFollowProfileRequest.parse(await req.json())
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
+  const body = bodyParsedResult.data
   const myUserAndProfile = await profileService.findByUserUid(session.uid)
 
   if (!myUserAndProfile) {
     return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
   }
 
-  await followService.acceptAllRequestFollows(myUserAndProfile.profile.id, followAt, parsedBody.ignored)
+  await followService.acceptAllRequestFollows(myUserAndProfile.profile.id, followAt, body.ignored)
 
-  return NextResponse.json({acceptedAll: true}, {status: 200})
+  return NextResponse.json({acceptedAll: true}, {status: StatusCodes.OK})
 })

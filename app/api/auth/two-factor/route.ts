@@ -11,29 +11,27 @@ import {isPasswordValid} from "@/utils/password"
 import {isContentType} from "@/http/content-type"
 import { env } from "@/env"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
 export async function POST(req: NextRequest) {
   if (!isContentType(req, "json")) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
   }
 
-  const body = await req.json()
+  const bodyParsedResult = TwoFactorAuthenticatorTypeRequest.safeParse(await req.json())
 
-  let parsedBody = null
-
-  try {
-    parsedBody = TwoFactorAuthenticatorTypeRequest.parse(body)
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
-  const user = await userService.findByEmail(parsedBody.email)
+  const body = bodyParsedResult.data
+  const user = await userService.findByEmail(body.email)
 
   if (!user) {
     return problem(emailNotFoundProblem)
   }
 
-  if (!await isPasswordValid(parsedBody.password, user.hashedPassword, env.PEPPER_PASSWORD_SECRET)) {
+  if (!await isPasswordValid(body.password, user.hashedPassword, env.PEPPER_PASSWORD_SECRET)) {
     return problem(passwordIsInvalidProblem)
   }
 
@@ -41,5 +39,5 @@ export async function POST(req: NextRequest) {
     type: user.twoFactorEnabled ? "totp" : "none"
   }
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, {status: StatusCodes.OK})
 }
