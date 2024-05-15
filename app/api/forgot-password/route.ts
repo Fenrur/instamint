@@ -10,7 +10,7 @@ import * as u from "node:url"
 import {passwordResetService, userService} from "@/services"
 import ResetPassword from "@/mail/templates/reset-password"
 
-async function sendPasswordResetEmail(formData: SignupCredentials, createdAt: DateTime<true>, userId: number, resetId: string) {
+async function sendPasswordResetEmail(formData: SignupCredentials, resetId: string) {
   const verificationLink = u.format({
     host: env.BASE_URL,
     pathname: "/api/forgot-password/reset-password-email",
@@ -61,8 +61,7 @@ export async function POST(req: NextRequest) {
   url.searchParams.set("email", parsedFormData.email)
 
   const passwordResetId = await passwordResetService.create(user.id, createdAt)
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  await sendPasswordResetEmail(parsedFormData, createdAt, user.id, passwordResetId)
+  await sendPasswordResetEmail(parsedFormData, passwordResetId)
 
   return NextResponse.redirect(url)
 }

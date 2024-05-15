@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const expireAt = DateTime.fromSQL(passwordReset.expireAt, {zone: "utc"})
-  const now = DateTime.now()
+  const now = DateTime.utc()
 
   if (now > expireAt) {
     url.pathname = "/reset-password/invalid/expired"

@@ -27,9 +27,7 @@ export const POST = async (req: NextRequest) => {
 
   await passwordResetService.deactivateResetById(passwordReset.id)
 
-  // eslint-disable-next-line no-warning-comments
   url.pathname = "/login"
 
-  //Url.searchParams.set("email", passwordReset.email)
   return NextResponse.redirect(url)
 }
