@@ -17,23 +17,19 @@ export async function POST(req: NextRequest) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
   }
 
-  const body = await req.json()
-
-  let parsedBody = null
-
-  try {
-    parsedBody = TwoFactorAuthenticatorTypeRequest.parse(body)
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  const bodyParsedResult = TwoFactorAuthenticatorTypeRequest.safeParse(await req.json())
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
-  const user = await userService.findByEmail(parsedBody.email)
+  const body = bodyParsedResult.data
+  const user = await userService.findByEmail(body.email)
 
   if (!user) {
     return problem(emailNotFoundProblem)
   }
 
-  if (!await isPasswordValid(parsedBody.password, user.hashedPassword, env.PEPPER_PASSWORD_SECRET)) {
+  if (!await isPasswordValid(body.password, user.hashedPassword, env.PEPPER_PASSWORD_SECRET)) {
     return problem(passwordIsInvalidProblem)
   }
 

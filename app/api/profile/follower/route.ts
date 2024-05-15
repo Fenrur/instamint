@@ -98,21 +98,19 @@ export const DELETE = auth(async (req) => {
     return problem(notAuthenticatedProblem)
   }
 
-  let parsedBody = null
-
-  try {
-    parsedBody = DeleteFollowerProfileRequest.parse(await req.json())
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  const bodyParsedResult = DeleteFollowerProfileRequest.safeParse(await req.json())
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
+  const body = bodyParsedResult.data
   const myUserAndProfile = await profileService.findByUserUid(session.uid)
 
   if (!myUserAndProfile) {
     return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
   }
 
-  const targetProfile = await profileService.findByUsername(parsedBody.username)
+  const targetProfile = await profileService.findByUsername(body.username)
 
   if (!targetProfile) {
     return problem({...profileNotFoundProblem, detail: "target profile not fount"})
@@ -131,6 +129,6 @@ export const DELETE = auth(async (req) => {
       return problem(internalServerErrorProblem)
 
     case "not_following":
-      return problem({...dontFollowProfileProblem, detail: `@${parsedBody.username} not following you`})
+      return problem({...dontFollowProfileProblem, detail: `@${body.username} not following you`})
   }
 })

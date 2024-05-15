@@ -15,17 +15,13 @@ export async function POST(req: NextRequest) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
   }
 
-  const body = await req.json()
-
-  let parsedBody = null
-
-  try {
-    parsedBody = VerifyPasswordRequest.parse(body)
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  const bodyParsedResult = VerifyPasswordRequest.safeParse(await req.json())
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
-  const result = await userService.verifyPasswordByEmail(parsedBody.email, parsedBody.password)
+  const body = bodyParsedResult.data
+  const result = await userService.verifyPasswordByEmail(body.email, body.password)
 
   switch (result) {
     case "valid":

@@ -38,20 +38,16 @@ export const POST = async (req: NextRequest) => {
   }
 
   const createdAt = DateTime.utc()
-  const body = await req.json()
-
-  let parsedBody = null
-
-  try {
-    parsedBody = RegisterUserRequest.parse(body)
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  const bodyParsedResult = RegisterUserRequest.safeParse(await req.json())
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
+  const body = bodyParsedResult.data
   const result = await userService.create(
-    parsedBody.password,
-    parsedBody.username,
-    parsedBody.emailVerificationId, createdAt
+    body.password,
+    body.username,
+    body.emailVerificationId, createdAt
   )
 
   switch (result) {
@@ -76,7 +72,7 @@ export const POST = async (req: NextRequest) => {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  sendRegisteredEmail(parsedBody, result)
+  sendRegisteredEmail(body, result)
 
   return NextResponse.json(response, {status: 201})
 }

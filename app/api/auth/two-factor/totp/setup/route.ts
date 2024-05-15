@@ -24,17 +24,14 @@ export const POST = auth(async (req) => {
     return problem(notAuthenticatedProblem)
   }
 
-  const body = await req.json()
-  let parsedBody = null
-
-  try {
-    parsedBody = TwoFactorAuthenticatorSetupRequest.parse(body)
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  const bodyParsedResult = TwoFactorAuthenticatorSetupRequest.safeParse(await req.json())
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
+  const body = bodyParsedResult.data
   const secret = authenticator().generateSecret(20)
-  const result = await userService.setupTwoFactorAuthentification(session.uid, parsedBody.password, secret)
+  const result = await userService.setupTwoFactorAuthentification(session.uid, body.password, secret)
 
   switch (result) {
     case "uid_not_found":

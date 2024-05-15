@@ -35,21 +35,19 @@ export const POST = auth(async (req) => {
       return problem(notAuthenticatedProblem)
     }
 
-    let parsedBody = null
-
-    try {
-      parsedBody = FollowProfileRequest.parse(await req.json())
-    } catch (e: any) {
-      return problem({...invalidBodyProblem, detail: e.errors})
+    const bodyParsedResult = FollowProfileRequest.safeParse(await req.json())
+    if (!bodyParsedResult.success) {
+      return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
     }
 
+    const body = bodyParsedResult.data
     const myUserAndProfile = await profileService.findByUserUid(session.uid)
 
     if (!myUserAndProfile) {
       return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
     }
 
-    const targetProfile = await profileService.findByUsername(parsedBody.username)
+    const targetProfile = await profileService.findByUsername(body.username)
 
     if (!targetProfile) {
       return problem({...profileNotFoundProblem, detail: "target profile not fount"})
@@ -75,7 +73,7 @@ export const POST = auth(async (req) => {
         return problem(alreadyFollowProfileProblem)
 
       case "already_request_follow":
-        return problem({...alreadyRequestProfileProblem, detail: `@${parsedBody.username} requesting to follow`})
+        return problem({...alreadyRequestProfileProblem, detail: `@${body.username} requesting to follow`})
 
       case "followed_profile_not_found":
         return problem(profileNotFoundProblem)
@@ -228,21 +226,19 @@ export const DELETE = auth(async (req) => {
     return problem(notAuthenticatedProblem)
   }
 
-  let parsedBody = null
-
-  try {
-    parsedBody = UnfollowProfileRequest.parse(await req.json())
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  const bodyParsedResult = UnfollowProfileRequest.safeParse(await req.json())
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
+  const body = bodyParsedResult.data
   const myUserAndProfile = await profileService.findByUserUid(session.uid)
 
   if (!myUserAndProfile) {
     return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
   }
 
-  const targetProfile = await profileService.findByUsername(parsedBody.username)
+  const targetProfile = await profileService.findByUsername(body.username)
 
   if (!targetProfile) {
     return problem({...profileNotFoundProblem, detail: "target profile not fount"})

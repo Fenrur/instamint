@@ -15,16 +15,13 @@ export async function POST(req: NextRequest) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
   }
 
-  const body = await req.json()
-  let parsedBody = null
-
-  try {
-    parsedBody = VerifyTotpCodeRequest.parse(body)
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  const bodyParsedResult = VerifyTotpCodeRequest.safeParse(await req.json())
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
-  const result = await userService.verifyPasswordAndTotpCodeByEmail(parsedBody.email, parsedBody.password, parsedBody.totpCode)
+  const body = bodyParsedResult.data
+  const result = await userService.verifyPasswordAndTotpCodeByEmail(body.email, body.password, body.totpCode)
 
   switch (result) {
     case "email_not_found":

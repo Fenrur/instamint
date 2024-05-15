@@ -6,7 +6,7 @@ interface Problem {
   status: number
   errorCode: ErrorCode
   title: string
-  detail?: string
+  detail?: unknown
   type?: string
 }
 
