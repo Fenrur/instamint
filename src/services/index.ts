@@ -7,6 +7,7 @@ import {DefaultFollowService} from "@/follow/service"
 import {DefaultPasswordResetService} from "@/password-reset/service"
 import {env} from "@/env"
 import {
+  durationExpireOffset,
   followersPageSize,
   followRequestIgnoredPageSize,
   followRequestPageSize,
@@ -19,7 +20,7 @@ import {
 
 export const userService = new DefaultUserService(pgClient, env.PEPPER_PASSWORD_SECRET, env.TOTP_ENCRYPTION_KEY)
 
-export const emailVerificationService = new DefaultEmailVerificationService(pgClient)
+export const emailVerificationService = new DefaultEmailVerificationService(pgClient, durationExpireOffset)
 
 export const passwordResetService = new DefaultPasswordResetService(pgClient)
 

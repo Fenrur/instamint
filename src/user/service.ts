@@ -147,7 +147,7 @@ export class DefaultUserService {
             return "email_verification_already_verified"
         }
 
-        const verificationEmailExpireAt = DateTime.fromSQL(emailVerification.expireAt)
+        const verificationEmailExpireAt = emailVerification.expireAt
 
         if (verificationEmailExpireAt < createdAt) {
             return "email_verification_expired"

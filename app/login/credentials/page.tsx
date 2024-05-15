@@ -89,32 +89,42 @@ function ContentPage() {
 
     if (result === "email_not_found") {
       router.push(`/login${createRedirectQueryParam(redirect)}`)
-    } else if (result === "password_invalid") {
+
+      return
+    }
+
+    if (result === "password_invalid") {
       toast.error("Invalid password", {description: "Please try again..."})
-    } else if (result.type === "totp") {
+
+      return
+    }
+
+    if (result.type === "totp") {
       setCredentials({
         email,
         password
       })
       router.push(`/login/totp${createRedirectQueryParam(redirect)}`)
-    } else {
-      resetCredentials()
 
-      if (redirect) {
-        await signIn("credentials", {
-          email,
-          password,
-          redirect: true,
-          callbackUrl: decodeURI(redirect)
-        })
-      } else {
-        await signIn("credentials", {
-          email,
-          password,
-          redirect: true,
-          callbackUrl: "/"
-        })
-      }
+      return
+    }
+
+    resetCredentials()
+
+    if (redirect) {
+      await signIn("credentials", {
+        email,
+        password,
+        redirect: true,
+        callbackUrl: decodeURI(redirect)
+      })
+    } else {
+      await signIn("credentials", {
+        email,
+        password,
+        redirect: true,
+        callbackUrl: "/"
+      })
     }
   }
 

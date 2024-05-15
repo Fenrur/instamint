@@ -10,6 +10,7 @@ import {followService, profileService} from "@/services"
 import {NextResponse} from "next/server"
 import {FollowerProfileStateResponse} from "@/http/rest/types"
 import {usernameRegex} from "@/utils/validator"
+import {StatusCodes} from "http-status-codes"
 
 export const GET = auth(async (req) => {
   const session = getSession(req)
@@ -50,5 +51,5 @@ export const GET = auth(async (req) => {
     state: followerState
   }
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, {status: StatusCodes.OK})
 })

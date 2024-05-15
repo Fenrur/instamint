@@ -9,22 +9,21 @@ import {
 import {VerifyTotpCodeRequest} from "@/http/rest/types"
 import {isContentType} from "@/http/content-type"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
 export async function POST(req: NextRequest) {
   if (!isContentType(req, "json")) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
   }
 
-  const body = await req.json()
-  let parsedBody = null
+  const bodyParsedResult = VerifyTotpCodeRequest.safeParse(await req.json())
 
-  try {
-    parsedBody = VerifyTotpCodeRequest.parse(body)
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
-  const result = await userService.verifyPasswordAndTotpCodeByEmail(parsedBody.email, parsedBody.password, parsedBody.totpCode)
+  const body = bodyParsedResult.data
+  const result = await userService.verifyPasswordAndTotpCodeByEmail(body.email, body.password, body.totpCode)
 
   switch (result) {
     case "email_not_found":
@@ -43,6 +42,6 @@ export async function POST(req: NextRequest) {
       return problem(invalidTwoFactorCodeProblem)
 
     case "valid":
-      return NextResponse.json({message: "TOTP code is valid"})
+      return NextResponse.json({message: "TOTP code is valid"}, {status: StatusCodes.OK})
   }
 }
