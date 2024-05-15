@@ -9,6 +9,7 @@ import {
 import {VerifyTotpCodeRequest} from "@/http/rest/types"
 import {isContentType} from "@/http/content-type"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
 export async function POST(req: NextRequest) {
   if (!isContentType(req, "json")) {
@@ -40,6 +41,6 @@ export async function POST(req: NextRequest) {
       return problem(invalidTwoFactorCodeProblem)
 
     case "valid":
-      return NextResponse.json({message: "TOTP code is valid"})
+      return NextResponse.json({message: "TOTP code is valid"}, {status: StatusCodes.OK})
   }
 }

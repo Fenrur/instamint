@@ -15,6 +15,7 @@ import {env} from "@/env"
 import {transporter} from "@/mail/mailer"
 import {RegisteringUser} from "@/mail/templates/registering-user"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
 async function sendRegisteredEmail(body: RegisterUserRequest, result: { uid: string; email: string }) {
   const emailHtml = render(RegisteringUser({
@@ -74,5 +75,5 @@ export const POST = async (req: NextRequest) => {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   sendRegisteredEmail(body, result)
 
-  return NextResponse.json(response, {status: 201})
+  return NextResponse.json(response, {status: StatusCodes.CREATED})
 }

@@ -11,6 +11,7 @@ import {isPasswordValid} from "@/utils/password"
 import {isContentType} from "@/http/content-type"
 import { env } from "@/env"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
 export async function POST(req: NextRequest) {
   if (!isContentType(req, "json")) {
@@ -37,5 +38,5 @@ export async function POST(req: NextRequest) {
     type: user.twoFactorEnabled ? "totp" : "none"
   }
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, {status: StatusCodes.OK})
 }

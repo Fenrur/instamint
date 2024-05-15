@@ -12,6 +12,7 @@ import {TwoFactorAuthenticatorSetupRequest, TwoFactorAuthenticatorSetupResponse}
 import {isContentType} from "@/http/content-type"
 import {authenticator} from "@/two-factor/otp"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
 export const POST = auth(async (req) => {
   if (!isContentType(req, "json")) {
@@ -52,7 +53,7 @@ export const POST = auth(async (req) => {
         dataUri
       }
 
-      return NextResponse.json(response)
+      return NextResponse.json(response, {status: StatusCodes.OK})
     }
   }
 })

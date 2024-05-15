@@ -9,6 +9,7 @@ import {
 } from "@/http/problem"
 import {isContentType} from "@/http/content-type"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
 export async function POST(req: NextRequest) {
   if (!isContentType(req, "json")) {
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
 
   switch (result) {
     case "valid":
-      return NextResponse.json({message: "valid"})
+      return NextResponse.json({message: "valid"}, {status: StatusCodes.OK})
 
     case "invalid":
       return problem(passwordIsInvalidProblem)

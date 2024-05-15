@@ -11,6 +11,7 @@ import {followService, profileService} from "@/services"
 import {AcceptAllFollowProfileRequest} from "@/http/rest/types"
 import {NextResponse} from "next/server"
 import {isContentType} from "@/http/content-type"
+import {StatusCodes} from "http-status-codes"
 
 export const PUT = auth(async (req) => {
   if (!isContentType(req, "json")) {
@@ -38,5 +39,5 @@ export const PUT = auth(async (req) => {
 
   await followService.acceptAllRequestFollows(myUserAndProfile.profile.id, followAt, body.ignored)
 
-  return NextResponse.json({acceptedAll: true}, {status: 200})
+  return NextResponse.json({acceptedAll: true}, {status: StatusCodes.OK})
 })

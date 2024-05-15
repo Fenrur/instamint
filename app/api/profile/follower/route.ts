@@ -16,6 +16,7 @@ import {followService, profileService} from "@/services"
 import {NextResponse} from "next/server"
 import {usernameRegex} from "@/utils/validator"
 import {isContentType} from "@/http/content-type"
+import {StatusCodes} from "http-status-codes"
 
 export const GET = auth(async (req) => {
   const session = getSession(req)
@@ -58,7 +59,7 @@ export const GET = auth(async (req) => {
       parsedPage
     )
 
-    return NextResponse.json(response)
+    return NextResponse.json(response, {status: StatusCodes.OK})
   }
 
   const targetProfile = await profileService.findByUsername(username)
@@ -84,7 +85,7 @@ export const GET = auth(async (req) => {
     parsedPage
   )
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, {status: StatusCodes.OK})
 })
 
 export const DELETE = auth(async (req) => {
@@ -123,7 +124,7 @@ export const DELETE = auth(async (req) => {
       return problem({...cantDeleteFollowerYourselfProblem, detail: "You can't delete yourself as a follower"})
 
     case "unfollowed":
-      return NextResponse.json({deleted: true}, {status: 200})
+      return NextResponse.json({deleted: true}, {status: StatusCodes.OK})
 
     case "unrequested_follow":
       return problem(internalServerErrorProblem)

@@ -13,6 +13,7 @@ import {IgnoreProfileRequest} from "@/http/rest/types"
 import {followService, profileService} from "@/services"
 import {NextResponse} from "next/server"
 import {isContentType} from "@/http/content-type"
+import {StatusCodes} from "http-status-codes"
 
 export const POST = auth(async (req) => {
   if (!isContentType(req, "json")) {
@@ -53,6 +54,6 @@ export const POST = auth(async (req) => {
       return problem({...dontRequestProfileProblem, detail: `@${targetProfile.username} not requesting to follow you`})
 
     case "ignored_request_follow":
-      return NextResponse.json({ignored: true}, {status: 200})
+      return NextResponse.json({ignored: true}, {status: StatusCodes.OK})
   }
 })

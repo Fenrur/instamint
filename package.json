@@ -51,6 +51,7 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.30.10",
     "embla-carousel-react": "^8.0.4",
+    "http-status-codes": "^2.3.0",
     "input-otp": "^1.2.4",
     "knex": "^3.1.0",
     "lucide-react": "^0.378.0",

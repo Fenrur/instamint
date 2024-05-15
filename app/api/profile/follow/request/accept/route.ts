@@ -15,6 +15,7 @@ import {followService, profileService} from "@/services"
 import {NextResponse} from "next/server"
 import {DateTime} from "luxon"
 import {isContentType} from "@/http/content-type"
+import {StatusCodes} from "http-status-codes"
 
 export const POST = auth(async (req) => {
   if (!isContentType(req, "json")) {
@@ -59,6 +60,6 @@ export const POST = auth(async (req) => {
       return problem(alreadyFollowProfileProblem)
 
     case "accepted_request_follow":
-      return NextResponse.json({accepted: true}, {status: 200})
+      return NextResponse.json({accepted: true}, {status: StatusCodes.OK})
   }
 })

@@ -25,6 +25,7 @@ import {DateTime} from "luxon"
 import {NextResponse} from "next/server"
 import {usernameRegex} from "@/utils/validator"
 import {isContentType} from "@/http/content-type"
+import {StatusCodes} from "http-status-codes"
 
 export const POST = auth(async (req) => {
   if (isContentType(req, "json")) {
@@ -59,12 +60,12 @@ export const POST = auth(async (req) => {
       case "requested_follow":
         return NextResponse.json({
           type: "requesting_follow"
-        } satisfies FollowProfileResponse)
+        } satisfies FollowProfileResponse, {status: StatusCodes.OK})
 
       case "followed":
         return NextResponse.json({
           type: "followed"
-        } satisfies FollowProfileResponse)
+        } satisfies FollowProfileResponse, {status: StatusCodes.OK})
 
       case "cant_follow_yourself":
         return problem(cantFollowYourselfProblem)
@@ -186,7 +187,7 @@ export const GET = auth(async (req) => {
       parsedPage
     )
 
-    return NextResponse.json(response)
+    return NextResponse.json(response, {status: StatusCodes.OK})
   }
 
   const targetProfile = await profileService.findByUsername(username)
@@ -212,7 +213,7 @@ export const GET = auth(async (req) => {
     parsedPage
   )
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, {status: StatusCodes.OK})
 })
 
 export const DELETE = auth(async (req) => {
@@ -253,12 +254,12 @@ export const DELETE = auth(async (req) => {
     case "unfollowed":
       return NextResponse.json({
         type: "unfollowed"
-      } satisfies UnfollowProfileResponse)
+      } satisfies UnfollowProfileResponse, {status: StatusCodes.OK})
 
     case "unrequested_follow":
       return NextResponse.json({
         type: "unrequested_follow"
-      } satisfies UnfollowProfileResponse)
+      } satisfies UnfollowProfileResponse, {status: StatusCodes.OK})
 
     case "not_following":
       return problem(dontFollowProfileProblem)

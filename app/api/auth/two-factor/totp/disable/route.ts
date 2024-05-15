@@ -11,6 +11,7 @@ import {
 import {TwoFactorAuthenticatorDisableRequest} from "@/http/rest/types"
 import {isContentType} from "@/http/content-type"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
 export const POST = auth(async (req) => {
   if (!isContentType(req, "json")) {
@@ -50,6 +51,6 @@ export const POST = auth(async (req) => {
     case "valid":
       await userService.disableTwoFactorAuthentification(session.uid)
 
-    return NextResponse.json({message: "Two-factor authentication has been disabled"})
+    return NextResponse.json({message: "Two-factor authentication has been disabled"}, {status: StatusCodes.OK})
   }
 })
