@@ -82,13 +82,9 @@ VALUES (1, 'instaminttest+1@outlook.com', '$2a$12$Uxou41mTi/jxwoU3yeINDeMRftoG/g
         'es', 'user', 9, '{"comments_threads", "follow_requests"}', NULL),
 -- PASSWORD: h8G6?87*£+7ae6srvp
        (10, 'instaminttest+10@outlook.com', '$2a$12$88CcZPjmX8ZY/qifYgEeZeMW756ojAAJ2jpN2bvrJyx8k9Z965AX2', TRUE, FALSE,
-        'en', 'user', 10, '{"comments_replies", "comments_threads", "mints", "follow_requests", "follow_requests_accepted"}', NULL);
+        'en', 'user', 10, '{"comments_replies", "comments_threads", "mints", "follow_requests", "follow_requests_accepted"}', NULL),
 -- PASSWORD: +b.4e8&OqP7CBso6?g
-
-
-INSERT INTO "User" ("id", "email", "hashedPassword", "isActivated", "twoFactorEnabled", "languageType", "role",
-                    "profileId", "enabledNotificationTypes", "twoFactorSecret")
-VALUES (11, 'instaminttest+11@outlook.com', '$2a$12$Uxou41mTi/jxwoU3yeINDeMRftoG/glmHUvGavVRXOJjVIEeiTjWO', TRUE, FALSE,
+       (11, 'instaminttest+11@outlook.com', '$2a$12$Uxou41mTi/jxwoU3yeINDeMRftoG/glmHUvGavVRXOJjVIEeiTjWO', TRUE, FALSE,
         'en', 'user', 12, '{"comments_replies", "mints"}', NULL);
 -- PASSWORD: V5[tSp+k354/=}:J/u
 
