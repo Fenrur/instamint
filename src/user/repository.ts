@@ -25,6 +25,33 @@ export class UserPgRepository {
       })
   }
 
+  public findById(id: string) {
+    return this.pgClient.query.UserTable
+      .findFirst({
+        where: (user, {eq}) => (eq(user.id, Number(id))),
+      })
+  }
+
+  public async existUsername(username: string) {
+    const result = await this.pgClient.query.ProfileTable
+      .findFirst({
+        where: (profile, {ilike}) => (ilike(profile.username, username)),
+        columns: {
+          id: false,
+          createdAt: false,
+          avatarUrl: false,
+          link: false,
+          displayName: false,
+          bio: false,
+          location: false,
+          canBeSearched: false,
+          visibilityType: false,
+        }
+      })
+
+    return Boolean(result)
+  }
+
   public async resetTwoFactorAuthentification(id: number) {
     return this.pgClient
       .update(UserTable)
@@ -58,6 +85,15 @@ export class UserPgRepository {
       .update(UserTable)
       .set({
         twoFactorSecret: symmetricEncrypt(secret, env.TOTP_ENCRYPTION_KEY)
+      })
+      .where(eq(UserTable.uid, uid))
+  }
+
+  public async updatePassword(uid: string, hashedPassword: string) {
+    return this.pgClient
+      .update(UserTable)
+      .set({
+         hashedPassword
       })
       .where(eq(UserTable.uid, uid))
   }

@@ -22,12 +22,12 @@ interface VerificationEmailProps {
   contactEmail: string;
 }
 
-export const VerificationEmail = ({
-                                    baseUrl,
-                                    instamintImageUrl,
-                                    verificationLink,
-                                    contactEmail,
-                                  }: VerificationEmailProps) => {
+export const ResetPassword = ({
+                                baseUrl,
+                                instamintImageUrl,
+                                verificationLink,
+                                contactEmail,
+                              }: VerificationEmailProps) => {
   const previewText = `Verify your mail on Instamint`
 
   return (
@@ -46,15 +46,15 @@ export const VerificationEmail = ({
               />
             </Section>
             <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
-              <strong>Verify your email Instamint <Link href={baseUrl}
-                                                 className="text-green-400 underline">Instamint</Link></strong>
+              <strong>Reset your password Instamint <Link href={baseUrl}
+                                                          className="text-green-400 underline">Instamint</Link></strong>
             </Heading>
             <Section className="text-center mt-[32px] mb-[32px]">
               <Button
                 className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
                 href={verificationLink}
               >
-                  Verify
+                Reset
               </Button>
             </Section>
             <Text className="text-black text-[14px] leading-[24px]">
@@ -78,11 +78,11 @@ export const VerificationEmail = ({
   )
 }
 
-VerificationEmail.PreviewProps = {
+ResetPassword.PreviewProps = {
   baseUrl: "http://localhost:3000",
   instamintImageUrl: "https://image.noelshack.com/fichiers/2024/16/5/1713534366-instamint.png",
   verificationLink: "http://localhost:3000/verify-email?uid=123",
   contactEmail: "contact-instamint@gmail.com"
 } as VerificationEmailProps
 
-export default VerificationEmail
+export default ResetPassword
