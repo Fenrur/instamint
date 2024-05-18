@@ -49,6 +49,12 @@ export const emailAlreadyUsedProblem = {title: "Email is already in use", errorC
 
 export const usernameAlreadyUsedProblem = {title: "Username is already in use", errorCode: ErrorCode.USERNAME_ALREADY_USED, status: 400}
 
+export const linkAlreadyUsedProblem = {
+  title: "unique link is already in use",
+  errorCode: ErrorCode.LINK_ALREADY_USED,
+  status: 400
+}
+
 export const profileNotFoundProblem = {title: "Profile not found", errorCode: ErrorCode.PROFILE_NOT_FOUND, status: 404}
 
 export const userNotFoundProblem = {title: "User not found", errorCode: ErrorCode.USER_NOT_FOUND, status: 404}

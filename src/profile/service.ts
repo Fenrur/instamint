@@ -2,7 +2,6 @@ import {PgClient} from "@/db/db-client"
 import {S3Client} from "@aws-sdk/client-s3"
 import {ProfilePgRepository} from "@/profile/repository"
 import {AvatarProfileS3Repository} from "@/profile/avatar/repository"
-import {getServerSession} from "@/auth"
 
 export class DefaultProfileService {
   private readonly profilePgRepository: ProfilePgRepository
@@ -19,7 +18,7 @@ export class DefaultProfileService {
     return this.profilePgRepository.findByUsername(username)
   }
 
-  public updateProfileByUid(userId:string, username: string, bio:string, link:string, avatarUrl:string) {
+  public updateProfileByUid(userId: string, username: string, bio: string, link: string, avatarUrl: string) {
     return this.profilePgRepository.updateProfileByUserUid(userId, username, bio, link, avatarUrl)
   }
 
@@ -27,7 +26,15 @@ export class DefaultProfileService {
     return this.profilePgRepository.findByUserUid(uid)
   }
 
-  public findUsersOrTeaPaginatedByUsernameOrLocation(username:string, location:string, page: number) {
+  public findUsersOrTeaPaginatedByUsernameOrLocation(username: string, location: string, page: number) {
     return this.profilePgRepository.findUsersOrTeaPaginatedByUsernameOrLocation(username, location, this.pageSize * (page - 1), this.pageSize)
+  }
+
+  public isUsernameAlreadyExist(username: string) {
+    return this.profilePgRepository.isUsernameAlreadyExist(username)
+  }
+
+  public isLinkAlreadyExist(link: string) {
+    return this.profilePgRepository.isLinkAlreadyExist(link)
   }
 }
