@@ -64,6 +64,7 @@ export class AvatarProfileS3Repository {
       Bucket: this.bucket,
       Key: key
     })
+
     try {
       const result = await this.s3client.send(getCommand)
 
