@@ -36,6 +36,7 @@ export default function Home() {
           Click me
         </Button>
         <Label>{count}</Label>
+        { status === "authenticated" && <Button className="w-24" onClick={() => { router.push("/me") }}>My Profile</Button> }
         <Button className="w-24" onClick={routingToSignupPage}>
           Signup
         </Button>

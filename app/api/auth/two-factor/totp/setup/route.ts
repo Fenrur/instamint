@@ -9,13 +9,12 @@ import {
 } from "@/http/problem"
 import qrcode from "qrcode"
 import {TwoFactorAuthenticatorSetupRequest, TwoFactorAuthenticatorSetupResponse} from "@/http/rest/types"
-// @ts-expect-error TODO fix library not found
-import {NextAuthRequest} from "next-auth/lib"
 import {isContentType} from "@/http/content-type"
 import {authenticator} from "@/two-factor/otp"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
-export const POST = auth(async (req: NextAuthRequest) => {
+export const POST = auth(async (req) => {
   if (!isContentType(req, "json")) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
   }
@@ -26,17 +25,15 @@ export const POST = auth(async (req: NextAuthRequest) => {
     return problem(notAuthenticatedProblem)
   }
 
-  const body = await req.json()
-  let parsedBody = null
+  const bodyParsedResult = TwoFactorAuthenticatorSetupRequest.safeParse(await req.json())
 
-  try {
-    parsedBody = TwoFactorAuthenticatorSetupRequest.parse(body)
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
+  const body = bodyParsedResult.data
   const secret = authenticator().generateSecret(20)
-  const result = await userService.setupTwoFactorAuthentification(session.uid, parsedBody.password, secret)
+  const result = await userService.setupTwoFactorAuthentification(session.uid, body.password, secret)
 
   switch (result) {
     case "uid_not_found":
@@ -57,7 +54,7 @@ export const POST = auth(async (req: NextAuthRequest) => {
         dataUri
       }
 
-      return NextResponse.json(response)
+      return NextResponse.json(response, {status: StatusCodes.OK})
     }
   }
 })

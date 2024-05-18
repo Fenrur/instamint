@@ -49,41 +49,44 @@ $$;
 INSERT INTO "User" ("id", "email", "hashedPassword", "isActivated", "twoFactorEnabled", "languageType", "role",
                     "profileId", "enabledNotificationTypes", "twoFactorSecret")
 VALUES (1, 'instaminttest+1@outlook.com', '$2a$12$Uxou41mTi/jxwoU3yeINDeMRftoG/glmHUvGavVRXOJjVIEeiTjWO', TRUE, FALSE,
-        'en', 'user', 1, '{"replies_comments", "mint"}', NULL),
+        'en', 'user', 1, '{"comments_replies", "mints"}', NULL),
 -- PASSWORD: V5[tSp+k354/=}:J/u
        (2, 'instaminttest+2@outlook.com', '$2a$12$t6HtJgGogs9iTEFdh9VRc.HFO6RIWwm4eeqD4vwaU/vDVpaRmmUzy', TRUE, TRUE,
-        'fr', 'user', 2, '{"replies_comments", "mint"}',
+        'fr', 'user', 2, '{"comments_replies", "mints"}',
         '5192b5b444977100fdb024d8f30648c2:e480af9a24ea7eacf6a28f714195ec41e7a56db13ba0d07d555ed46d5e99690a5be6f15580e83fa673915753f01be4ed'),
 -- PASSWORD: ?#95,>7jYnJymy},]E
 -- TOTP SECRET: G5TVEKDKEZ4UWUCJPVVEMCZYG4DD4ODJ
        (3, 'instaminttest+3@outlook.com', '$2a$12$w9cXcd2VIk5dgLE1ktNLyuzNPp1cJfUkih95ttdpEOeN9CcyO9wri', TRUE, FALSE,
-        'es', 'user', 3, '{"follow", "follow_request_accepted"}', NULL),
+        'es', 'user', 3, '{"follow_requests", "follow_requests_accepted"}', NULL),
 -- PASSWORD: 20Dl[FC4IAq%[rlJ8
        (4, 'instaminttest+4@outlook.com', '$2a$12$QbAsqcDOxe9PCiZe2rnUAeP/FhfXouBuV3/Vru5SdRPTcv3Mi95hK', TRUE, FALSE,
-        'en', 'admin', 4, '{"replies_comments"}', NULL),
+        'en', 'admin', 4, '{"comments_replies"}', NULL),
 -- PASSWORD: p5e5g?J,tL*Jcx1*h
        (5, 'instaminttest+5@outlook.com', '$2a$12$rwBzxh48Cvr8oeFmn178mORYGKRxJrNVG7k8RliDZwkIuQQ5HNsf2', TRUE, TRUE,
-        'fr', 'user', 5, '{"thread_comment", "follow"}',
+        'fr', 'user', 5, '{"comments_threads", "follow_requests"}',
         '93b8bf955b343631da0007aa22326322:29af8196c4cc5d1a8ba75aed6156880946ecd6bd9f5cb4d4f641663f409bf2ded542ad29b4a465fdf38493ce66cb5482'),
 -- PASSWORD: )vs:7'8K2E<B.l9_+x
 -- TOTP SECRET: G5QUIGLRBB7DAOLZHB4TKCD6FYATS7IE
        (6, 'instaminttest+6@outlook.com', '$2a$12$Hh3JR8I4PToRxSsGzVul.erhCMjvyvq7LXMB9P./M5VY47Y2iQTKC', TRUE, FALSE,
-        'es', 'user', 6, '{"mint"}', NULL),
+        'es', 'user', 6, '{"mints"}', NULL),
 -- PASSWORD: 6V0£8V<Z^8s:ZHs£d
        (7, 'instaminttest+7@outlook.com', '$2a$12$sM5K2T5IYgboP0Ru.t5QyuebKmjEx68o4jwZBJ7I1S0pTJUcmKLWy', TRUE, TRUE,
-        'en', 'user', 7, '{"replies_comments", "thread_comment"}',
+        'en', 'user', 7, '{"comments_replies", "comments_threads"}',
         '901e44b579dd3e88cdcf40569a5eddd2:919985862d3ad3f7fafcce6c96c7e6df73d259b761d498ccab0c3fc698a980c3967c0bfbe0acf92692f8e7f7112ef1ef'),
 -- PASSWORD: 7hOms98+3,#_=(R9k4
 -- TOTP SECRET: ARCR2W2RMZ2GGLTPBU3FONBRHBNHQFJO
        (8, 'instaminttest+8@outlook.com', '$2a$12$bMdpGukNNNkkxlc/cCgQFumw9A2yUoYTB7s1m1gc4Wj5LtdQGy8IC', TRUE, FALSE,
-        'fr', 'user', 8, '{"replies_comments", "follow_request_accepted"}', NULL),
+        'fr', 'user', 8, '{"comments_replies", "follow_requests_accepted"}', NULL),
 -- PASSWORD: 74,:az3%vD+IH3jHDU
        (9, 'instaminttest+9@outlook.com', '$2a$12$.nz.4nrYjUTTcyt7aiE3.uoZQsmPpAIq3l3A155OqqViEFf/90qE2', TRUE, FALSE,
-        'es', 'user', 9, '{"thread_comment", "follow"}', NULL),
+        'es', 'user', 9, '{"comments_threads", "follow_requests"}', NULL),
 -- PASSWORD: h8G6?87*£+7ae6srvp
        (10, 'instaminttest+10@outlook.com', '$2a$12$88CcZPjmX8ZY/qifYgEeZeMW756ojAAJ2jpN2bvrJyx8k9Z965AX2', TRUE, FALSE,
-        'en', 'user', 10, '{"replies_comments", "thread_comment", "mint", "follow", "follow_request_accepted"}', NULL);
+        'en', 'user', 10, '{"comments_replies", "comments_threads", "mints", "follow_requests", "follow_requests_accepted"}', NULL),
 -- PASSWORD: +b.4e8&OqP7CBso6?g
+       (11, 'instaminttest+11@outlook.com', '$2a$12$Uxou41mTi/jxwoU3yeINDeMRftoG/glmHUvGavVRXOJjVIEeiTjWO', TRUE, FALSE,
+        'en', 'user', 12, '{"comments_replies", "mints"}', NULL);
+-- PASSWORD: V5[tSp+k354/=}:J/u
 
 DO
 $$

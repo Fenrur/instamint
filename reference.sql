@@ -29,7 +29,7 @@ CREATE TYPE "CurrencyType" AS ENUM ('usd', 'eur', 'eth', 'sol');
 
 CREATE TYPE "UserTeaBagRole" AS ENUM ('user', 'cooker');
 
-CREATE TYPE "NotificationType" AS ENUM ('replies_comments', 'thread_comment', 'mint', 'follow', 'follow_request_accepted');
+CREATE TYPE "NotificationType" AS ENUM ('comments_replies', 'comments_threads', 'mints', 'follow_requests', 'follow_requests_accepted');
 
 CREATE TYPE "NftType" AS ENUM ('image', 'video', 'audio');
 
@@ -71,11 +71,11 @@ CREATE TABLE "User"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE,
   "enabledNotificationTypes" "NotificationType"[] NOT NULL        DEFAULT ARRAY [
-    'replies_comments'::"NotificationType",
-    'thread_comment'::"NotificationType",
-    'mint'::"NotificationType",
-    'follow'::"NotificationType",
-    'follow_request_accepted'::"NotificationType"]
+    'comments_replies'::"NotificationType",
+    'comments_threads'::"NotificationType",
+    'mints'::"NotificationType",
+    'follow_requests'::"NotificationType",
+    'follow_requests_accepted'::"NotificationType"]
 );
 
 CREATE TABLE "TeaBag"

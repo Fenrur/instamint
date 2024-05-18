@@ -10,11 +10,20 @@ export class ProfilePgRepository {
     this.pgClient = pqClient
   }
 
-  public findByUsername(username: string) {
-    return this.pgClient.query.ProfileTable
+  public async findByUsername(username: string) {
+    const result = await this.pgClient.query.ProfileTable
       .findFirst({
         where: (profile, {ilike}) => ilike(profile.username, username)
       })
+
+    if (result) {
+      return {
+        ...result,
+        createdAt: DateTime.fromSQL(result.createdAt, {zone: "utc"}) as DateTime<true>
+      }
+    }
+
+    return result
   }
 
   public async isUsernameAlreadyExist(username: string) {
@@ -74,16 +83,30 @@ export class ProfilePgRepository {
     return createdProfile[0]
   }
 
-  public findByUserUid(uid: string) {
-    return this.pgClient.query.UserTable
+  public async existUsername(username: string) {
+    const result = await this.pgClient.query.ProfileTable
       .findFirst({
-        where: (user, {eq}) => eq(user.uid, uid),
+        where: (profile, {ilike}) => (ilike(profile.username, username)),
         columns: {
-          id: true,
-        },
-        with: {
-          profile: true,
+          id: false,
+          createdAt: false,
+          avatarUrl: false,
+          link: false,
+          displayName: false,
+          bio: false,
+          location: false,
+          canBeSearched: false,
+          visibilityType: false,
         }
+      })
+
+    return Boolean(result)
+  }
+
+  public findById(followedProfileId: number) {
+    return this.pgClient.query.ProfileTable
+      .findFirst({
+        where: (profile, {eq}) => eq(profile.id, followedProfileId)
       })
   }
 
