@@ -25,7 +25,7 @@ async function sendPasswordResetEmail(formData: SignupCredentials, resetId: stri
 
   await transporter.sendMail({
     to: formData.email,
-    subject: "Password reset Instamint ",
+    subject: "Password reset Instamint",
     html: emailHtml,
   })
 }

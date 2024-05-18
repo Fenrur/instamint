@@ -29,7 +29,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const expireAt = DateTime.fromSQL(passwordReset.expireAt, {zone: "utc"})
   const now = DateTime.utc()
 

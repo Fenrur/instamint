@@ -14,9 +14,49 @@ import {
   passwordContainsUppercase,
   passwordMinimumLength
 } from "@/utils/validator"
+import {useTwoFactorAuthenticatorUserType, useVerifyUserPasswordByEmail} from "@/repository/hooks"
 
 type Requirements = "length" | "uppercase" | "lowercase" | "number" | "special"
 const requirementsEnumSize = 5
+
+function useVerifyPasswordAndGetTwoFactorAuthenticatorType() {
+  const {verifyUserPassword, isFetchingVerification, errorVerification} = useVerifyUserPasswordByEmail()
+  const {twoFactorAuthenticatorUserType, isFetchingTwoFactor, errorTwoFactor} = useTwoFactorAuthenticatorUserType()
+  const [isFetching, setIsFetching] = useState(false)
+  const [error, setError] = useState<any | null>(null)
+
+  useEffect(() => {
+    if (isFetchingVerification || isFetchingTwoFactor) {
+      setIsFetching(true)
+    } else {
+      setIsFetching(false)
+    }
+  }, [isFetchingVerification, isFetchingTwoFactor])
+
+  useEffect(() => {
+    if (errorVerification || errorTwoFactor) {
+      setError(errorVerification || errorTwoFactor)
+    }
+  }, [errorVerification, errorTwoFactor])
+
+  return {
+    trigger: async (req: { email: string, password: string }) => {
+      const [verify, twoFactorType] = await Promise.all([verifyUserPassword(req), twoFactorAuthenticatorUserType(req)])
+
+      if (verify === "email_not_found" || twoFactorType === "email_not_found") {
+        return "email_not_found"
+      }
+
+      if (verify === "password_invalid" || twoFactorType === "password_invalid") {
+        return "password_invalid"
+      }
+
+      return twoFactorType
+    },
+    isFetching,
+    error
+  }
+}
 
 function ContentPage() {
   const searchParams = useSearchParams()
@@ -27,6 +67,7 @@ function ContentPage() {
   const [init, setInit] = useState(false)
   const passwordRef = React.useRef<HTMLInputElement>(null)
   const confirmPasswordRef = React.useRef<HTMLInputElement>(null)
+  const {trigger, isFetching, error} = useVerifyPasswordAndGetTwoFactorAuthenticatorType()
   const changeRequirements = (password: string) => {
     const length = password.length >= passwordMinimumLength
     const uppercase = passwordContainsUppercase.test(password)
