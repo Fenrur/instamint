@@ -8,8 +8,8 @@ import {Button} from "@/components/ui/button"
 import {useQuery} from "@tanstack/react-query"
 import {RightPanel} from "../signup/right-panel"
 import {toast} from "sonner"
-import {cn} from "@/lib/utils";
-import {ErrorCode} from "@/http/error-code";
+import {cn} from "@/lib/utils"
+import {ErrorCode} from "@/http/error-code"
 
 
 async function fetchProfileData(): Promise<any> {
@@ -67,9 +67,7 @@ export default function MePage() {
               })
             }
           })
-          .catch(error => {
-            console.error("Error checking avatar URL:", error)
-            // If there's an error, set default
+          .catch(() => {
             setFormData({
               ...updatedFormData,
               avatarUrl: "https://api.dicebear.com/8.x/fun-emoji/svg?seed=Willow"
@@ -112,6 +110,7 @@ export default function MePage() {
         body: formDataWithImage
         // No Content-Type header needed, browser will set the correct multipart/form-data boundary
       })
+
       if (response.ok) {
         setErrors({
           username: "",
@@ -119,11 +118,10 @@ export default function MePage() {
         })
         toast.success("Successfully updated", {description: "Your profile has been updated."})
       } else {
-        //TODO: set errors in form
-        const error = await response.json();
+        const error = await response.json()
         setErrors({
-          username: error.errorCode == ErrorCode.USERNAME_ALREADY_USED ? error.title : "",
-          link: error.errorCode == ErrorCode.LINK_ALREADY_USED ? error.title : ""
+          username: error.errorCode === ErrorCode.USERNAME_ALREADY_USED ? error.title : "",
+          link: error.errorCode === ErrorCode.LINK_ALREADY_USED ? error.title : ""
         })
         toast.error("Error", {description: "Failed to update profile"})
       }

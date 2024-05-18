@@ -8,11 +8,11 @@ import {
 } from "@/http/problem"
 import {profileService} from "@/services"
 import {auth, getSession} from "@/auth"
-// @ts-expect-error
+// @ts-expect-error TODO fix library not found
 import {NextAuthRequest} from "next-auth/lib"
-import path from "path";
-import fs from "fs";
-import {NextResponse} from "next/server";
+import path from "path"
+import fs from "fs"
+import {NextResponse} from "next/server"
 
 
 export const POST = auth(async (req: NextAuthRequest) => {
@@ -36,35 +36,40 @@ export const POST = auth(async (req: NextAuthRequest) => {
   }
 
   const session = getSession(req)
+
   if (!session) {
     return problem({...notAuthenticatedProblem, detail: "you need to be authenticated to see this private profile"})
   }
 
   const myUserAndProfile = await profileService.findByUserUid(session.uid)
+
   if (!myUserAndProfile) {
     return problem({...userNotFoundProblem, detail: "my user not found"})
   }
 
-  //todo: test username & link
   const isUsernameAlreadyUsed = await profileService.isUsernameAlreadyExist(username)
+
   if (isUsernameAlreadyUsed) {
     return problem({...usernameAlreadyUsedProblem, detail: "username already used"})
   }
 
   const isLinkAlreadyUsed = await profileService.isLinkAlreadyExist(link)
+
   if (isLinkAlreadyUsed) {
     return problem({...linkAlreadyUsedProblem, detail: "link already used"})
   }
 
-  let avatarUrl;
+  let avatarUrl = null
+
   if (!imageFile) {
-    const imageType = (imageFile as string).split(";")[0].split(":")[1].split("/")[1]
+    const imageType = (imageFile).split(";")[0].split(":")[1].split("/")[1]
+
     if (!imageType) {
       return problem({...invalidQueryParameterProblem, detail: "Invalid image format"})
     }
 
     // Convert imageFile to binary data
-    const data = (imageFile as string).replace(/^data:image\/\w+;base64,/, "")
+    const data = (imageFile).replace(/^data:image\/\w+;base64,/, "")
     const imageBuffer = Buffer.from(data, "base64")
     // Set the path where the image will be saved
     const filePath = path.join(process.cwd(), "public", "uploads", `${username}.${imageType}`)
