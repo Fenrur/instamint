@@ -4,9 +4,9 @@ import {Label} from "@/components/ui/label"
 import {Input} from "@/components/ui/input"
 import {Button} from "@/components/ui/button"
 import {useRouter, useSearchParams} from "next/navigation"
-import React, {Suspense, useEffect, useState} from "react"
+import React, {ChangeEvent, Suspense, useEffect, useState} from "react"
 import {Progress} from "@/components/ui/progress"
-import {useSignup} from "@/store"
+import {usePasswordReset} from "@/store"
 import {
   passwordContainsLowercase,
   passwordContainsNumber,
@@ -22,9 +22,11 @@ function ContentPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [requirements, setRequirements] = useState<Requirements[]>([])
-  const {password: signupPassword, setVid, reset, vid: currentVid} = useSignup()
+  const {newPassword, setResetId, reset, resetId: currentResetId} = usePasswordReset()
+  const [passwordsMatch, setPasswordsMatch] = useState(true)
   const [init, setInit] = useState(false)
   const passwordRef = React.useRef<HTMLInputElement>(null)
+  const confirmPasswordRef = React.useRef<HTMLInputElement>(null)
   const changeRequirements = (password: string) => {
     const length = password.length >= passwordMinimumLength
     const uppercase = passwordContainsUppercase.test(password)
@@ -61,33 +63,38 @@ function ContentPage() {
 
     if (!init) {
       if (resetId) {
-        setVid(resetId)
+        setResetId(resetId)
 
-        if (signupPassword) {
+        if (newPassword) {
           const pRef = passwordRef.current
 
           if (pRef) {
-            pRef.value = signupPassword
-            changeRequirements(signupPassword)
+            pRef.value = newPassword
+            changeRequirements(newPassword)
           }
         }
 
         setInit(true)
       } else {
         reset()
-        router.push("/signup")
+        router.push("/forgot-password")
       }
     }
-  }, [init, searchParams, router, signupPassword, setVid, reset, currentVid, setInit, passwordRef])
+  }, [init, searchParams, router, reset, setInit, passwordRef, setResetId, newPassword])
 
-  const handleOnChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChangePassword = (e: ChangeEvent<HTMLInputElement>) => {
     const password = e.target.value
     changeRequirements(password)
   }
-
+  const handleOnChangeConfirmPassword = (e: ChangeEvent<HTMLInputElement>) => {
+    validatePasswords(passwordRef.current?.value as string, e.target.value)
+  }
+  const validatePasswords = (password: string, confirmPassword: string) => {
+    setPasswordsMatch(password === confirmPassword)
+  }
 
   return (
-    <form action={`/api/forgot-password/reset?resetId=${currentVid}`} method="POST">
+    <form action={`/api/forgot-password/reset?resetId=${currentResetId}`} method="POST">
       <div className="grid gap-4">
         <Label htmlFor="password">Password</Label>
         <Input
@@ -98,6 +105,16 @@ function ContentPage() {
           onChange={handleOnChangePassword}
           required
         />
+        <Label htmlFor="confirm-password">Confirm Password</Label>
+        <Input
+          ref={confirmPasswordRef}
+          name="confirm-password"
+          id="confirm-password"
+          type="password"
+          onChange={handleOnChangeConfirmPassword}
+          required
+          aria-describedby="password-match"
+        />
         <Progress value={requirements.length / requirementsEnumSize * 100}/>
         <div className="grid gap-1">
           <div hidden={requirements.includes("length")} className="text-sm">- 8 characters long</div>
@@ -107,6 +124,9 @@ function ContentPage() {
           <div hidden={requirements.includes("special")} className="text-sm">- 1 special character
             (#?!@$%^&*-)
           </div>
+        </div>
+        <div id="password-match" className="text-sm text-red-600" aria-live="polite">
+          {!passwordsMatch && <p>Passwords do not match.</p>}
         </div>
         <Button disabled={requirements.length < requirementsEnumSize} type="submit" className="w-full">
           Validate

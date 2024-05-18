@@ -65,3 +65,42 @@ export const useSignup = create<SignupState>()(
     )
   )
 )
+
+
+export interface PasswordResetState {
+  email: string | null,
+  setEmail: (email: string) => void,
+  resetId: string | null,
+  setResetId: (code: string) => void,
+  newPassword: string | null,
+  setNewPassword: (password: string) => void,
+  reset: () => void
+}
+
+export const usePasswordReset = create<PasswordResetState>()(
+  devtools(
+    persist(
+      (set) => ({
+        email: null,
+        setEmail: (email) => {
+          set({email})
+        },
+        resetId: null,
+        setResetId: (code) => {
+          set({resetId: code})
+        },
+        newPassword: null,
+        setNewPassword: (password) => {
+          set({newPassword: password})
+        },
+        reset: () => {
+          set({email: null, resetId: null, newPassword: null})
+        }
+      }),
+      {
+        name: "password-reset-storage",
+        storage: createJSONStorage(() => sessionStorage)
+      }
+    )
+  )
+)
