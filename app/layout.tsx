@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   description: "Instamint is a social network for the creative community. Share your work, discover new artists, and connect with other creatives.",
 }
 
+
 export default function RootLayout({
                                      children,
                                    }: Readonly<{
@@ -20,8 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-    <body className={cn(inter.className, "light")}>
-    <Toaster richColors/>
+    <body className={cn(inter.className, "light")}><Toaster richColors/>
     <SessionProvider>
       {children}
     </SessionProvider>
