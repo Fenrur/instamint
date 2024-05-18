@@ -18,7 +18,7 @@ async function fetchProfileData(): Promise<ProfileData> {
   if (response.ok) {
     const resp = await response.json()
 
-    return resp.profile
+    return resp.profile as ProfileData
   }
 
   throw new Error("Network response was not ok")
@@ -43,7 +43,7 @@ export default function MePage() {
     username: "",
     link: ""
   })
-  const {data: profile, isLoading, isError} = useQuery(["profileData"], fetchProfileData)
+  const {data: profile} = useQuery(["profileData"], fetchProfileData)
 
   useEffect(() => {
     if (profile) {
@@ -140,6 +140,7 @@ export default function MePage() {
 
             <div className="rounded-full overflow-hidden border-2 border-gray-300 w-36 h-36">
               <img
+                alt="Profile Image"
                 src={profileImage ?? formData.avatarUrl}
                 className="w-full h-full object-cover"
               />
