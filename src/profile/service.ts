@@ -50,15 +50,19 @@ export class DefaultProfileService {
     return this.profilePgRepository.existUsername(username)
   }
 
+  public updateProfileByUid(userId: string, username: string, bio: string, link: string, avatarUrl: string) {
+    return this.profilePgRepository.updateProfileByUserUid(userId, username, bio, link, avatarUrl)
+  }
+
   public findUsersOrTeaPaginatedByUsernameOrLocation(username: string, location: string, page: number) {
     return this.profilePgRepository.findUsersOrTeaPaginatedByUsernameOrLocation(username, location, this.pageSize * (page - 1), this.pageSize)
   }
 
-  public isUsernameAlreadyExist(username: string) {
-    return this.profilePgRepository.isUsernameAlreadyExist(username)
+  public isUsernameExist(username: string) {
+    return this.profilePgRepository.isUsernameExist(username)
   }
 
-  public isLinkAlreadyExist(link: string) {
-    return this.profilePgRepository.isLinkAlreadyExist(link)
+  public isLinkExist(link: string) {
+    return this.profilePgRepository.isLinkExist(link)
   }
 }

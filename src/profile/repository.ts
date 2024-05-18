@@ -26,7 +26,7 @@ export class ProfilePgRepository {
     return result
   }
 
-  public async isUsernameAlreadyExist(username: string) {
+  public async isUsernameExist(username: string) {
     const rows = await this.pgClient.query.ProfileTable
       .findMany({
         where: (profile, {eq}) => eq(profile.username, username)
@@ -35,11 +35,12 @@ export class ProfilePgRepository {
     return rows.length > 0
   }
 
-  public async isLinkAlreadyExist(link: string) {
+  public async isLinkExist(link: string) {
     const rows = await this.pgClient.query.ProfileTable
       .findMany({
         where: (profile, {eq}) => eq(profile.link, link)
       })
+
     return rows.length > 0
   }
 

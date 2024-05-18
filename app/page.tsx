@@ -20,14 +20,12 @@ export default function Home() {
   const routingToSignupPage = () => {
     router.push("/signup")
   }
-
   const routingToSearch = () => {
-    router.push("/search");
-  };
-
+    router.push("/search")
+  }
   const routingToMe = () => {
-    router.push("/me");
-  };
+    router.push("/me")
+  }
 
   return (
     <main>

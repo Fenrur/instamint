@@ -47,13 +47,13 @@ export const POST = auth(async (req: NextAuthRequest) => {
     return problem({...userNotFoundProblem, detail: "my user not found"})
   }
 
-  const isUsernameAlreadyUsed = await profileService.isUsernameAlreadyExist(username)
+  const isUsernameAlreadyUsed = await profileService.isUsernameExist(username)
 
   if (isUsernameAlreadyUsed) {
     return problem({...usernameAlreadyUsedProblem, detail: "username already used"})
   }
 
-  const isLinkAlreadyUsed = await profileService.isLinkAlreadyExist(link)
+  const isLinkAlreadyUsed = await profileService.isLinkExist(link)
 
   if (isLinkAlreadyUsed) {
     return problem({...linkAlreadyUsedProblem, detail: "link already used"})
