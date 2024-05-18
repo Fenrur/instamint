@@ -1,15 +1,45 @@
-import {Separator} from "@/components/ui/separator"
+import React from "react"
+import {SidebarNav} from "./components/sidebar-nav"
 
-export default function SettingsProfilePage() {
+
+const sidebarNavItems = [
+  {
+    title: "TEA BAGs list",
+    href: "/tea-bags",
+    buttonVariant: "secondary",
+  },
+  {
+    title: "Reset password",
+    href: "/forgot-password",
+    buttonVariant: "secondary",
+  },
+  {
+    title: "Reset email",
+    href: "/reset-email",
+    buttonVariant: "secondary",
+  },
+  {
+    title: "Log out",
+    href: "/logout",
+    buttonVariant: "secondary",
+  },
+  {
+    title: "Edite profile",
+    href: "/settings/profile",
+    buttonVariant: "outline",
+  }, {
+    title: "Delete account",
+    href: "/delete-account",
+    buttonVariant: "destructive",
+  },
+]
+
+
+export default async function SettingsProfilePage() {
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium">Profile</h3>
-        <p className="text-sm text-muted-foreground">
-          This is how others will see you on the site.
-        </p>
-      </div>
-      <Separator/>
-    </div>
+    <aside className="w-full">
+      <SidebarNav items={sidebarNavItems}/>
+    </aside>
   )
 }

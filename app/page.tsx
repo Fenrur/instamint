@@ -1,39 +1,40 @@
 "use client"
 
-import {useEffect, useState} from "react"
+import React, {useEffect, useState} from "react"
 import {useSession} from "@/auth/session"
 import {useRouter} from "next/navigation"
+import {Button} from "@/components/ui/button"
+import {signOut} from "next-auth/react"
+import {Label} from "@/components/ui/label"
 
 export default function Home() {
-    const [count, setCount] = useState(0)
-    const handleClick = () => {
-        setCount(prevState => prevState + 1)
-    }
-
-    const {status, session} = useSession()
-    const router = useRouter()
-
-    useEffect(() => {
-        if (status === "authenticated") {
-            router.push("/settings")
-        } else {
-            router.push("/login")
-        }
-    }, [status]);
-
-    const routingToLoginPage = () => {
-        router.push("/login")
-    }
-    const routingToSignupPage = () => {
-        router.push("/signup")
-    }
-
-    const routingToSearch = () => {
-        router.push("/search")
+  const [count, setCount] = useState(0)
+  const handleClick = () => {
+    setCount(prevState => prevState + 1)
   }
-    const routingToMe = () => {
-        router.push("/me")
+  const {status, session} = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/settings")
+    } else {
+      router.push("/login")
     }
+  }, [status])
+
+  const routingToLoginPage = () => {
+    router.push("/login")
+  }
+  const routingToSignupPage = () => {
+    router.push("/signup")
+  }
+  const routingToSearch = () => {
+    router.push("/search")
+  }
+  const routingToMe = () => {
+    router.push("/me")
+  }
 
   return (
     <main>
@@ -42,7 +43,9 @@ export default function Home() {
           Click me
         </Button>
         <Label>{count}</Label>
-        { status === "authenticated" && <Button className="w-24" onClick={() => { router.push("/me") }}>My Profile</Button> }
+        {status === "authenticated" && <Button className="w-24" onClick={() => {
+          router.push("/me")
+        }}>My Profile</Button>}
         <Button className="w-24" onClick={routingToSignupPage}>
           Signup
         </Button>
