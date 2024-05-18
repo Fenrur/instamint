@@ -1,7 +1,13 @@
 import {auth, getSession} from "@/auth"
 // @ts-expect-error
 import {NextAuthRequest} from "next-auth/lib"
-import {invalidQueryParameterProblem, notAuthenticatedProblem, problem, userNotFoundProblem} from "@/http/problem"
+import {
+  invalidQueryParameterProblem,
+  notAuthenticatedProblem,
+  problem,
+  usernameAlreadyUsedProblem,
+  userNotFoundProblem
+} from "@/http/problem"
 import {profileService} from "@/services"
 import {NextResponse} from "next/server"
 import fs from "fs"
@@ -61,6 +67,11 @@ export const POST = auth(async (req: NextAuthRequest) => {
     return problem({...userNotFoundProblem, detail: "my user not found"})
   }
 
+  //todo: test username
+  const isUsernameAlreadyUsed = false
+  if (isUsernameAlreadyUsed) {
+    return problem({...usernameAlreadyUsedProblem, detail: "username already used"})
+  }
   const imageType = (imageFile as string).split(";")[0].split(":")[1].split("/")[1]
 
   if (!imageType) {
