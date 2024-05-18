@@ -1,5 +1,5 @@
 import {PgClient} from "@/db/db-client"
-import {DateTime, Duration} from "luxon"
+import {DateTime} from "luxon"
 import {EmailVerificationTable} from "@/db/schema"
 import {eq} from "drizzle-orm"
 
@@ -10,14 +10,24 @@ export class EmailVerificationPgRepository {
     this.pgClient = pqClient
   }
 
-  public findByVerificationId(verificationId: string) {
-    return this.pgClient.query.EmailVerificationTable
+  public async findByVerificationId(verificationId: string) {
+    const result = await this.pgClient.query.EmailVerificationTable
       .findFirst({
         where: (emailVerification, {eq}) => (eq(emailVerification.verificationId, verificationId))
       })
+
+    if (result) {
+      return {
+        ...result,
+        expireAt: DateTime.fromSQL(result.expireAt, {zone: "UTC"}) as DateTime<true>,
+        createdAt: DateTime.fromSQL(result.createdAt, {zone: "UTC"}) as DateTime<true>
+      }
+    }
+
+    return result
   }
 
-  public findUnverifiedAndBeforeExpirationByEmail(email: string, dateTime: DateTime<true>) {
+  public async findUnverifiedAndBeforeExpirationByEmail(email: string, dateTime: DateTime<true>) {
     const nowSql = dateTime.toSQL({includeZone: false, includeOffset: false})
 
     return this.pgClient.query.EmailVerificationTable
@@ -32,14 +42,11 @@ export class EmailVerificationPgRepository {
       })
   }
 
-  public async create(email: string, createdAt: DateTime<true>) {
-    const expireAt = createdAt.plus(Duration.fromObject({hours: 2}))
-    const createAtSql = createdAt.toSQL({includeZone: false, includeOffset: false})
-    const expireAtSql = expireAt.toSQL({includeZone: false, includeOffset: false})
+  public async create(email: string, createdAt: DateTime<true>, expireAt: DateTime<true>) {
     const result = await this.pgClient.insert(EmailVerificationTable).values({
       email: email.toLowerCase(),
-      createdAt: createAtSql,
-      expireAt: expireAtSql,
+      createdAt: createdAt.toSQL({includeZone: false, includeOffset: false}),
+      expireAt: expireAt.toSQL({includeZone: false, includeOffset: false}),
       isVerified: false
     }).returning({verificationId: EmailVerificationTable.verificationId})
 

@@ -67,7 +67,7 @@ export default async function LoginPage(props: LoginPageProps) {
             Sign up
           </Link>
         </div>
-        <Separator></Separator>
+        <Separator/>
         <Link href="/forgot-password" className="underline">
           Forgot my password?{" "}
         </Link>

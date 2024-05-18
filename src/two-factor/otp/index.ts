@@ -1,8 +1,7 @@
-import { authenticator as a } from "otplib"
+import { authenticator as authenticatorFromOtplib } from "otplib"
 
 export function authenticator() {
-  a.options = { window: 1 }
+  authenticatorFromOtplib.options = { window: 1 }
 
-  
-return a
+  return authenticatorFromOtplib
 }

@@ -29,14 +29,39 @@ export default function Home() {
     }
 
     const routingToSearch = () => {
-        router.push("/search");
-    };
-
+        router.push("/search")
+  }
     const routingToMe = () => {
-        router.push("/me");
-    };
+        router.push("/me")
+    }
 
-    return (
-        <></>
-    )
+  return (
+    <main>
+      <div className="flex flex-col gap-4">
+        <Button className="w-24" onClick={handleClick}>
+          Click me
+        </Button>
+        <Label>{count}</Label>
+        { status === "authenticated" && <Button className="w-24" onClick={() => { router.push("/me") }}>My Profile</Button> }
+        <Button className="w-24" onClick={routingToSignupPage}>
+          Signup
+        </Button>
+        <Button className="w-24" onClick={routingToLoginPage}>
+          Login
+        </Button>
+        <Button className="w-24" onClick={() => signOut()}>
+          Logout
+        </Button>
+        <Button className="w-24" onClick={routingToSearch}>
+          Search
+        </Button>
+        <Button className="w-24" onClick={routingToMe}>
+          Me
+        </Button>
+
+        <div>{status}</div>
+        <div>{session?.uid}</div>
+      </div>
+    </main>
+  )
 }

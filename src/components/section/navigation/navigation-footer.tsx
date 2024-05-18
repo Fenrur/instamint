@@ -3,30 +3,40 @@ import {HomeIcon, MenuIcon, PlusIcon, SearchIcon, SendIcon, UserIcon} from "luci
 import React from "react"
 import {SelectedNavigation} from "@/components/section/navigation/index"
 import Link from "next/link"
+import {cn} from "@/lib/utils"
 
 interface NavigationFooterProps {
     className?: string,
-    selectedNavigation: SelectedNavigation
+    selectedNavigation: SelectedNavigation,
+  username: string,
+  avatarUrl: string,
 }
 
-export function NavigationFooter({className, selectedNavigation}: NavigationFooterProps) {
+export function NavigationFooter({className, selectedNavigation, username, avatarUrl}: NavigationFooterProps) {
     return (
         <section className={className}>
             <Separator/>
             <footer className="h-12 flex justify-evenly items-center">
                 <Link href="/home">
-                    <HomeIcon className={selectedNavigation === "home" ? "text-primary" : ""} size={26}/>
+                    <HomeIcon className={cn(selectedNavigation === "home" && "text-primary")} size={26}/>
                 </Link>
                 <Link href="/search">
-                    <SearchIcon className={selectedNavigation === "search" ? "text-primary" : ""} size={26}/>
+                    <SearchIcon className={cn(selectedNavigation === "search" && "text-primary")} size={26}/>
                 </Link>
                 <Link href="/new">
-                    <PlusIcon className={selectedNavigation === "new" ? "text-primary" : ""} size={30}/>
+                    <PlusIcon className={cn(selectedNavigation === "new" && "text-primary")} size={30}/>
                 </Link>
-                <Link href="/message">
-                    <SendIcon className={selectedNavigation === "message" ? "text-primary" : ""} size={24}/>
+                <Link href="/messages">
+                    <SendIcon className={cn(selectedNavigation === "messages" && "text-primary")} size={24}/>
                 </Link>
-                <Link href="/me">
+                <Link className="grid items-center" href="/me">
+          <img
+            className={cn("rounded-full border-2 absolute size-8", selectedNavigation === "own_profile" && "border-primary")}
+            crossOrigin="anonymous"
+            draggable={false}
+            src={avatarUrl}
+            alt={`profile avatar of ${username}`}
+          />
                     <UserIcon className={selectedNavigation === "own_profile" ? "text-primary" : ""} size={26}/>
                 </Link>
                 <Link href="/settings">
