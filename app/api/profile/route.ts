@@ -18,7 +18,5 @@ export const GET = auth(async (req: NextAuthRequest) => {
     return problem({...userNotFoundProblem, detail: "my user not found"})
   }
 
-  const result = await profileService.findByUserUid(session.uid)
-
-  return NextResponse.json(result)
+  return NextResponse.json(myUserAndProfile)
 })

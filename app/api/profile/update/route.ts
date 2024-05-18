@@ -10,8 +10,6 @@ import {profileService} from "@/services"
 import {auth, getSession} from "@/auth"
 // @ts-expect-error TODO fix library not found
 import {NextAuthRequest} from "next-auth/lib"
-import path from "path"
-import fs from "fs"
 import {NextResponse} from "next/server"
 
 
@@ -20,7 +18,7 @@ export const POST = auth(async (req: NextAuthRequest) => {
   const username = formData.get("username") as string
   const bio = formData.get("bio") as string
   const link = formData.get("link") as string
-  const imageFile = formData.get("avatar") as FormDataEntryValue
+  const imageFile = formData.get("avatar") as string
 
 
   if (!username) {
@@ -63,11 +61,10 @@ export const POST = auth(async (req: NextAuthRequest) => {
     }
   }
 
-
-  let avatarUrl = null
-
-  if (!imageFile) {
-    const imageType = (imageFile).split(";")[0].split(":")[1].split("/")[1]
+  let imageBuffer = null
+  let imageType = null
+  if (imageFile) {
+    imageType = (imageFile).split(";")[0].split(":")[1].split("/")[1]
 
     if (!imageType) {
       return problem({...invalidQueryParameterProblem, detail: "Invalid image format"})
@@ -75,17 +72,10 @@ export const POST = auth(async (req: NextAuthRequest) => {
 
     // Convert imageFile to binary data
     const data = (imageFile).replace(/^data:image\/\w+;base64,/, "")
-    const imageBuffer = Buffer.from(data, "base64")
-    // Set the path where the image will be saved
-    const filePath = path.join(process.cwd(), "public", "uploads", `${username}.${imageType}`)
-
-    // Write the image data to the file
-    fs.writeFileSync(filePath, imageBuffer)
-    // Construct the avatar URL
-    avatarUrl = `/uploads/${username}.${imageType}`
+    imageBuffer = Buffer.from(data, "base64")
   }
 
-  const result = await profileService.updateProfileByUid(session.uid, username, bio, link, avatarUrl ?? myUserAndProfile.profile.avatarUrl)
+  const result = await profileService.updateProfileByUid(session.uid, username, bio, link, imageBuffer, imageType)
 
   return NextResponse.json(result)
 })
