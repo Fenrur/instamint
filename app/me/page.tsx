@@ -6,8 +6,8 @@ import React, {useEffect, useState} from "react"
 
 import {Button} from "@/components/ui/button"
 import {useQuery} from "@tanstack/react-query"
-import {RightPanel} from "../signup/right-panel";
-import {toast} from "sonner";
+import {RightPanel} from "../signup/right-panel"
+import {toast} from "sonner"
 
 type SignupPageError = "email_verification_limit_exceeded" | "email_exists";
 
@@ -58,39 +58,39 @@ export default function MePage(props: SignupPageProps) {
 
     useEffect(() => {
         if (data && data.profile) {
-            const profile = data.profile;
+          const profile = data.profile
             const updatedFormData = {
                 username: profile.username,
                 bio: profile.bio,
                 link: profile.link,
                 avatarUrl: profile.avatarUrl || "https://api.dicebear.com/8.x/fun-emoji/svg?seed=Willow"
-            };
+            }
 
             if (profile.avatarUrl) {
                 // Check if avatarUrl exists
-                fetch(profile.avatarUrl, {method: 'HEAD'})
+              fetch(profile.avatarUrl, {method: "HEAD"})
                     .then(response => {
                         if (response.ok) {
-                            setFormData(updatedFormData);
+                          setFormData(updatedFormData)
                         } else {
                             // If avatarUrl doesn't exist, set default
                             setFormData({
                                 ...updatedFormData,
                                 avatarUrl: "https://api.dicebear.com/8.x/fun-emoji/svg?seed=Willow"
-                            });
+                            })
                         }
                     })
                     .catch(error => {
-                        console.error("Error checking avatar URL:", error);
+                      console.error("Error checking avatar URL:", error)
                         // If there's an error, set default
                         setFormData({
                             ...updatedFormData,
                             avatarUrl: "https://api.dicebear.com/8.x/fun-emoji/svg?seed=Willow"
-                        });
-                    });
+                        })
+                    })
             } else {
                 // If avatarUrl doesn't exist, set default
-                setFormData(updatedFormData);
+              setFormData(updatedFormData)
             }
         }
     }, [data])
@@ -109,35 +109,35 @@ export default function MePage(props: SignupPageProps) {
             reader.readAsDataURL(file)
         }
     }
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+      e.preventDefault()
 
         // Assume profileImage is already in base64 format if it's included in formData
-        const formDataWithImage = new FormData();
-        formDataWithImage.append("username", formData.username);
-        formDataWithImage.append("bio", formData.bio);
-        formDataWithImage.append("link", formData.link);
-        formDataWithImage.append("avatar", profileImage as string);
+      const formDataWithImage = new FormData()
+      formDataWithImage.append("username", formData.username)
+      formDataWithImage.append("bio", formData.bio)
+      formDataWithImage.append("link", formData.link)
+      formDataWithImage.append("avatar", profileImage as string)
 
         try {
             const response = await fetch("/api/profile", {
                 method: "POST",
-                body: formDataWithImage // no need to stringify
-                // no Content-Type header needed, browser will set the correct multipart/form-data boundary
-            });
+              body: formDataWithImage
+              // No Content-Type header needed, browser will set the correct multipart/form-data boundary
+            })
+
             if (response.ok) {
-                toast.success("Successfully updated", {description: "Your profile has been updated."});
-                console.log("Success:", await response.json());
+              toast.success("Successfully updated", {description: "Your profile has been updated."})
             } else {
-                toast.error("Error", {description: "Failed to update profile"});
-                throw new Error('Failed to update profile');
+              toast.error("Error", {description: "Failed to update profile"})
             }
         } catch (error) {
-            console.error("Error:", error);
+          toast.error("Error", {description: "Failed to update profile"})
         }
     }
-    return (
+
+
+  return (
         <RightPanel title="Profile" text="You can edit your profile details" width="w-[350px]">
             <form onSubmit={handleSubmit}>
                 <div className="grid gap-4">
@@ -149,7 +149,6 @@ export default function MePage(props: SignupPageProps) {
                                 className="w-full h-full object-cover"
                             />
                         </div>
-
 
                         <input
                             type="file"
