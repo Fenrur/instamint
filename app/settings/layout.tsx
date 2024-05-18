@@ -31,6 +31,10 @@ const sidebarNavItems = [
     buttonVariant: "secondary",
   },
   {
+    title: "Edite profile",
+    href: "/me",
+    buttonVariant: "outline",
+  }, {
     title: "Delete account",
     href: "/delete-account",
     buttonVariant: "destructive",
@@ -54,7 +58,7 @@ export default function SettingsLayout({children}: SettingsLayoutProps) {
         </div>
         <Separator className="my-6"/>
         <div className="flex flex-col space-y-8 md:flex-row md:space-x-12 md:space-y-0">
-          <aside className="md:w-1/5">
+          <aside className="md:w-full">
             <SidebarNav items={sidebarNavItems}/>
           </aside>
           {/* <div className="flex-1 md:max-w-2xl">{children}</div> */}
