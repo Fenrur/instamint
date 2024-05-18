@@ -8,7 +8,6 @@ interface ProfilePageProps {
 }
 
 export default async function ProfileLayout(props: ProfilePageProps) {
-
   return (
     <ReactQueryClientProvider>
       {

@@ -1,21 +1,20 @@
-'use client'
+"use client"
 
-import {useEffect} from 'react';
-import {signOut} from 'next-auth/react';
+import {useEffect} from "react"
+import {signOut} from "next-auth/react"
 
 const LogoutPage = () => {
-
     useEffect(() => {
-        signOut({redirect: false}).then(() => {
-            window.location.href = '/login'; // Use router.push instead of router.replace for navigation
-        });
-    }, []);
+      void signOut({redirect: false}).then(() => {
+        window.location.href = "/login"
+      })
+    }, [])
 
     return (
         <div>
             Logging out...
         </div>
-    );
-};
+    )
+}
 
-export default LogoutPage;
+export default LogoutPage

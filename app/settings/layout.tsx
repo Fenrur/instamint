@@ -11,38 +11,6 @@ export const metadata: Metadata = {
   description: "instamint settings page",
 }
 
-const sidebarNavItems = [
-  {
-    title: "TEA BAGs list",
-    href: "/tea-bags",
-    buttonVariant: "secondary",
-  },
-  {
-    title: "Reset password",
-    href: "/forgot-password",
-    buttonVariant: "secondary",
-  },
-  {
-    title: "Reset email",
-    href: "/reset-email",
-    buttonVariant: "secondary",
-  },
-  {
-    title: "Log out",
-    href: "/logout",
-    buttonVariant: "secondary",
-  },
-  {
-    title: "Edite profile",
-    href: "/settings/profile",
-    buttonVariant: "outline",
-  }, {
-    title: "Delete account",
-    href: "/delete-account",
-    buttonVariant: "destructive",
-  },
-]
-
 interface SettingsPageProps {
   children: React.ReactNode,
 }

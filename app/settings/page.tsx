@@ -36,7 +36,6 @@ const sidebarNavItems = [
 
 
 export default async function SettingsProfilePage() {
-
   return (
     <aside className="w-full">
       <SidebarNav items={sidebarNavItems}/>
