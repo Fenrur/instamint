@@ -4,10 +4,11 @@ import {
   dontFollowProfileProblem,
   invalidQueryParameterProblem,
   notAuthenticatedProblem,
+  notActivated,
   problem,
-  profileNotFoundProblem,
+  profileNotFoundProblem
 } from "@/http/problem"
-import {followService, nftService, profileService} from "@/services"
+import {followService, nftService, profileService, userService} from "@/services"
 import {usernameRegex} from "@/utils/validator"
 import {auth, getSession} from "@/auth"
 import {DateTime} from "luxon"
@@ -17,6 +18,24 @@ export const GET = auth(async (req) => {
   const url = req.nextUrl.clone()
   const page = url.searchParams.get("page")
   const targetUsername = url.searchParams.get("username")
+
+  const session = getSession(req)
+
+  if (!session) {
+    return problem({...notAuthenticatedProblem, detail: "you need to be authenticated to see this private profile"})
+  }
+
+  const myUserAndProfile = await profileService.findByUserUid(session.uid)
+
+  if (!myUserAndProfile) {
+    return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
+  }
+
+  const userActivated = await userService.findByUid(session.uid)
+
+  if (userActivated && !userActivated.isActivated) {
+    return problem({...notActivated, detail: "your are not enable to access the app"})
+  }
 
   if (!page) {
     return problem({...invalidQueryParameterProblem, detail: "page query parameter is required"})
@@ -55,18 +74,6 @@ export const GET = auth(async (req) => {
     const reponse = mapNftsToResponse(result)
 
     return NextResponse.json(reponse)
-  }
-
-  const session = getSession(req)
-
-  if (!session) {
-    return problem({...notAuthenticatedProblem, detail: "you need to be authenticated to see this private profile"})
-  }
-
-  const myUserAndProfile = await profileService.findByUserUid(session.uid)
-
-  if (!myUserAndProfile) {
-    return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
   }
 
   if (myUserAndProfile.profile.id === targetProfile.id) {

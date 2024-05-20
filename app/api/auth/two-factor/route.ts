@@ -5,7 +5,7 @@ import {
   invalidContentTypeProblem,
   invalidBodyProblem,
   passwordIsInvalidProblem,
-  problem
+  problem,
 } from "@/http/problem"
 import {isPasswordValid} from "@/utils/password"
 import {isContentType} from "@/http/content-type"

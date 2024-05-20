@@ -9,10 +9,11 @@ import {
   invalidQueryParameterProblem,
   notAuthenticatedProblem,
   problem,
-  profileNotFoundProblem
+  profileNotFoundProblem,
+  notActivated
 } from "@/http/problem"
 import {DeleteFollowerProfileRequest, PaginatedFollowerProfileResponse} from "@/http/rest/types"
-import {followService, profileService} from "@/services"
+import {followService, profileService, userService} from "@/services"
 import {NextResponse} from "next/server"
 import {usernameRegex} from "@/utils/validator"
 import {isContentType} from "@/http/content-type"
@@ -31,6 +32,12 @@ export const GET = auth(async (req) => {
 
   if (!myUserAndProfile) {
     return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
+  }
+
+  const userActivated = await userService.findByUid(session.uid)
+
+  if (userActivated && !userActivated.isActivated) {
+    return problem({...notActivated, detail: "your are not enable to access the app"})
   }
 
   if (!page || !username) {

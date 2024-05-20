@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from "next/server"
-import {invalidContentTypeProblem, problem} from "@/http/problem"
+import {invalidContentTypeProblem, problem, notActivated} from "@/http/problem"
 import {LoginCredentials} from "@/http/rest/types"
 import {isContentType} from "@/http/content-type"
 import {userService} from "@/services"
@@ -28,6 +28,10 @@ export async function POST(req: NextRequest) {
     url.searchParams.set("error", "email_not_found")
 
     return NextResponse.redirect(url)
+  }
+
+  if (!user.isActivated) {
+    return problem({...notActivated, detail: "your are not enable to access the app"})
   }
 
   url.pathname = "/login/credentials"

@@ -298,7 +298,7 @@ CONTACT_EMAIL="instamint.contact@gmail.com"
 - Install dependencies
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 
 ## 🎬 Startup

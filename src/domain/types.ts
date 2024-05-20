@@ -53,3 +53,4 @@ export const nftTypeArray = [
 ] as const
 
 export type NftType = typeof nftTypeArray[number]
+export type RoleType = typeof userRoleArray[number]

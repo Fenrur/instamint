@@ -5,9 +5,10 @@ import {
   invalidBodyProblem,
   invalidContentTypeProblem,
   notAuthenticatedProblem,
-  problem
+  problem,
+  notActivated
 } from "@/http/problem"
-import {followService, profileService} from "@/services"
+import {followService, profileService, userService} from "@/services"
 import {AcceptAllFollowProfileRequest} from "@/http/rest/types"
 import {NextResponse} from "next/server"
 import {isContentType} from "@/http/content-type"
@@ -36,6 +37,12 @@ export const PUT = auth(async (req) => {
 
   if (!myUserAndProfile) {
     return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
+  }
+
+  const userActivated = await userService.findByUid(session.uid)
+
+  if (userActivated && !userActivated.isActivated) {
+    return problem({...notActivated, detail: "your are not enable to access the app"})
   }
 
   await followService.acceptAllRequestFollows(myUserAndProfile.profile.id, followAt, parsedBody.ignored)

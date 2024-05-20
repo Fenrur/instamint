@@ -25,6 +25,8 @@ export const invalidBodyProblem = {title: "Invalid request body", errorCode: Err
 
 export const notAuthenticatedProblem = {title: "Not authenticated", errorCode: ErrorCode.NOT_AUTHENTICATED, status: 401}
 
+export const notActivated = {title: "Not activated user", errorCode: ErrorCode.NOT_ACTIVATED, status: 401}
+
 export const uidNotFoundProblem = {title: "UID not found", errorCode: ErrorCode.UID_NOT_FOUND, status: 404}
 
 export const twoFactorSetupRequiredProblem = {title: "Two-factor setup required", errorCode: ErrorCode.TWO_FACTOR_SETUP_REQUIRED, status: 400}
@@ -82,6 +84,7 @@ const GetCode = z.object({
 export function getErrorCodeFromProblem(e: any): ErrorCode {
   try {
     const parsed = GetCode.parse(e)
+    console.log("Error", parsed)
 
     return parsed.errorCode
   } catch {

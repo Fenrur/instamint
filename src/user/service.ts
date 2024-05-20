@@ -21,17 +21,23 @@ export class DefaultUserService {
   private readonly totpEncryptionKey: string
   private readonly userPgRepository: UserPgRepository
   private readonly profilePgRepository: ProfilePgRepository
+  private readonly usersPageSize: number
 
-  constructor(pgClient: PgClient, pepperPasswordSecret: string, totpEncryptionKey: string) {
+  constructor(pgClient: PgClient, pepperPasswordSecret: string, totpEncryptionKey: string, usersPageSize: number) {
     this.pgClient = pgClient
     this.pepperPasswordSecret = pepperPasswordSecret
     this.totpEncryptionKey = totpEncryptionKey
     this.userPgRepository = new UserPgRepository(this.pgClient)
     this.profilePgRepository = new ProfilePgRepository(this.pgClient)
+    this.usersPageSize = usersPageSize
   }
 
   public findByEmail(email: string) {
     return this.userPgRepository.findByEmail(email)
+  }
+
+  public findById(id: number) {
+    return this.userPgRepository.findById(id)
   }
 
   public findByUid(uid: string) {
@@ -48,6 +54,14 @@ export class DefaultUserService {
 
   public disableTwoFactorAuthentification(uid: string) {
     return this.userPgRepository.disableTwoFactorAuthentification(uid)
+  }
+
+  public enableIsActivated(id: number) {
+    return this.userPgRepository.enableIsActivated(id)
+  }
+
+  public disableIsActivated(id: number) {
+    return this.userPgRepository.disableIsActivated(id)
   }
 
   public setTwoFactorSecret(uid: string, secret: string) {
@@ -199,5 +213,13 @@ export class DefaultUserService {
     }
 
     return "invalid"
+  }
+
+  public findUsersPaginatedAndSorted(page: number) {
+    return this.userPgRepository
+      .findUsersPaginatedAndSorted(
+        this.usersPageSize * (page - 1),
+        this.usersPageSize
+      )
   }
 }
