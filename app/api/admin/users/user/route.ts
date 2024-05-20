@@ -14,10 +14,9 @@ export async function POST(req: NextRequest) {
   const url = req.nextUrl.clone()
   const id = url.searchParams.get("id")
   const formData = await req.formData()
-  const parseId = initialNumber
-
+  let parseId = initialNumber
   if (id) {
-    const parseId = parseInt(id)
+    parseId = parseInt(id)
   } else {
     return problem({...invalidQueryParameterProblem, detail: "id query parameter is required"})
   }
@@ -25,10 +24,11 @@ export async function POST(req: NextRequest) {
   const data = req.body
   let parsedFormData = null
   const enabled = formData.get("enabled")
-  if (enabled && id) {
+
+  if (enabled && parseId) {
     userService.enableIsActivated(parseId)
   }
-  if (!enabled && id) {
+  if (!enabled && parseId) {
     userService.disableIsActivated(parseId)
   }
   formData.get
