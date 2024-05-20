@@ -219,7 +219,7 @@ export class NftPgRepository {
     const searchMap: Record<number, Nft> = {}
     searchResult.forEach((row) => {
       searchMap[row.id as number] = {
-        id: row.id as string,
+        id: row.id as number,
         contentUrl: row.contentUrl as string,
         type: row.type as string,
         postedAt: row.postedAt as Date,
@@ -229,22 +229,22 @@ export class NftPgRepository {
 
 
     const countResult = await this.pgClient.execute(countQuery)
-    const countsMap: Record<string, NftCount> = {}
+    const countsMap: Record<number, NftCount> = {}
 
     countResult.forEach((row) => {
-      countsMap[row.id as string] = {
-        id: row.id as string,
+      countsMap[row.id as number] = {
+        id: row.id as number,
         mintCount: row.mintCount as number,
         commentCount: row.commentCount as number,
       }
     })
 
     const finalResult: NftWithCounts[] = searchResult.map(nft => ({
-      id: searchResult[nft.id as any as number]?.id as string,
-      contentUrl: searchResult[nft.id as any as number]?.contentUrl as string,
-      type: searchResult[nft.id as any as number]?.type as string,
-      mintCount: countsMap[nft.id as string]?.mintCount || 0,
-      commentCount: countsMap[nft.id as string]?.commentCount || 0,
+      id: searchResult[nft.id as number]?.id as number,
+      contentUrl: searchResult[nft.id as number]?.contentUrl as string,
+      type: searchResult[nft.id as number]?.type as string,
+      mintCount: countsMap[nft.id as number]?.mintCount || 0,
+      commentCount: countsMap[nft.id as number]?.commentCount || 0,
     } as NftWithCounts))
 
     return finalResult
@@ -252,7 +252,7 @@ export class NftPgRepository {
 }
 
 interface Nft {
-  id: string;
+  id: number;
   contentUrl: string;
   postedAt: Date;
   showOnProfileId: string;
@@ -260,7 +260,7 @@ interface Nft {
 }
 
 interface NftCount {
-  id: string;
+  id: number;
   mintCount: number;
   commentCount: number;
 }
