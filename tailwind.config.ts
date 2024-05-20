@@ -55,6 +55,12 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        tertiary: {
+          DEFAULT: "hsl(var(--tertiary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        "tertiary-hover": "hsl(var(--tertiary-hover))",
+        "light-selection": "hsl(var(--light-selection))",
       },
       borderRadius: {
         lg: "var(--radius)",

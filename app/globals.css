@@ -24,6 +24,9 @@
     --input: 240 5.9% 90%;
     --ring: 142.1 76.2% 36.3%;
     --radius: 0.5rem;
+    --tertiary: 30 0% 94%;
+    --tertiary-hover: 30 0% 86%;
+    --light-selection: 30 1% 98%;
   }
 
   .dark {
@@ -46,6 +49,9 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 142.4 71.8% 29.2%;
+    --tertiary: 30 0% 21%;
+    --tertiary-hover: 30 0% 15%;
+    --light-selection: 30 0% 7%;
   }
 }
 

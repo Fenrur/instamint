@@ -10,8 +10,6 @@ import {createRedirectQueryParam} from "@/utils/url"
 
 export const dynamic = "force-dynamic"
 
-type LoginPageError = "email_not_exists"
-
 interface forgotPasswordPageProps {
   searchParams: {
     error?: string,
@@ -19,9 +17,10 @@ interface forgotPasswordPageProps {
   }
 }
 
-function parseError(props: forgotPasswordPageProps): LoginPageError | null {
+function parseError(props: forgotPasswordPageProps): string | null {
   if (props.searchParams.error) {
     const error = props.searchParams.error
+
     if (error === "email_not_exists") {
       return "email_not_exists"
     }
@@ -55,7 +54,8 @@ export default async function ForgotPasswordPage(props: forgotPasswordPageProps)
               placeholder="myemail@example.com"
               required
             />
-            <div hidden={error === null} className={cn("text-sm", error ? "text-destructive" : "")}>{errorMessage}</div>
+            <div hidden={error === null}
+                 className={cn("text-sm", error ? "text-destructive" : "")}>{errorMessage}</div>
           </div>
           <Button type="submit" className="w-full">
             Continue

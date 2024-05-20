@@ -25,6 +25,13 @@ export class UserPgRepository {
       })
   }
 
+  public findById(id: string) {
+    return this.pgClient.query.UserTable
+      .findFirst({
+        where: (user, {eq}) => (eq(user.id, Number(id))),
+      })
+  }
+
   public async existUsername(username: string) {
     const result = await this.pgClient.query.ProfileTable
       .findFirst({
@@ -82,13 +89,22 @@ export class UserPgRepository {
       .where(eq(UserTable.uid, uid))
   }
 
+  public async updatePassword(uid: string, hashedPassword: string) {
+    return this.pgClient
+      .update(UserTable)
+      .set({
+         hashedPassword
+      })
+      .where(eq(UserTable.uid, uid))
+  }
+
   public async create(email: string, hashedPassword: string, profileId: number) {
     const createdUser = await this.pgClient
       .insert(UserTable)
       .values({
         email,
         hashedPassword,
-        profileId
+        profileId,
       })
       .returning({uid: UserTable.uid})
 

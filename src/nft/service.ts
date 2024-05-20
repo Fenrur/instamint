@@ -1,16 +1,13 @@
 import {NftPgRepository} from "@/nft/repository"
 import {PgClient} from "@/db/db-client"
-import {ProfilePgRepository} from "@/profile/repository"
 
 export class DefaultNftService {
   private readonly nftPgRepository: NftPgRepository
-  private readonly profilePgRepository: ProfilePgRepository
-  private readonly pageSize: number
+  private readonly nftsPageSize: number
 
-  constructor(pgClient: PgClient, pageSize: number) {
+  constructor(pgClient: PgClient, nftsPageSize: number) {
     this.nftPgRepository = new NftPgRepository(pgClient)
-    this.profilePgRepository = new ProfilePgRepository(pgClient)
-    this.pageSize = pageSize
+    this.nftsPageSize = nftsPageSize
   }
 
   public countNfts(profileId: number) {
@@ -33,6 +30,13 @@ export class DefaultNftService {
     }
 
     return this.nftPgRepository.findNftsPaginatedByProfileIdWithMintCountAndCommentCount(profile.id, this.pageSize * (page - 1), this.pageSize)
+  public findNftsPaginatedAndSorted(profileId: number, page: number) {
+    return this.nftPgRepository
+      .findNftsPaginatedAndSorted(
+        profileId,
+        this.nftsPageSize * (page - 1),
+        this.nftsPageSize
+      )
   }
 
 }

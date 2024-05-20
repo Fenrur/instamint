@@ -5,26 +5,22 @@ import {isContentType} from "@/http/content-type"
 import {DateTime} from "luxon"
 import {transporter} from "@/mail/mailer"
 import {render} from "@react-email/render"
-import VerificationEmail from "@/mail/templates/verification-email"
 import {env} from "@/env"
 import * as u from "node:url"
-import {emailVerificationService, userService} from "@/services"
+import {passwordResetService, userService} from "@/services"
+import ResetPassword from "@/mail/templates/reset-password"
 
-async function createVerificationAndSendEmail(formData: SignupCredentials, createdAt: DateTime<true>) {
-  const verificationId = await emailVerificationService.create(formData.email, createdAt)
-
+async function sendPasswordResetEmail(formData: SignupCredentials, resetId: string) {
   const verificationLink = u.format({
     host: env.BASE_URL,
-    pathname: "/api/forgot-password/verification-email",
-    query: {vid: verificationId},
+    pathname: "/api/forgot-password/reset-password-email",
+    query: {resetId},
   })
-
-  const emailHtml = render(VerificationEmail({
+  const emailHtml = render(ResetPassword({
     baseUrl: env.BASE_URL,
     contactEmail: env.CONTACT_EMAIL,
     instamintImageUrl: `${env.BASE_URL}/instamint.svg`,
     verificationLink,
-    bodyMassage: "Reset your password Instamint",
   }))
 
   await transporter.sendMail({
@@ -39,36 +35,33 @@ export async function POST(req: NextRequest) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/x-www-form-urlencoded"})
   }
 
-  const createdAt = DateTime.now();
-  const formData = await req.formData();
-  let parsedFormData = null;
-  const url = req.nextUrl.clone();
+  const createdAt = DateTime.now()
+  const formData = await req.formData()
+  let parsedFormData = null
+  const url = req.nextUrl.clone()
 
   try {
-    parsedFormData = SignupCredentials.parse(formData);
+    parsedFormData = SignupCredentials.parse(formData)
   } catch (e: any) {
-    url.pathname = "/signup";
-    return NextResponse.redirect(url);
+    url.pathname = "/signup"
+
+    return NextResponse.redirect(url)
   }
 
-  const user = await userService.findByEmail(parsedFormData.email);
+  const user = await userService.findByEmail(parsedFormData.email)
 
   if (!user) {
-    url.pathname = "/forgot-password";
-    url.searchParams.set("error", "email_not_exists");
-    return NextResponse.redirect(url);
+    url.pathname = "/forgot-password"
+    url.searchParams.set("error", "email_not_exists")
+
+    return NextResponse.redirect(url)
   }
 
-  const emailVerifications = await emailVerificationService.findUnverifiedAndBeforeExpirationByEmail(
-    parsedFormData.email,
-    createdAt
-  )
-
-  url.pathname = "/verification-email/sent"
+  url.pathname = "/reset-password/sent"
   url.searchParams.set("email", parsedFormData.email)
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  createVerificationAndSendEmail(parsedFormData, createdAt)
+  const passwordResetId = await passwordResetService.create(user.id, createdAt)
+  await sendPasswordResetEmail(parsedFormData, passwordResetId)
 
   return NextResponse.redirect(url)
 }

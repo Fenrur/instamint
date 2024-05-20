@@ -2,23 +2,15 @@ import {PgClient} from "@/db/db-client"
 import {CommentTable, HashtagNftTable, MintTable, NftTable, ProfileTable, UserTable} from "@/db/schema"
 import {count, eq, sql} from "drizzle-orm"
 import {z} from "zod"
-import {DateTime} from "luxon"
-import {nftTypeArray} from "../../app/domain/types"
+import {nftTypeArray} from "@/domain/types"
+import {datetimeSql} from "@/utils/zod"
 
 export class NftPgRepository {
   private readonly pgClient: PgClient
   private readonly FindNftsPaginatedByProfileIdWithMintCountCommentCountSchema = z.array(z.object({
     id: z.number().int().positive(),
     contentUrl: z.string(),
-    postedAt: z.string().transform(dateSql => {
-      const pAt = DateTime.fromSQL(dateSql, {zone: "utc"})
-
-      if (pAt.isValid) {
-        return pAt
-      }
-
-      throw new Error("Invalid date")
-    }),
+    postedAt: datetimeSql(),
     showOnProfileId: z.number().int().positive(),
     commentCount: z
       .string()
@@ -44,7 +36,7 @@ export class NftPgRepository {
     return result[0].count
   }
 
-  public async findNftsPaginatedByProfileIdWithMintCountAndCommentCount(profileId: number, offset: number, limit: number) {
+  public async findNftsPaginatedAndSorted(profileId: number, offset: number, limit: number) {
     const query = sql`
       SELECT ${NftTable.id},
              ${NftTable.contentUrl},

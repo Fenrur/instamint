@@ -9,12 +9,11 @@ import {
   uidNotFoundProblem
 } from "@/http/problem"
 import {TwoFactorAuthenticatorDisableRequest} from "@/http/rest/types"
-// @ts-expect-error TODO fix library not found
-import {NextAuthRequest} from "next-auth/lib"
 import {isContentType} from "@/http/content-type"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
-export const POST = auth(async (req: NextAuthRequest) => {
+export const POST = auth(async (req) => {
   if (!isContentType(req, "json")) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
   }
@@ -25,17 +24,14 @@ export const POST = auth(async (req: NextAuthRequest) => {
     return problem(notAuthenticatedProblem)
   }
 
-  const body = await req.json()
+  const bodyParsedResult = TwoFactorAuthenticatorDisableRequest.safeParse(await req.json())
 
-  let parsedBody = null
-
-  try {
-    parsedBody = TwoFactorAuthenticatorDisableRequest.parse(body)
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
-  const result = await userService.verifyPasswordAndTotpCodeByUid(session.uid, parsedBody.password, parsedBody.totpCode)
+  const body = bodyParsedResult.data
+  const result = await userService.verifyPasswordAndTotpCodeByUid(session.uid, body.password, body.totpCode)
 
   switch (result) {
     case "uid_not_found":
@@ -56,6 +52,6 @@ export const POST = auth(async (req: NextAuthRequest) => {
     case "valid":
       await userService.disableTwoFactorAuthentification(session.uid)
 
-    return NextResponse.json({message: "Two-factor authentication has been disabled"})
+      return NextResponse.json({message: "Two-factor authentication has been disabled"}, {status: StatusCodes.OK})
   }
 })

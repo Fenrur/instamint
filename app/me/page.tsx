@@ -1,180 +1,61 @@
-"use client"
+import {getServerSession} from "@/auth"
+import {redirect} from "next/navigation"
+import {createRedirectQueryParam} from "@/utils/url"
+import {followService, nftService, profileService} from "@/services"
+import {MyUserAuthenticatedDoesntExist} from "@/components/section/my-user-authenticated-doest-exist"
+import React from "react"
+import {ProfileHeaderSection, ProfileStatisticsSection} from "../profile/[slug]/ssr"
+import {Separator} from "@/components/ui/separator"
+import {NftsSection as NftsSectionCsr} from "../profile/[slug]/csr"
 
-import {Input} from "@/components/ui/input"
-import {Label} from "@/components/ui/label"
-import React, {useEffect, useState} from "react"
+export default async function MyProfilePage() {
+  const session = await getServerSession()
 
-import {RightPanel} from "../search/right-panel"
-import {Button} from "@/components/ui/button"
-import {profileService} from "@/services"
-import {useQuery} from "@tanstack/react-query"
+  if (!session) {
+    redirect(`/login${createRedirectQueryParam("/me")}`)
+  }
 
-type SignupPageError = "email_verification_limit_exceeded" | "email_exists";
+  const myUserAndProfile = await profileService.findByUserUid(session.uid)
 
-interface SignupPageProps {
-    searchParams: {
-        error?: SignupPageError;
-    };
-}
-
-function parseError(props: SignupPageProps): SignupPageError | null {
-    const error = props.searchParams.error
-
-    if (error === "email_verification_limit_exceeded") {
-        return "email_verification_limit_exceeded"
-    }
-
-
-    return null
-}
-
-async function fetchProfileData(): Promise<any> {
-    const response = await fetch("/api/profile")
-
-    if (response.ok) {
-        return response.json()
-    }
-
-    throw new Error("Network response was not ok")
-}
-
-interface ProfileData {
-    username: string;
-    bio: string;
-    profileImage: string;
-    link: string;
-}
-
-export default function MePage(props: SignupPageProps) {
-    const error = parseError(props)
-    const [profileImage, setProfileImage] = useState<string | null>(null)
-    const [formData, setFormData] = useState({
-        username: "",
-        bio: "",
-        link: ""
-    })
-    const {data, isLoading, isError} = useQuery(["profileData"], fetchProfileData)
-
-    useEffect(() => {
-        if (data && data.profile) {
-            const profile = data.profile as ProfileData
-            setFormData({
-                username: profile.username,
-                bio: profile.bio,
-                uniqueLink: profile.link
-            })
-        }
-    }, [data])
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({...formData, [e.target.name]: e.target.value})
-    }
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files && e.target.files[0]
-
-        if (file) {
-            const reader = new FileReader()
-            reader.onloadend = () => {
-                setProfileImage(reader.result as string)
-            }
-            reader.readAsDataURL(file)
-        }
-    }
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const formDataWithImage = {
-            ...formData,
-            profileImage
-        }
-
-        // Send formDataWithImage to your API endpoint using fetch or axios
-        try {
-            const response = await fetch("/api/profile", {
-                method: "POST",
-                body: JSON.stringify(formDataWithImage),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            console.log("Success:", response)
-        } catch (error) {
-            console.error("Error:", error)
-        }
-    }
-
+  if (!myUserAndProfile) {
     return (
-        <RightPanel title="Profile" text="You can edit your profile details" width="w-[350px]">
-            <form onSubmit={handleSubmit}>
-                <div className="grid gap-4">
-                    <div className="flex justify-center items-center flex-col">
-                        {profileImage && (
-                            <div className="rounded-full overflow-hidden border-2 border-gray-300 w-36 h-36">
-                                <img
-                                    alt="profile image"
-                                    src={profileImage}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                        )}
-                        {!profileImage && (
-                            <div
-                                className="rounded-full overflow-hidden border-2 border-gray-300 w-36 h-36 flex justify-center items-center">
-                                <span className="text-gray-400">No image selected</span>
-                            </div>
-                        )}
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            className="mt-4"
-                        />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="username" className={error ? "text-destructive" : ""}>Username</Label>
-                        <Input
-                            name="username"
-                            id="username"
-                            type="text"
-                            required
-                            defaultValue={formData.username}
-                            onChange={handleInputChange}
-                        />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="link" className={error ? "text-destructive" : ""}>Link</Label>
-                        <Input
-                            name="link"
-                            id="link"
-                            type="text"
-                            required
-                            defaultValue={formData.link}
-                            onChange={handleInputChange}
-                        />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="bio" className={error ? "text-destructive" : ""}>Bio</Label>
-                        <textarea
-                            name="bio"
-                            id="bio"
-                            required
-                            defaultValue={formData.bio}
-                            onChange={handleInputChange}
-                        />
-                    </div>
-
-                    <div className="justify-around" style={{display: "flex", justifyContent: "space-around"}}>
-                        <Button type="submit" className="w-1/3">
-                            Validate
-                        </Button>
-                        <Button className="w-1/3">
-                            Cancel
-                        </Button>
-                    </div>
-                </div>
-            </form>
-        </RightPanel>
+      <main>
+        <MyUserAuthenticatedDoesntExist/>
+      </main>
     )
+  }
+
+  const [followersCount, followsCount, nftsCount] = await Promise.all([
+    followService.countFollowers(myUserAndProfile.profile.id),
+    followService.countFollows(myUserAndProfile.profile.id),
+    nftService.countNfts(myUserAndProfile.profile.id),
+  ])
+
+  return (
+    <main>
+      <div className="flex justify-center">
+        <div className="grid max-w-[940px] w-full">
+          <ProfileHeaderSection
+            bio={myUserAndProfile.profile.bio}
+            link={myUserAndProfile.profile.link}
+            username={myUserAndProfile.profile.username}
+            displayName={myUserAndProfile.profile.displayName}
+            location={myUserAndProfile.profile.location}
+            avatarUrl={myUserAndProfile.profile.avatarUrl}
+            viewerUserType="my_profile"
+          />
+          <Separator/>
+          <ProfileStatisticsSection
+            followers={followersCount}
+            follows={followsCount}
+            nfts={nftsCount}
+            username={myUserAndProfile.profile.username}
+            subAccess="logged_access"
+          />
+          <Separator/>
+          <NftsSectionCsr username={myUserAndProfile.profile.username}/>
+        </div>
+      </div>
+    </main>
+  )
 }
