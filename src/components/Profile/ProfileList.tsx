@@ -3,7 +3,6 @@ export interface ProfileData {
 }
 
 export const ProfileList = ({data}: { data: ProfileData[] }) => {
-
   return (
     <div>
       <h1>Profile List</h1>
@@ -13,5 +12,5 @@ export const ProfileList = ({data}: { data: ProfileData[] }) => {
         ))}
       </ul>
     </div>
-  );
+  )
 }

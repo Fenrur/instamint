@@ -12,6 +12,8 @@ import {
   followRequestIgnoredPageSize,
   followRequestPageSize,
   followsPageSize,
+  nftsPageSize,
+  profilePageSize,
   searchFollowersProfileSize,
   searchFollowsProfileSize,
   searchRequesterProfileSize
@@ -23,9 +25,9 @@ export const emailVerificationService = new DefaultEmailVerificationService(pgCl
 
 export const passwordResetService = new DefaultPasswordResetService(pgClient)
 
-export const profileService = new DefaultProfileService(pgClient, s3client, env.S3_BUCKET_NAME, 12)
+export const profileService = new DefaultProfileService(pgClient, s3client, env.S3_BUCKET_NAME, profilePageSize)
 
-export const nftService = new DefaultNftService(pgClient, 10)
+export const nftService = new DefaultNftService(pgClient, nftsPageSize)
 
 export const followService = new DefaultFollowService(
   pgClient,

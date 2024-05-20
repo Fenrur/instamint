@@ -30,8 +30,8 @@ function parseError(props: SignupPageProps): SignupPageError | null {
     return "email_verification_limit_exceeded"
   }
 
-  
-return null
+
+  return null
 }
 
 const debounceTime = 300
@@ -72,7 +72,6 @@ export default function SignupPage(props: SignupPageProps) {
         const responseData = await response.json() as NFTData[]
         setNftsList(responseData)
       } catch (error) {
-        console.error("Error fetching data:", error)
       }
     }
     const fetchUsersData = async () => {
@@ -95,9 +94,9 @@ export default function SignupPage(props: SignupPageProps) {
     }
 
     if (isNfts) {
-      fetchNftsData()
+      void fetchNftsData()
     } else {
-      fetchUsersData()
+      void fetchUsersData()
     }
   }, [query, priceRange, location, isNfts])
 
@@ -135,8 +134,12 @@ export default function SignupPage(props: SignupPageProps) {
 
       <Tabs defaultValue="nfts">
         <TabsList>
-          <TabsTrigger value="nfts" onClick={() => { setIsNfts(true) }}>Nfts</TabsTrigger>
-          <TabsTrigger value="documents" onClick={() => { setIsNfts(false) }}>Users</TabsTrigger>
+          <TabsTrigger value="nfts" onClick={() => {
+            setIsNfts(true)
+          }}>Nfts</TabsTrigger>
+          <TabsTrigger value="documents" onClick={() => {
+            setIsNfts(false)
+          }}>Users</TabsTrigger>
         </TabsList>
 
         <div>

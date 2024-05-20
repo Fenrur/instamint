@@ -1,4 +1,3 @@
-"use client"
 import React from "react"
 import {LoggedLayout} from "@/components/layout/logged-layout"
 import {getServerSession} from "@/auth"
@@ -10,9 +9,11 @@ export const dynamic = "force-dynamic"
 
 interface ProfilePageProps {
   children: React.ReactNode,
-params: {
+  params: {
     slug: string
   }
+}
+
 export default async function ProfileLayout(props: ProfilePageProps) {
   const session = await getServerSession()
   const getUserAndProfile = async () => {
@@ -21,7 +22,7 @@ export default async function ProfileLayout(props: ProfilePageProps) {
     }
 
 
-return null
+    return null
   }
   const userAndProfile = await getUserAndProfile()
   const username = userAndProfile?.profile.username || ""
