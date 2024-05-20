@@ -11,6 +11,7 @@ import {usernameCharactersRegex} from "@/utils/validator"
 import {followService, profileService, userService} from "@/services"
 import {SearchFollowersProfileResponse} from "@/http/rest/types"
 import {NextResponse} from "next/server"
+import {StatusCodes} from "http-status-codes"
 
 export const GET = auth(async (req) => {
   const session = getSession(req)
@@ -60,7 +61,7 @@ export const GET = auth(async (req) => {
       searchedUsername
     )
 
-    return NextResponse.json(response)
+    return NextResponse.json(response, {status: StatusCodes.OK})
   }
 
   if (targetProfile.visibilityType === "public") {
@@ -70,7 +71,7 @@ export const GET = auth(async (req) => {
       searchedUsername
     )
 
-    return NextResponse.json(response)
+    return NextResponse.json(response, {status: StatusCodes.OK})
   }
 
   const followingState = await followService.getFollowState(myUserAndProfile.profile.id, targetProfile.id)
@@ -82,7 +83,7 @@ export const GET = auth(async (req) => {
       searchedUsername
     )
 
-    return NextResponse.json(response)
+    return NextResponse.json(response, {status: StatusCodes.OK})
   }
 
   return problem({...dontFollowProfileProblem, detail: `you are not following profile @${targetProfileUsername}`})

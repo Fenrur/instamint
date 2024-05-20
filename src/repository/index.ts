@@ -24,18 +24,14 @@ import {
 } from "@/http/rest/types"
 import {getErrorCodeFromProblem} from "@/http/problem"
 import {ErrorCode} from "@/http/error-code"
-import {
-  statusOk,
-  statusCreated
-} from "@/status_code/index"
-
+import {StatusCodes} from "http-status-codes"
 
 export async function myProfile() {
   const res = await fetch("/api/profile/me", {
     method: "GET"
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return FollowProfileStateResponse.parse(await res.json())
   }
 
@@ -58,7 +54,7 @@ export async function followProfile(req: FollowProfileRequest) {
     },
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     const body = FollowProfileResponse.parse(await res.json())
 
     return body.type
@@ -98,7 +94,7 @@ export async function getPaginatedFollows(username: string, page: number) {
     method: "GET"
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return PaginatedFollowProfileResponse.parse(await res.json())
   }
 
@@ -130,7 +126,7 @@ export async function getPaginatedFollowers(username: string, page: number) {
     method: "GET"
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return PaginatedFollowerProfileResponse.parse(await res.json())
   }
 
@@ -168,7 +164,7 @@ export async function unfollowProfile(req: UnfollowProfileRequest) {
     },
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     const body = UnfollowProfileResponse.parse(await res.json())
 
     return body.type
@@ -205,7 +201,7 @@ export async function getFollowProfileState(username: string) {
     method: "GET"
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     const body = FollowProfileStateResponse.parse(await res.json())
 
 
@@ -235,7 +231,7 @@ export async function getFollowerProfileState(username: string) {
     method: "GET"
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     const body = FollowerProfileStateResponse.parse(await res.json())
 
 
@@ -268,7 +264,7 @@ export async function deleteFollowerProfile(req: DeleteFollowerProfileRequest) {
     },
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return "deleted"
   }
 
@@ -304,7 +300,7 @@ export async function acceptRequestFollowProfile(req: AcceptFollowProfileRequest
     },
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return "accepted"
   }
 
@@ -348,7 +344,7 @@ export async function ignoreRequestFollowProfile(req: IgnoreProfileRequest) {
     },
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return "ignored"
   }
 
@@ -383,7 +379,7 @@ export async function getPaginatedRequestersFollowProfile(page: number, ignored:
     method: "GET"
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return PaginatedRequestersFollowProfileResponse.parse(await res.json())
   }
 
@@ -412,7 +408,7 @@ export async function acceptAllRequestFollowProfile(req: AcceptAllFollowProfileR
     },
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return "accepted_all"
   }
 
@@ -437,7 +433,7 @@ export async function ignoreAllRequestFollowProfile() {
     method: "PUT",
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return "ignored_all"
   }
 
@@ -461,7 +457,7 @@ export async function searchRequesterProfile(signal: AbortSignal, usernameSearch
     signal
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return PaginatedRequestersFollowProfileResponse.parse(await res.json())
   }
 
@@ -488,7 +484,7 @@ export async function searchFollowsProfile(signal: AbortSignal, username: string
     signal
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return SearchFollowsProfileResponse.parse(await res.json())
   }
 
@@ -521,7 +517,7 @@ export async function searchFollowersProfile(signal: AbortSignal, username: stri
     signal
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return SearchFollowersProfileResponse.parse(await res.json())
   }
 
@@ -582,7 +578,7 @@ export async function getPaginatedNfts(username: string, page: number) {
     method: "GET"
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return GetPaginedNftsByUsernameResponse.parse(await res.json())
   }
 
@@ -620,7 +616,7 @@ export async function verifyUserPassword(req: VerifyPasswordRequest) {
     body: JSON.stringify(req)
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return "password_valid"
   }
 
@@ -646,7 +642,7 @@ export async function twoFactorAuthenticatorUserType(req: TwoFactorAuthenticator
     body: JSON.stringify(req)
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return TwoFactorAuthenticatorTypeResponse.parse(await res.json())
   }
 
@@ -672,7 +668,7 @@ export async function verifyTwoFactorAuthenticatorTotpCode(req: VerifyTotpCodeRe
     body: JSON.stringify(req)
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return "code_valid"
   }
 
@@ -705,7 +701,7 @@ export async function verifyExistUsername(signal: AbortSignal, username: string)
     signal
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return VerifyExistUsernameResponse.parse(await res.json())
   }
 
@@ -720,8 +716,8 @@ export async function registerUser(req: RegisterUserRequest) {
     },
     body: JSON.stringify(req)
   })
-
-  if (res.status === statusCreated) {
+  
+  if (res.status === StatusCodes.CREATED) {
     return RegisterUserResponse.parse(await res.json())
   }
 

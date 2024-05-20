@@ -13,6 +13,7 @@ import {usernameRegex} from "@/utils/validator"
 import {auth, getSession} from "@/auth"
 import {DateTime} from "luxon"
 import {NftType} from "@/domain/types"
+import {StatusCodes} from "http-status-codes"
 
 export const GET = auth(async (req) => {
   const url = req.nextUrl.clone()
@@ -71,16 +72,16 @@ export const GET = auth(async (req) => {
         targetProfile.id,
         parsedPage
       )
-    const reponse = mapNftsToResponse(result)
+    const response = mapNftsToResponse(result)
 
-    return NextResponse.json(reponse)
+    return NextResponse.json(response, {status: StatusCodes.OK})
   }
 
   if (myUserAndProfile.profile.id === targetProfile.id) {
     const result = await nftService.findNftsPaginatedAndSorted(targetProfile.id, parsedPage)
     const response = mapNftsToResponse(result)
 
-    return NextResponse.json(response)
+    return NextResponse.json(response, {status: StatusCodes.OK})
   }
 
   const followState = await followService.getFollowState(myUserAndProfile.profile.id, targetProfile.id)
@@ -92,7 +93,7 @@ export const GET = auth(async (req) => {
   const result = await nftService.findNftsPaginatedAndSorted(targetProfile.id, parsedPage)
   const response = mapNftsToResponse(result)
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, {status: StatusCodes.OK})
 })
 
 function mapNftsToResponse(nfts: {

@@ -16,6 +16,7 @@ import {followService, profileService, userService} from "@/services"
 import {NextResponse} from "next/server"
 import {DateTime} from "luxon"
 import {isContentType} from "@/http/content-type"
+import {StatusCodes} from "http-status-codes"
 
 export const POST = auth(async (req) => {
   if (!isContentType(req, "json")) {
@@ -29,14 +30,13 @@ export const POST = auth(async (req) => {
     return problem(notAuthenticatedProblem)
   }
 
-  let parsedBody = null
+  const bodyParsedResult = AcceptFollowProfileRequest.safeParse(await req.json())
 
-  try {
-    parsedBody = AcceptFollowProfileRequest.parse(await req.json())
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
+  const body = bodyParsedResult.data
   const myUserAndProfile = await profileService.findByUserUid(session.uid)
 
   if (!myUserAndProfile) {
@@ -49,7 +49,7 @@ export const POST = auth(async (req) => {
     return problem({...notActivated, detail: "your are not enable to access the app"})
   }
 
-  const targetProfile = await profileService.findByUsername(parsedBody.username)
+  const targetProfile = await profileService.findByUsername(body.username)
 
   if (!targetProfile) {
     return problem({...profileNotFoundProblem, detail: "target profile not fount"})
@@ -62,12 +62,12 @@ export const POST = auth(async (req) => {
       return problem(cantAcceptYourselfProblem)
 
     case "not_requesting_follow":
-      return problem({...dontRequestProfileProblem, detail: `@${parsedBody.username} not request to follow you`})
+      return problem({...dontRequestProfileProblem, detail: `@${body.username} not request to follow you`})
 
     case "already_follow":
       return problem(alreadyFollowProfileProblem)
 
     case "accepted_request_follow":
-      return NextResponse.json({accepted: true}, {status: 200})
+      return NextResponse.json({accepted: true}, {status: StatusCodes.OK})
   }
 })

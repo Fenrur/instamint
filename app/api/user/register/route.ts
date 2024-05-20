@@ -15,6 +15,7 @@ import {env} from "@/env"
 import {transporter} from "@/mail/mailer"
 import {RegisteringUser} from "@/mail/templates/registering-user"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
 async function sendRegisteredEmail(body: RegisterUserRequest, result: { uid: string; email: string }) {
   const emailHtml = render(RegisteringUser({
@@ -38,20 +39,17 @@ export const POST = async (req: NextRequest) => {
   }
 
   const createdAt = DateTime.utc()
-  const body = await req.json()
+  const bodyParsedResult = RegisterUserRequest.safeParse(await req.json())
 
-  let parsedBody = null
-
-  try {
-    parsedBody = RegisterUserRequest.parse(body)
-  } catch (e: any) {
-    return problem({...invalidBodyProblem, detail: e.errors})
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
   }
 
+  const body = bodyParsedResult.data
   const result = await userService.create(
-    parsedBody.password,
-    parsedBody.username,
-    parsedBody.emailVerificationId, createdAt
+    body.password,
+    body.username,
+    body.emailVerificationId, createdAt
   )
 
   switch (result) {
@@ -76,7 +74,7 @@ export const POST = async (req: NextRequest) => {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  sendRegisteredEmail(parsedBody, result)
+  sendRegisteredEmail(body, result)
 
-  return NextResponse.json(response, {status: 201})
+  return NextResponse.json(response, {status: StatusCodes.CREATED})
 }

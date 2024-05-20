@@ -3,6 +3,7 @@ import {badSessionProblem, notAuthenticatedProblem, problem, notActivated} from 
 import {profileService, userService} from "@/services"
 import {NextResponse} from "next/server"
 import {MyProfileResponse} from "@/http/rest/types"
+import {StatusCodes} from "http-status-codes"
 
 export const GET = auth(async (req) => {
   const session = getSession(req)
@@ -26,5 +27,5 @@ export const GET = auth(async (req) => {
 
   const response: MyProfileResponse = userAndProfile.profile
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, {status: StatusCodes.OK})
 })

@@ -2,6 +2,7 @@ import {auth, getSession} from "@/auth"
 import {badSessionProblem, notAuthenticatedProblem, problem, notActivated} from "@/http/problem"
 import {followService, profileService, userService} from "@/services"
 import {NextResponse} from "next/server"
+import {StatusCodes} from "http-status-codes"
 
 export const PUT = auth(async (req) => {
   const session = getSession(req)
@@ -24,5 +25,5 @@ export const PUT = auth(async (req) => {
 
   await followService.ignoreAllRequestFollows(myUserAndProfile.profile.id)
 
-  return NextResponse.json({ignoredAll: true}, {status: 200})
+  return NextResponse.json({ignoredAll: true}, {status: StatusCodes.OK})
 })

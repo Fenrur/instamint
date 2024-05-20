@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useState} from "react"
+import React, {useCallback, useEffect, useState} from "react"
 import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
 
 import {NftContainer} from "./ssr"
@@ -31,7 +31,7 @@ export function NftsSection({username}: TestButtonProps) {
   const [init, setInit] = useState(true)
   const router = useRouter()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadNextPage = () => {
+  const loadNextPage =useCallback(() => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     setTimeout(async () => {
       const paginatedNfts = await getPaginatedNfts(username, page)
@@ -66,7 +66,7 @@ export function NftsSection({username}: TestButtonProps) {
       setNfts([...nfts, ...paginatedNfts])
       setPage(page + 1)
     })
-  }
+  }, [nfts, page, router, username])
 
   useEffect(() => {
     if (init) {

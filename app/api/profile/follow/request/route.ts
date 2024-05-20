@@ -3,6 +3,7 @@ import {badSessionProblem, invalidQueryParameterProblem, notAuthenticatedProblem
 import {followService, profileService, userService} from "@/services"
 import {NextResponse} from "next/server"
 import {PaginatedRequestersFollowProfileResponse} from "@/http/rest/types"
+import {StatusCodes} from "http-status-codes"
 
 export const GET = auth(async (req) => {
   const session = getSession(req)
@@ -62,5 +63,5 @@ export const GET = auth(async (req) => {
 
   const response: PaginatedRequestersFollowProfileResponse = result
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, {status: StatusCodes.OK})
 })

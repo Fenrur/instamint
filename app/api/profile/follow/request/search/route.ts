@@ -3,6 +3,7 @@ import {badSessionProblem, invalidQueryParameterProblem, notAuthenticatedProblem
 import {followService, profileService, userService} from "@/services"
 import {usernameCharactersRegex} from "@/utils/validator"
 import {NextResponse} from "next/server"
+import {StatusCodes} from "http-status-codes"
 
 export const GET = auth(async (req) => {
   const session = getSession(req)
@@ -45,5 +46,5 @@ export const GET = auth(async (req) => {
     searchedUsername
   )
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, {status: StatusCodes.OK})
 })
