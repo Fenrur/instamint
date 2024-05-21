@@ -97,7 +97,6 @@ export class NftPgRepository {
       SELECT ${NftTable.id},
              ${NftTable.contentUrl},
              ${NftTable.postedAt},
-             ${NftTable.showOnProfileId},
              ${NftTable.type}
       FROM ${NftTable}
       WHERE 1 = 1
@@ -216,38 +215,41 @@ export class NftPgRepository {
                         GROUP BY ${CommentTable.nftId}) c ON ${NftTable.id} = c."nftId"
     `
     const searchResult = await this.pgClient.execute(searchQuery)
-    const searchMap: Record<number, Nft> = {}
-    searchResult.forEach((row) => {
-      searchMap[row.id as number] = {
-        id: row.id as number,
-        contentUrl: row.contentUrl as string,
-        type: row.type as string,
-        postedAt: row.postedAt as Date,
-        showOnProfileId: row.showOnProfileId as string,
-      }
-    })
-
-
+    const transformedSearchResult = searchResult.map((value) => transformNft(value))
     const countResult = await this.pgClient.execute(countQuery)
-    const countsMap: Record<number, NftCount> = {}
+    const transformedCountResult = countResult.map((value) => transformNftCount(value))
+    const finalResult = transformedSearchResult.map((value) => {
+      const nftCount = transformedCountResult.find((nftCount) => nftCount.id === value.id)
 
-    countResult.forEach((row) => {
-      countsMap[row.id as number] = {
-        id: row.id as number,
-        mintCount: row.mintCount as number,
-        commentCount: row.commentCount as number,
+      if (nftCount) {
+        return {
+          ...value,
+          mintCount: nftCount.mintCount,
+          commentCount: nftCount.commentCount
+        }
       }
     })
-
-    const finalResult: NftWithCounts[] = searchResult.map(nft => ({
-      id: searchResult[nft.id as number]?.id as number,
-      contentUrl: searchResult[nft.id as number]?.contentUrl as string,
-      type: searchResult[nft.id as number]?.type as string,
-      mintCount: countsMap[nft.id as number]?.mintCount || 0,
-      commentCount: countsMap[nft.id as number]?.commentCount || 0,
-    } as NftWithCounts))
 
     return finalResult
+  }
+}
+
+// Function that matches the expected signature
+const transformNft = (value: Record<string, unknown>): Nft => {
+  // Transform value to match Nft structure
+  return {
+    id: value.id as number,
+    contentUrl: value.contentUrl as string,
+    postedAt: new Date(value.postedAt as string),
+    type: value.type as string
+  }
+}
+const transformNftCount = (value: Record<string, unknown>): NftCount => {
+  // Transform value to match Nft structure
+  return {
+    id: value.id as number,
+    mintCount: value.mintCount as number,
+    commentCount: value.commentCount as number
   }
 }
 
@@ -255,7 +257,6 @@ interface Nft {
   id: number;
   contentUrl: string;
   postedAt: Date;
-  showOnProfileId: string;
   type: string;
 }
 
