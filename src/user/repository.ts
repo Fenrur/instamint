@@ -33,7 +33,7 @@ export class UserPgRepository {
       })
   }
 
-  public async findById(id: number) {
+  public async findWithId(id: number) {
     const query = sql`
       SELECT ${UserTable.id},
              ${UserTable.email},

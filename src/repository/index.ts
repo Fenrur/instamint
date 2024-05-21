@@ -549,7 +549,7 @@ export async function getPaginatedUsers(page: number) {
     method: "GET"
   })
 
-  if (res.status === statusOk) {
+  if (res.status === StatusCodes.OK) {
     return GetPaginedUsersResponse.parse(await res.json())
   }
 
@@ -716,7 +716,7 @@ export async function registerUser(req: RegisterUserRequest) {
     },
     body: JSON.stringify(req)
   })
-  
+
   if (res.status === StatusCodes.CREATED) {
     return RegisterUserResponse.parse(await res.json())
   }

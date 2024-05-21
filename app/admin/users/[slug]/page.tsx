@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic"
 export default async function AdminUserPage() {
   const headersList = headers()
   const headerUrl = headersList.get('x-url') || ""
-  const user = await userService.findById(parseInt(headerUrl.slice(-1)))
+  const user = await userService.findWithId(parseInt(headerUrl.slice(-1)))
 
   return (
     <>
