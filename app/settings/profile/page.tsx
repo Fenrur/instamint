@@ -47,7 +47,7 @@ export default async function MePage() {
       }
       setFormData(updatedFormData)
     }
-  }, [profile, dataCheck])
+  }, [dataCheck, profile])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({...formData, [e.target.name]: e.target.value})
