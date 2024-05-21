@@ -59,29 +59,6 @@ export class AvatarProfileS3Repository {
     return key
   }
 
-  public async getByKey(key: string) {
-    const getCommand = new GetObjectCommand({
-      Bucket: this.bucket,
-      Key: key
-    })
-
-    try {
-      const result = await this.s3client.send(getCommand)
-
-      if (result.Body) {
-        return result.Body
-      }
-
-      return "key_not_found"
-    } catch (error: any) {
-      if (error.name === "NoSuchKey") {
-        return "key_not_found"
-      }
-
-      throw error
-    }
-  }
-
   public delete(username: string) {
     const deleteCommand = new DeleteObjectCommand({
       Bucket: this.bucket,

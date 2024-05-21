@@ -5,33 +5,23 @@ import {Label} from "@/components/ui/label"
 import React, {useEffect, useState} from "react"
 
 import {Button} from "@/components/ui/button"
-import {useQuery} from "@tanstack/react-query"
 import {toast} from "sonner"
 import {cn} from "@/lib/utils"
 import {ErrorCode} from "@/http/error-code"
 import {RightPanel} from "../../signup/right-panel"
+import {useCheckAvatarUrl} from "@/repository/hooks"
+import {fetchProfileData} from "@/repository"
 
 
-async function fetchProfileData(): Promise<ProfileData> {
-  const response = await fetch("/api/profile")
-
-  if (response.ok) {
-    const resp = await response.json()
-
-    return resp.profile as ProfileData
-  }
-
-  throw new Error("Network response was not ok")
-}
-
-interface ProfileData {
+export interface ProfileData {
   username: string;
   bio: string;
   avatarUrl: string;
   link: string;
 }
 
-export default function MePage() {
+
+export default async function MePage() {
   const [profileImage, setProfileImage] = useState<string | null>(null)
   const [formData, setFormData] = useState<ProfileData>({
     username: "",
@@ -39,11 +29,13 @@ export default function MePage() {
     link: "",
     avatarUrl: ""
   })
+  const {checkAndMaybeSetAvatarUrl, dataCheck} = useCheckAvatarUrl()
   const [errors, setErrors] = useState<any>({
     username: "",
     link: ""
   })
-  const {data: profile} = useQuery(["profileData"], fetchProfileData)
+  const profile = await fetchProfileData()
+  await checkAndMaybeSetAvatarUrl(profile.avatarUrl)
 
   useEffect(() => {
     if (profile) {
@@ -51,35 +43,11 @@ export default function MePage() {
         username: profile.username,
         bio: profile.bio,
         link: profile.link,
-        avatarUrl: profile.avatarUrl || "https://api.dicebear.com/8.x/fun-emoji/svg?seed=Willow"
+        avatarUrl: dataCheck ?? profile.avatarUrl
       }
-
-      if (profile.avatarUrl) {
-        // Check if avatarUrl exists
-        fetch(profile.avatarUrl, {method: "HEAD"})
-          .then(response => {
-            if (response.ok) {
-              setFormData(updatedFormData)
-            } else {
-              // If avatarUrl doesn't exist, set default
-              setFormData({
-                ...updatedFormData,
-                avatarUrl: "https://api.dicebear.com/8.x/fun-emoji/svg?seed=Willow"
-              })
-            }
-          })
-          .catch(() => {
-            setFormData({
-              ...updatedFormData,
-              avatarUrl: "https://api.dicebear.com/8.x/fun-emoji/svg?seed=Willow"
-            })
-          })
-      } else {
-        // If avatarUrl doesn't exist, set default
-        setFormData(updatedFormData)
-      }
+      setFormData(updatedFormData)
     }
-  }, [profile])
+  }, [profile, dataCheck])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({...formData, [e.target.name]: e.target.value})

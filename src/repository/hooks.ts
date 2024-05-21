@@ -1,6 +1,7 @@
 import {
   acceptAllRequestFollowProfile,
   acceptRequestFollowProfile,
+  checkAndMaybeSetAvatarUrl,
   deleteFollowerProfile,
   followProfile,
   ignoreAllRequestFollowProfile,
@@ -357,5 +358,20 @@ export function useRegisterUser() {
     dataRegister: data,
     errorRegister: error,
     isFetchingRegister: isMutating
+  }
+}
+
+
+export function useCheckAvatarUrl() {
+  const checkAndMaybeSetAvatarUrlFetcher = (_: any, {arg}: {
+    arg: string
+  }) => checkAndMaybeSetAvatarUrl(arg)
+  const {trigger, data, error, isMutating} = useSWRMutation("RegisterUser", checkAndMaybeSetAvatarUrlFetcher)
+
+  return {
+    checkAndMaybeSetAvatarUrl: (req: string) => trigger(req),
+    dataCheck: data,
+    errorCheck: error,
+    isFetchingCheck: isMutating
   }
 }
