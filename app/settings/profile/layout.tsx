@@ -4,7 +4,6 @@ import {getServerSession} from "@/auth"
 import {Separator} from "@/components/ui/separator"
 import {profileService} from "@/services"
 import {ConnectionHeader} from "../../profile/[slug]/ssr"
-import {ReactQueryClientProvider} from "@/components/ReactQueryClientProvider"
 
 export const dynamic = "force-dynamic"
 
@@ -36,11 +35,9 @@ export default async function ProfileLayout(props: ProfilePageProps) {
             username={username}
             navigationHeader={false}
           >
-            <ReactQueryClientProvider>
               {
                 props.children
               }
-            </ReactQueryClientProvider>
           </LoggedLayout>
           : <>
             <div className="flex justify-center">

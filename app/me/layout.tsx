@@ -19,7 +19,7 @@ export default async function ProfileLayout(props: ProfilePageProps) {
     }
 
 
-return null
+    return null
   }
   const userAndProfile = await getUserAndProfile()
   const username = userAndProfile?.profile.username || ""
