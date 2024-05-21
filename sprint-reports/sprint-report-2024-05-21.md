@@ -8,9 +8,9 @@
 
 During this sprint the team was more focused on finishing tasks we didn't finish last sprint.
 
-Then we keep on the features of the applications to make it functional.
+Then we keep on the features of the application to make it functional.
 
-We worked on the profile features and on the admin ones.
+We worked on the profile, user settings, followers and on the admin features.
 
 The work is not completely finished yet, but it is on the good way.
 
@@ -41,7 +41,7 @@ The work is not completely finished yet, but it is on the good way.
     - What: `response to call for tenders`
     - When: `2 May 2024`
 - Review 5
-  - Description: `users have access to other users pofile and its own`
+  - Description: `users have access to other users profile and its own`
   - Commitment:
     - Who: `Livio TINNIRELLO`
     - What: `user's profile`
@@ -61,7 +61,7 @@ The work is not completely finished yet, but it is on the good way.
     - When: `9 May 2024`
 
 - Review 8
-  - Description: `user can folow other users and be followed by other users`
+  - Description: `user can follow other users and be followed by other users`
   - Commitment:
     - Who: `Livio TINNIRELLO`
     - What: `follow system for users`
