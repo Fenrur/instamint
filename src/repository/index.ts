@@ -711,10 +711,10 @@ export async function registerUser(req: RegisterUserRequest) {
 }
 
 
-export async function fetchProfileData() {
+export async function fetchProfileData(): Promise<ProfileData> {
   const res = await fetch("/api/profile/me")
 
-  if (res.status === StatusCodes.OK) {
+  if (res.status === StatusCodes.CREATED) {
     return await res.json() as ProfileData
   }
 
