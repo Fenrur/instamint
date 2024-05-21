@@ -9,8 +9,7 @@ import {toast} from "sonner"
 import {cn} from "@/lib/utils"
 import {ErrorCode} from "@/http/error-code"
 import {RightPanel} from "../../signup/right-panel"
-import {useCheckAvatarUrl} from "@/repository/hooks"
-import {fetchProfileData} from "@/repository"
+import {useFetchProfileData} from "@/repository/hooks"
 
 
 export interface ProfileData {
@@ -21,33 +20,32 @@ export interface ProfileData {
 }
 
 
-export default async function MePage() {
+export default function MePage() {
   const [profileImage, setProfileImage] = useState<string | null>(null)
+  const [errors, setErrors] = useState<any>({
+    username: "",
+    link: ""
+  })
   const [formData, setFormData] = useState<ProfileData>({
     username: "",
     bio: "",
     link: "",
     avatarUrl: ""
   })
-  const {checkAndMaybeSetAvatarUrl, dataCheck} = useCheckAvatarUrl()
-  const [errors, setErrors] = useState<any>({
-    username: "",
-    link: ""
-  })
-  const profile = await fetchProfileData()
-  await checkAndMaybeSetAvatarUrl(profile.avatarUrl)
+  const {profileData, profileDataMutate} = useFetchProfileData()
+  void profileDataMutate()
 
   useEffect(() => {
-    if (profile) {
-      const updatedFormData = {
-        username: profile.username,
-        bio: profile.bio,
-        link: profile.link,
-        avatarUrl: dataCheck ?? profile.avatarUrl
+    if (profileData) {
+      const data = {
+        username: profileData.username,
+        bio: profileData.bio,
+        link: profileData.link,
+        avatarUrl: profileData.avatarUrl
       }
-      setFormData(updatedFormData)
+      setFormData(data)
     }
-  }, [profile, dataCheck])
+  }, [profileData])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({...formData, [e.target.name]: e.target.value})

@@ -1,8 +1,8 @@
 import {
   acceptAllRequestFollowProfile,
   acceptRequestFollowProfile,
-  checkAndMaybeSetAvatarUrl,
   deleteFollowerProfile,
+  fetchProfileData,
   followProfile,
   ignoreAllRequestFollowProfile,
   ignoreRequestFollowProfile,
@@ -23,6 +23,7 @@ import {
   VerifyTotpCodeRequest
 } from "@/http/rest/types"
 import {useRef} from "react"
+import useSWR from "swr"
 
 export function useFollowProfile(username: string) {
   const followProfileFetcher = () => followProfile({username})
@@ -361,17 +362,15 @@ export function useRegisterUser() {
   }
 }
 
-
-export function useCheckAvatarUrl() {
-  const checkAndMaybeSetAvatarUrlFetcher = (_: any, {arg}: {
-    arg: string
-  }) => checkAndMaybeSetAvatarUrl(arg)
-  const {trigger, data, error, isMutating} = useSWRMutation("RegisterUser", checkAndMaybeSetAvatarUrlFetcher)
+export function useFetchProfileData() {
+  const fetchProfileDataFetcher = () => fetchProfileData()
+  const { data, error, mutate} = useSWR("useFetchProfileData", fetchProfileDataFetcher)
 
   return {
-    checkAndMaybeSetAvatarUrl: (req: string) => trigger(req),
-    dataCheck: data,
-    errorCheck: error,
-    isFetchingCheck: isMutating
+    profileData: data,
+    profileDataMutate: mutate,
+    errorProfileData: error,
   }
 }
+
+

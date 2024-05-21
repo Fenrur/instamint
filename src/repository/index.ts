@@ -26,8 +26,6 @@ import {
 import {getErrorCodeFromProblem} from "@/http/problem"
 import {ErrorCode} from "@/http/error-code"
 import {StatusCodes} from "http-status-codes"
-import {getServerSession} from "@/auth"
-import {profileService} from "@/services"
 import {ProfileData} from "../../app/settings/profile/page"
 
 export async function myProfile() {
@@ -713,37 +711,12 @@ export async function registerUser(req: RegisterUserRequest) {
 }
 
 
-export async function checkAndMaybeSetAvatarUrl(avatarUrl: string) {
-  const defaultAvatarUrl = "https://api.dicebear.com/8.x/fun-emoji/svg?seed=Willow"
-  const res = await fetch(avatarUrl, {method: "HEAD"})
-    .then(response => {
-      if (response.ok) {
-        return avatarUrl
-      } else {
-        return defaultAvatarUrl
-      }
-    })
-    .catch(() => {
-      return defaultAvatarUrl
-    })
+export async function fetchProfileData() {
+  const res = await fetch("/api/profile/me")
 
-  return res
-}
-
-//this is the function (next action) that will be used to get the data from the server
-export async function fetchProfileData(): Promise<ProfileData> {
-  "use server"
-  const session = await getServerSession()
-
-  if (!session) {
-    throw new Error("you need to be authenticated to see this private profile")
+  if (res.status === StatusCodes.OK) {
+    return await res.json() as ProfileData
   }
 
-  const myUserAndProfile = await profileService.findByUserUid(session.uid)
-
-  if (!myUserAndProfile) {
-    throw new Error("user not found")
-  }
-
-  throw new Error("Network response was not ok")
+  return {avatarUrl: "", bio: "", link: "", username: ""}
 }

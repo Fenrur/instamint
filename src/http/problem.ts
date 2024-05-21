@@ -76,11 +76,7 @@ export const cantAcceptYourselfProblem = {title: "Can't accept yourself", errorC
 
 export const cantDeleteFollowerYourselfProblem = {title: "Can't delete follower yourself", errorCode: ErrorCode.CANT_DELETE_FOLLOWER_YOURSELF, status: StatusCodes.BAD_REQUEST}
 
-export const linkAlreadyUsedProblem = {
-  title: "unique link is already in use",
-  errorCode: ErrorCode.LINK_ALREADY_USED,
-  status: 400
-}
+export const linkAlreadyUsedProblem = {title: "unique link is already in use", errorCode: ErrorCode.LINK_ALREADY_USED, status: StatusCodes.BAD_REQUEST}
 
 const GetCode = z.object({
   errorCode: z.number().int().positive()

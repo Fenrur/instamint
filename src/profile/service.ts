@@ -55,7 +55,8 @@ export class DefaultProfileService {
     let avatarKey = ""
 
     if (avatar) {
-      avatarKey = `${env.S3_ENDPOINT}/${env.S3_BUCKET_NAME}/${await this.avatarProfileS3Repository.putImage(username, avatar, <string>type)}`
+      const uname = await this.avatarProfileS3Repository.putImage(username, avatar, <string>type)
+      avatarKey = `${env.S3_ENDPOINT}/${env.S3_BUCKET_NAME}/${uname}`
     }
 
     return this.profilePgRepository.updateProfileByUserUid(userId, username, bio, link, avatarKey)
