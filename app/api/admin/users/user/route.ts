@@ -23,10 +23,6 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData()
   const session = getSession(req)
 
-  if (!session) {
-    return problem({...notAuthenticatedProblem, detail: "you need to be authenticated to access"})
-  }
-
   let parseId = initialNumber
 
   if (id) {
@@ -55,11 +51,6 @@ export async function POST(req: NextRequest) {
   }
 
   url.pathname = "/admin/users"
-
-  const myUser = await userService.findByUid(session.uid)
-  if (myUser && myUser.role !== "admin") {
-    return problem({...badSessionProblem, detail: "you don't have the right permissions"})
-  }
 
   return NextResponse.redirect(url)
 }
