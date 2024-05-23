@@ -79,6 +79,11 @@ export default function SignupPage() {
     setPage(page + 1)
   }, [isNfts, page, query, location, priceRange, nftsList, profilesList])
 
+  function onTabChange(value: string) {
+    const x = value === "nfts"
+    setIsNfts(x)
+    fetchData(query, location, priceRange, page)
+  }
 
   return (
     <RightPanel title="Search" text="you can search what you want" width="w-full">
@@ -127,19 +132,15 @@ export default function SignupPage() {
             </div>
 
             <div className="mt-6">
-              <Tabs defaultValue="nfts">
+              <Tabs defaultValue="nfts" onValueChange={value => { onTabChange(value) }}>
                 <TabsList className="flex w-full">
                   <TabsTrigger className="w-1/2 text-center"
-                               value="nfts" onClick={() => {
-                    setIsNfts(true)
-                  }}
-                  >
+                               value="nfts">
                     NFTs
                   </TabsTrigger>
                   <TabsTrigger className="w-1/2 text-center"
-                               value="profiles" onClick={() => {
-                    setIsNfts(false)
-                  }}>
+                               value="profiles">
+
                     Users
                   </TabsTrigger>
                 </TabsList>
