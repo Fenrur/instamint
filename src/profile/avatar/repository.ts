@@ -1,6 +1,7 @@
 import {DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3"
 import {avatarS3Path} from "@/utils/avatar"
 import {ReadStream} from "node:fs"
+import {Readable} from "node:stream"
 
 export class AvatarProfileS3Repository {
   private readonly s3client: S3Client
@@ -42,6 +43,20 @@ export class AvatarProfileS3Repository {
     })
 
     return this.s3client.send(putCommand)
+  }
+
+  public async putImage(username: string, buffer: Buffer, type: string) {
+    const key = avatarS3Path(username)
+    const putCommand = new PutObjectCommand({
+      Bucket: this.bucket,
+      Key: key,
+      Body: Readable.from(buffer),
+      ContentLength: buffer.length,
+      ContentType: `image/${type}`
+    })
+    await this.s3client.send(putCommand)
+
+    return key
   }
 
   public delete(username: string) {

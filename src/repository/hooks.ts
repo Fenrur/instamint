@@ -2,6 +2,7 @@ import {
   acceptAllRequestFollowProfile,
   acceptRequestFollowProfile,
   deleteFollowerProfile,
+  fetchProfileData,
   followProfile,
   ignoreAllRequestFollowProfile,
   ignoreRequestFollowProfile,
@@ -22,6 +23,7 @@ import {
   VerifyTotpCodeRequest
 } from "@/http/rest/types"
 import {useRef} from "react"
+import useSWR from "swr"
 
 export function useFollowProfile(username: string) {
   const followProfileFetcher = () => followProfile({username})
@@ -359,3 +361,16 @@ export function useRegisterUser() {
     isFetchingRegister: isMutating
   }
 }
+
+export function useFetchProfileData() {
+  const fetchProfileDataFetcher = () => fetchProfileData()
+  const { data, error, mutate} = useSWR("useFetchProfileData", fetchProfileDataFetcher)
+
+  return {
+    profileData: data,
+    profileDataMutate: mutate,
+    errorProfileData: error,
+  }
+}
+
+

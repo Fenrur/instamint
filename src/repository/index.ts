@@ -742,3 +742,14 @@ export async function getPaginatedUsersWithSearch(query: string, location: strin
 
   throw new Error("Undefined error code from server")
 }
+
+
+export async function fetchProfileData(): Promise<ProfileData> {
+  const res = await fetch("/api/profile/me")
+
+  if (res.status === StatusCodes.CREATED) {
+    return await res.json() as ProfileData
+  }
+
+  return {avatarUrl: "", bio: "", link: "", username: ""}
+}
