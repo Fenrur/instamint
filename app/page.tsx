@@ -21,7 +21,7 @@ export default function Home() {
     } else {
       router.push("/login")
     }
-  }, [status])
+  }, [router, status])
 
   const routingToLoginPage = () => {
     router.push("/login")
@@ -35,14 +35,6 @@ export default function Home() {
   const routingToMe = () => {
     router.push("/me")
   }
-
-  const routingToSearch = () => {
-    router.push("/search");
-  };
-
-  const routingToMe = () => {
-    router.push("/me");
-  };
 
   return (
     <main>

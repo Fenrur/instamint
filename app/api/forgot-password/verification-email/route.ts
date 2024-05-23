@@ -1,16 +1,17 @@
-import {NextRequest, NextResponse} from "next/server";
-import {DateTime} from "luxon";
-import {emailVerificationService} from "@/services";
+import {NextRequest, NextResponse} from "next/server"
+import {DateTime} from "luxon"
+import {emailVerificationService} from "@/services"
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"
 
 export async function GET(req: NextRequest) {
-  const url = req.nextUrl.clone();
-  const verificationId = url.searchParams.get("vid");
+  const url = req.nextUrl.clone()
+  const verificationId = url.searchParams.get("vid")
 
   if (!verificationId) {
-    url.pathname = "/verification-email/invalid/url";
-    return NextResponse.redirect(url);
+    url.pathname = "/verification-email/invalid/url"
+
+  return NextResponse.redirect(url)
   }
 
   const emailVerification = await emailVerificationService.findByVerificationId(verificationId)
@@ -27,8 +28,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  const expireAt = DateTime.fromSQL(emailVerification.expireAt, {zone: "utc"});
-  const now = DateTime.now();
+  const expireAt = DateTime.fromSQL(emailVerification.expireAt.toString(), {zone: "utc"})
+  const now = DateTime.now()
 
   if (now > expireAt) {
     url.pathname = "/verification-email/invalid/expired"

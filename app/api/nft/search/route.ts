@@ -1,30 +1,32 @@
 import {NextResponse} from "next/server"
-import {notAuthenticatedProblem, problem, userNotFoundProblem} from "@/http/problem"
+import {invalidQueryParameterProblem, notAuthenticatedProblem, problem, userNotFoundProblem} from "@/http/problem"
 import {nftService, profileService} from "@/services"
 import {auth, getSession} from "@/auth"
-// @ts-expect-error
+// @ts-expect-error TODO fix library not found
 import {NextAuthRequest} from "next-auth/lib"
 
 export const GET = auth(async (req: NextAuthRequest) => {
   const url = req.nextUrl.clone()
-  const page = url.searchParams.get("page") as number
+  const page = url.searchParams.get("page") as string
   const query = url.searchParams.get("query") as string
   const location = url.searchParams.get("location") as string
   const maxPrice = url.searchParams.get("maxPrice") as string
   const minPrice = url.searchParams.get("minPrice") as string
 
-  /*  if (!page) {
-      return problem({...invalidQueryParameterProblem, detail: "page is required"})
-    }
+  if (!page) {
+    return problem({...invalidQueryParameterProblem, detail: "page is required"})
+  }
 
-    const parsedPage = parseInt(page, 10)
-    if (isNaN(parsedPage)) {
-      return problem({...invalidQueryParameterProblem, detail: "page must be a number"})
-    }
-    if (parsedPage <= 0) {
-      return problem({...invalidQueryParameterProblem, detail: "page must be a minimum 1"})
-    }
-  */
+  const parsedPage = parseInt(page, 10)
+
+  if (isNaN(parsedPage)) {
+    return problem({...invalidQueryParameterProblem, detail: "page must be a number"})
+  }
+
+  if (parsedPage <= 0) {
+    return problem({...invalidQueryParameterProblem, detail: "page must be a minimum 1"})
+  }
+
   const session = getSession(req)
 
   if (!session) {
@@ -38,7 +40,7 @@ export const GET = auth(async (req: NextAuthRequest) => {
   }
 
 
-  const result = await nftService.findNftsPaginatedByUsernameOrHashtagOrDescriptionOrLocationOrPriceRange(query, location, minPrice, maxPrice, page)
+  const result = await nftService.findNftsPaginatedByUsernameOrHashtagOrDescriptionOrLocationOrPriceRange(query, location, minPrice, maxPrice, parsedPage)
 
   return NextResponse.json(result)
 })
