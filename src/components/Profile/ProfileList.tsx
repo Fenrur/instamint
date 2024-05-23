@@ -4,6 +4,7 @@ import {ProfileContainer} from "../../../app/profile/[slug]/ssr"
 export interface ProfileData {
   id: number;
   link: string;
+  bio: string;
   avatarUrl: string;
   username: string;
 }

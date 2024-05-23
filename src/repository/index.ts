@@ -751,5 +751,5 @@ export async function fetchProfileData(): Promise<ProfileData> {
     return await res.json() as ProfileData
   }
 
-  return {avatarUrl: "", bio: "", link: "", username: ""}
+  return {id: 0, avatarUrl: "", bio: "", link: "", username: ""}
 }
