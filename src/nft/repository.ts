@@ -265,8 +265,3 @@ interface NftCount {
   mintCount: number;
   commentCount: number;
 }
-
-interface NftWithCounts extends Nft {
-  mintCount: number;
-  commentCount: number;
-}
