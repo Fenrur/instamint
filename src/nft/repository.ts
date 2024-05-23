@@ -218,19 +218,20 @@ export class NftPgRepository {
     const transformedSearchResult = searchResult.map((value) => transformNft(value))
     const countResult = await this.pgClient.execute(countQuery)
     const transformedCountResult = countResult.map((value) => transformNftCount(value))
-    const finalResult = transformedSearchResult.map((value) => {
+
+    return transformedSearchResult.map((value) => {
       const nftCount = transformedCountResult.find((nftCount) => nftCount.id === value.id)
 
       if (nftCount) {
-        return {
+        return ({
           ...value,
           mintCount: nftCount.mintCount,
           commentCount: nftCount.commentCount
-        }
+        })
       }
-    })
 
-    return finalResult
+      return {}
+    }).filter(item => item)
   }
 }
 

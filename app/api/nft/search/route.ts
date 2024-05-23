@@ -7,7 +7,7 @@ import {NextAuthRequest} from "next-auth/lib"
 
 export const GET = auth(async (req: NextAuthRequest) => {
   const url = req.nextUrl.clone()
-  const page = url.searchParams.get("page") as string
+  const page = url.searchParams.get("page") as number
   const query = url.searchParams.get("query") as string
   const location = url.searchParams.get("location") as string
   const maxPrice = url.searchParams.get("maxPrice") as string
@@ -38,7 +38,7 @@ export const GET = auth(async (req: NextAuthRequest) => {
   }
 
 
-  const result = await nftService.findNftsPaginatedByUsernameOrHashtagOrDescriptionOrLocationOrPriceRange(query, location, minPrice, maxPrice, 1)
+  const result = await nftService.findNftsPaginatedByUsernameOrHashtagOrDescriptionOrLocationOrPriceRange(query, location, minPrice, maxPrice, page)
 
   return NextResponse.json(result)
 })

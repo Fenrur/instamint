@@ -12,7 +12,9 @@ import {
   PaginatedFollowProfileResponse,
   PaginatedRequestersFollowProfileResponse,
   RegisterUserRequest,
-  RegisterUserResponse, SearchFollowersProfileResponse, SearchFollowsProfileResponse,
+  RegisterUserResponse,
+  SearchFollowersProfileResponse,
+  SearchFollowsProfileResponse,
   TwoFactorAuthenticatorTypeRequest,
   TwoFactorAuthenticatorTypeResponse,
   UnfollowProfileRequest,
@@ -24,6 +26,8 @@ import {
 import {getErrorCodeFromProblem} from "@/http/problem"
 import {ErrorCode} from "@/http/error-code"
 import {StatusCodes} from "http-status-codes"
+import {ProfileData} from "@/components/Profile/ProfileList"
+import {NFTData} from "@/components/NFT/NFTList"
 
 export async function myProfile() {
   const res = await fetch("/api/profile/me", {
@@ -705,4 +709,37 @@ export async function registerUser(req: RegisterUserRequest) {
   }
 
   throw new Error(`Undefined error code from server ${errorCode}`)
+}
+
+export async function getPaginatedNftsWithSearch(query: string, location: string, priceRange: number[], page: number) {
+
+  const queryParams = new URLSearchParams({
+    query,
+    minPrice: priceRange[0].toString(),
+    maxPrice: priceRange[1].toString(),
+    location,
+    page: page.toString()
+  })
+  const response = await fetch(`/api/nft/search?${queryParams.toString()}`)
+
+  if (response.status === StatusCodes.OK) {
+    return await response.json() as NFTData[]
+  }
+
+  throw new Error("Undefined error code from server")
+}
+
+export async function getPaginatedUsersWithSearch(query: string, location: string, page: number) {
+  const queryParams = new URLSearchParams({
+    query,
+    location,
+    page: page.toString()
+  })
+  const response = await fetch(`/api/profile/search?${queryParams.toString()}`)
+
+  if (response.status === StatusCodes.OK) {
+    return await response.json() as ProfileData[]
+  }
+
+  throw new Error("Undefined error code from server")
 }

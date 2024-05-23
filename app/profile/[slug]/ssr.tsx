@@ -25,6 +25,12 @@ export interface NftContainerProps {
   comments: string
 }
 
+export interface ProfileContainerProps {
+  link: string,
+  avatarUrl: string,
+  username: string,
+}
+
 export function NftContainer({url, type, mints, comments}: NftContainerProps) {
   return (
     <div className="relative pb-full cursor-pointer transition-opacity duration-200">
@@ -75,6 +81,19 @@ export function NftContainer({url, type, mints, comments}: NftContainerProps) {
         </div>
       </div>
     </div>
+  )
+}
+
+export function ProfileContainer({link, avatarUrl, username}: ProfileContainerProps) {
+  return (
+    <a href={link} className="relative pb-1 cursor-pointer">
+      <div className="rounded overflow-hidden">
+        <img className="w-full" src={avatarUrl} alt="avatar image"/>
+        <div className="px-6">
+          <div className="font-bold text-sm">{username}</div>
+        </div>
+      </div>
+    </a>
   )
 }
 
@@ -378,8 +397,7 @@ export function ProfileStatisticsSection({
           </Link>
         )
       }
-    }
-    else if (subAccess === "logged_access") {
+    } else if (subAccess === "logged_access") {
       if (subAccessLink.loggedAccessLink) {
         return (
           <Link href={subAccessLink.loggedAccessLink} className="hover:text-primary">

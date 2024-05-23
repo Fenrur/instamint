@@ -1,22 +1,14 @@
-import {NextResponse} from "next/server";
-import {
-  invalidQueryParameterProblem,
-  notAuthenticatedProblem,
-  problem,
-  userNotFoundProblem
-} from "@/http/problem";
-import {nftService, profileService, userService} from "@/services";
-import {auth, getSession} from "@/auth";
-import {DateTime} from "luxon";
-import {NftType} from "../../../domain/types";
+import {NextResponse} from "next/server"
+import {profileService} from "@/services"
+import {auth} from "@/auth"
 // @ts-ignore
-import {NextAuthRequest} from "next-auth/lib";
+import {NextAuthRequest} from "next-auth/lib"
 
 export const GET = auth(async (req: NextAuthRequest) => {
-  const url = req.nextUrl.clone();
-  const page = url.searchParams.get("page") as string;
-  const query = url.searchParams.get("query") as string;
-  const location = url.searchParams.get("location") as string;
+  const url = req.nextUrl.clone()
+  const page = url.searchParams.get("page") as number
+  const query = url.searchParams.get("query") as string
+  const location = url.searchParams.get("location") as string
 
   /*  if (!page) {
       return problem({...invalidQueryParameterProblem, detail: "page is required"});
@@ -40,7 +32,7 @@ export const GET = auth(async (req: NextAuthRequest) => {
     }
   */
 
-  const result = await profileService.findUsersOrTeaPaginatedByUsernameOrLocation(query, location, 1);
+  const result = await profileService.findUsersOrTeaPaginatedByUsernameOrLocation(query, location, page)
 
   return NextResponse.json(result)
 })
