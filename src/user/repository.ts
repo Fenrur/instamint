@@ -1,7 +1,7 @@
 import {PgClient} from "@/db/db-client"
 import {env} from "@/env"
-import {ProfileTable, UserTable} from "@/db/schema"
-import {eq, sql} from "drizzle-orm"
+import {UserTable} from "@/db/schema"
+import {eq} from "drizzle-orm"
 import {symmetricEncrypt} from "@/utils/crypto"
 
 export class UserPgRepository {
@@ -93,7 +93,7 @@ export class UserPgRepository {
     return this.pgClient
       .update(UserTable)
       .set({
-         hashedPassword
+        hashedPassword
       })
       .where(eq(UserTable.uid, uid))
   }

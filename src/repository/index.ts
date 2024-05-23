@@ -712,7 +712,6 @@ export async function registerUser(req: RegisterUserRequest) {
 }
 
 export async function getPaginatedNftsWithSearch(query: string, location: string, priceRange: number[], page: number) {
-
   const queryParams = new URLSearchParams({
     query,
     minPrice: priceRange[0].toString(),
