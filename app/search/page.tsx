@@ -83,6 +83,8 @@ export default function SignupPage() {
     const x = value === "nfts"
     setIsNfts(x)
     fetchData(query, location, priceRange, page)
+    setPage(1)
+    setHasMore(true)
   }
 
   return (
@@ -163,7 +165,20 @@ export default function SignupPage() {
                     </InfiniteScroll>
                   </TabsContent>
                   <TabsContent value="profiles">
-                    <ProfileList data={profilesList}/>
+                    <InfiniteScroll
+                      dataLength={profilesList.length}
+                      next={loadNextPage}
+                      hasMore={hasMore}
+                      loader={
+                        <div className="grid justify-center">
+                          {
+                            <BackgroundLoadingDots size={50}/>
+                          }
+                        </div>
+                      }
+                    >
+                      <ProfileList data={profilesList}/>
+                    </InfiniteScroll>
                   </TabsContent>
                 </div>
               </Tabs>
