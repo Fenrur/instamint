@@ -1,85 +1,83 @@
-import {NextResponse} from "next/server";
 import {
-    invalidQueryParameterProblem,
-    notAuthenticatedProblem,
-    problem,
-    userNotFoundProblem
-} from "@/http/problem";
-import {nftService, profileService, userService} from "@/services";
-import {auth, getSession} from "@/auth";
-import {DateTime} from "luxon";
-import {NftType} from "../../../domain/types";
-// @ts-ignore
-import {NextAuthRequest} from "next-auth/lib";
+  invalidQueryParameterProblem,
+  linkAlreadyUsedProblem,
+  notAuthenticatedProblem,
+  problem,
+  usernameAlreadyUsedProblem,
+  userNotFoundProblem
+} from "@/http/problem"
+import {profileService} from "@/services"
+import {auth, getSession} from "@/auth"
+// @ts-expect-error TODO fix library not found
+import {NextAuthRequest} from "next-auth/lib"
+import {NextResponse} from "next/server"
+
 
 export const POST = auth(async (req: NextAuthRequest) => {
-    const url = req.nextUrl.clone();
-    const username = url.searchParams.get("username") as string;
-    const bio = url.searchParams.get("bio") as string;
-    const uniqueLink = url.searchParams.get("uniqueLink") as string;
+  const formData = await req.formData()
+  const username = formData.get("username") as string
+  const bio = formData.get("bio") as string
+  const link = formData.get("link") as string
+  const imageFile = formData.get("avatar") as string
 
-    if (!username) {
-        return problem({...invalidQueryParameterProblem, detail: "username is required"});
+
+  if (!username) {
+    return problem({...invalidQueryParameterProblem, detail: "username is required"})
+  }
+
+  if (!bio) {
+    return problem({...invalidQueryParameterProblem, detail: "bio is required"})
+  }
+
+  if (!link) {
+    return problem({...invalidQueryParameterProblem, detail: "link is required"})
+  }
+
+  const session = getSession(req)
+
+  if (!session) {
+    return problem({...notAuthenticatedProblem, detail: "you need to be authenticated to see this private profile"})
+  }
+
+  const myUserAndProfile = await profileService.findByUserUid(session.uid)
+
+  if (!myUserAndProfile) {
+    return problem({...userNotFoundProblem, detail: "my user not found"})
+  }
+
+  if (username !== myUserAndProfile.profile.username) {
+    const isUsernameAlreadyUsed = await profileService.isUsernameExist(username)
+
+    if (isUsernameAlreadyUsed) {
+      return problem({...usernameAlreadyUsedProblem, detail: "username already used"})
+    }
+  }
+
+  if (link !== myUserAndProfile.profile.link) {
+    const isLinkAlreadyUsed = await profileService.isLinkExist(link)
+
+    if (isLinkAlreadyUsed) {
+      return problem({...linkAlreadyUsedProblem, detail: "link already used"})
+    }
+  }
+
+  let imageBuffer = null
+  let imageType = null
+
+  if (imageFile) {
+    imageType = (imageFile).split(";")[0].split(":")[1].split("/")[1]
+
+    if (!imageType) {
+      return problem({...invalidQueryParameterProblem, detail: "Invalid image format"})
     }
 
-    if (!bio) {
-        return problem({...invalidQueryParameterProblem, detail: "bio is required"});
-    }
+    // Convert imageFile to binary data
+    const data = (imageFile).replace(/^data:image\/\w+;base64,/, "")
+    imageBuffer = Buffer.from(data, "base64")
+  }
 
-    if (!uniqueLink) {
-        return problem({...invalidQueryParameterProblem, detail: "uniqueLink is required"});
-    }
+  const result = await profileService.updateProfileByUid(session.uid, username, bio, link, imageBuffer, imageType)
 
-    const session = getSession(req)
-
-    if (!session) {
-        return problem({...notAuthenticatedProblem, detail: "you need to be authenticated to see this private profile"})
-    }
-
-    const myUserAndProfile = await profileService.findByUserUid(session.uid)
-
-    if (!myUserAndProfile) {
-        return problem({...userNotFoundProblem, detail: "my user not found"})
-    }
-
-    const result = await profileService.findUsersOrTeaPaginatedByUsernameOrLocation(, 1);
-
-    return NextResponse.json(result)
+  return NextResponse.json(result)
 })
-
-export const GET = auth(async (req: NextAuthRequest) => {
-    const url = req.nextUrl.clone();
-    const username = url.searchParams.get("username") as string;
-    const bio = url.searchParams.get("bio") as string;
-    const uniqueLink = url.searchParams.get("uniqueLink") as string;
-
-    if (!username) {
-        return problem({...invalidQueryParameterProblem, detail: "username is required"});
-    }
-
-    if (!bio) {
-        return problem({...invalidQueryParameterProblem, detail: "bio is required"});
-    }
-
-    if (!uniqueLink) {
-        return problem({...invalidQueryParameterProblem, detail: "uniqueLink is required"});
-    }
-
-    const session = getSession(req)
-
-    if (!session) {
-        return problem({...notAuthenticatedProblem, detail: "you need to be authenticated to see this private profile"})
-    }
-
-    const myUserAndProfile = await profileService.findByUserUid(session.uid)
-
-    if (!myUserAndProfile) {
-        return problem({...userNotFoundProblem, detail: "my user not found"})
-    }
-
-    const result = await profileService.findUsersOrTeaPaginatedByUsernameOrLocation(, 1);
-
-    return NextResponse.json(result)
-})
-
 

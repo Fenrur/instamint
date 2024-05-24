@@ -21,7 +21,7 @@ async function createVerificationAndSendEmail(formData: SignupCredentials, creat
     baseUrl: env.BASE_URL,
     contactEmail: env.CONTACT_EMAIL,
     instamintImageUrl: `${env.BASE_URL}/instamint.svg`,
-    verificationLink
+    verificationLink,
   }))
 
   await transporter.sendMail({
@@ -36,20 +36,18 @@ export async function POST(req: NextRequest) {
     return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/x-www-form-urlencoded"})
   }
 
-  const createdAt = DateTime.now()
-  const formData = await req.formData()
-  let parsedFormData = null
+  const createdAt = DateTime.utc()
   const url = req.nextUrl.clone()
+  const formDataParsedResult = SignupCredentials.safeParse(await req.formData())
 
-  try {
-    parsedFormData = SignupCredentials.parse(formData)
-  } catch (e: any) {
+  if (!formDataParsedResult.success) {
     url.pathname = "/signup"
 
     return NextResponse.redirect(url)
   }
 
-  const emailDb = await userService.findByEmail(parsedFormData.email)
+  const formData = formDataParsedResult.data
+  const emailDb = await userService.findByEmail(formData.email)
 
   if (emailDb) {
     url.pathname = "/signup"
@@ -59,7 +57,7 @@ export async function POST(req: NextRequest) {
   }
 
   const emailVerifications = await emailVerificationService.findUnverifiedAndBeforeExpirationByEmail(
-    parsedFormData.email,
+    formData.email,
     createdAt
   )
 
@@ -71,10 +69,10 @@ export async function POST(req: NextRequest) {
   }
 
   url.pathname = "/verification-email/sent"
-  url.searchParams.set("email", parsedFormData.email)
+  url.searchParams.set("email", formData.email)
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  createVerificationAndSendEmail(parsedFormData, createdAt)
+  createVerificationAndSendEmail(formData, createdAt)
 
   return NextResponse.redirect(url)
 }

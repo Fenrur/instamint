@@ -1,2 +1,2 @@
-export type SelectedNavigation = "home" | "search" | "new" | "message" | "own_profile" | "love" | "minter" | "settings"
+export type SelectedNavigation = "home" | "search" | "new" | "messages" | "own_profile" | "minters" | "settings" | "notifications" | "notifications-follow-request"
 

@@ -1,7 +1,7 @@
 import {AudioLinesIcon, ImageIcon, MapPin, SquarePlayIcon} from "lucide-react"
-import {CommentIcon, MintIcon} from "@/components/ui/icons"
+import {CommentFilledIcon, MintFilledIcon} from "@/components/ui/icons"
 import React from "react"
-import {NftType} from "../../domain/types"
+import {NftType} from "@/domain/types"
 import {Button} from "@/components/ui/button"
 import {DotsHorizontalIcon} from "@radix-ui/react-icons"
 import {cn} from "@/lib/utils"
@@ -9,6 +9,7 @@ import {Pacifico} from "next/font/google"
 import Link from "next/link"
 import {createRedirectQueryParam} from "@/utils/url"
 import {Separator} from "@/components/ui/separator"
+import {FollowUnfollowTextButton, ProfileStatisticsSectionSubAccess, ViewerUserType} from "../types"
 
 export const dynamic = "force-dynamic"
 
@@ -22,6 +23,12 @@ export interface NftContainerProps {
   type: NftType,
   mints: string,
   comments: string
+}
+
+export interface ProfileContainerProps {
+  link: string,
+  avatarUrl: string,
+  username: string,
 }
 
 export function NftContainer({url, type, mints, comments}: NftContainerProps) {
@@ -65,8 +72,8 @@ export function NftContainer({url, type, mints, comments}: NftContainerProps) {
       <div
         className="absolute inset-0 bg-black opacity-0 hover:opacity-50 transition-opacity duration-200 text-white flex gap-2 justify-center items-center">
         <div>
-          <MintIcon className="size-6 text-white" color="#FFFFFF"/>
-          <CommentIcon className="size-6 text-white mt-2" color="#FFFFFF"/>
+          <MintFilledIcon className="size-6 fill-white"/>
+          <CommentFilledIcon className="size-6 mt-2" color="#FFFFFF"/>
         </div>
         <div>
           <div className="font-extrabold">{mints}</div>
@@ -74,6 +81,19 @@ export function NftContainer({url, type, mints, comments}: NftContainerProps) {
         </div>
       </div>
     </div>
+  )
+}
+
+export function ProfileContainer({link, avatarUrl, username}: ProfileContainerProps) {
+  return (
+    <a href={link} className="relative pb-1 cursor-pointer">
+      <div className="rounded overflow-hidden">
+        <img className="w-full" src={avatarUrl} alt="avatar image"/>
+        <div className="px-6">
+          <div className="font-bold text-sm">{username}</div>
+        </div>
+      </div>
+    </a>
   )
 }
 
@@ -106,8 +126,40 @@ function SmallScreenProfileSection({
                                      link,
                                      location,
                                      bio,
-                                     avatarUrl
+                                     avatarUrl,
+                                     viewerUserType,
+                                     followUnfollowTextButton
                                    }: ProfileSectionProps) {
+  const firstButton = () => {
+    switch (viewerUserType) {
+      case "logged":
+        return (
+          <LoggedFollowUnfollowButton username={username} followUnfollowTextButton={followUnfollowTextButton}/>
+        )
+
+      case "visitor":
+        return (
+          <VisitorFollowButton username={username}/>
+        )
+
+      case "my_profile":
+        return (
+          <ModifyMyProfileButton/>
+        )
+    }
+  }
+  const secondButton = () => {
+    if (viewerUserType === "my_profile") {
+      return (
+        <ShareMyProfileButton/>
+      )
+    }
+
+    return (
+      <Button variant="tertiary" className="h-8 min-w-32 font-semibold">Contact</Button>
+    )
+  }
+
   return (
     <section className={cn("flex flex-col m-4 gap-4", className)}>
       <div className="flex">
@@ -128,18 +180,31 @@ function SmallScreenProfileSection({
             </Link>
           </div>
           <div className="flex gap-2">
-            <Button variant="secondary" className="h-8 w-32 font-semibold">Follow</Button>
-            <Button variant="secondary" className="h-8 w-32 font-semibold">Contact</Button>
+            {
+              firstButton()
+            }
+            {
+              secondButton()
+            }
           </div>
         </div>
       </div>
       <div>
         <div className="font-semibold text-sm">{displayName}</div>
-        <div className="flex items-center gap-2 pt-1">
-          <MapPin strokeWidth={1.5}/>
-          <h3 className="text-sm">{location}</h3>
-        </div>
-        <Button className="p-0 h-min" variant="link">{link}</Button>
+
+        {
+          location &&
+          <div className="flex items-center gap-2 pt-1">
+            <MapPin strokeWidth={1.5}/>
+            <h3 className="text-sm">{location}</h3>
+          </div>
+        }
+
+        {
+          link &&
+          <Button className="p-0 h-min" variant="link">{link}</Button>
+        }
+
         <h1 className="mt-2 text-sm">
           {bio}
         </h1>
@@ -155,8 +220,45 @@ function MediumScreenProfileSection({
                                       link,
                                       location,
                                       bio,
-                                      avatarUrl
+                                      avatarUrl,
+                                      viewerUserType,
+                                      followUnfollowTextButton
                                     }: ProfileSectionProps) {
+  const firstButton = () => {
+    switch (viewerUserType) {
+      case "logged":
+        return (
+          <LoggedFollowUnfollowButton className="ml-14" username={username}
+                                      followUnfollowTextButton={followUnfollowTextButton}/>
+        )
+
+      case "visitor":
+        return (
+          <VisitorFollowButton className="ml-14" username={username}/>
+        )
+
+      case "my_profile":
+        return (
+          <ModifyMyProfileButton className="ml-14"/>
+        )
+    }
+  }
+  const secondButton = () => {
+    if (viewerUserType === "my_profile") {
+      return (
+        <ShareMyProfileButton className="ml-2"/>
+      )
+    }
+
+    return (
+      <Button variant="tertiary" className="h-8 min-w-32 ml-2 font-semibold" asChild>
+        <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`}>
+          Contact
+        </Link>
+      </Button>
+    )
+  }
+
   return (
     <div className={className}>
       <section className="flex gap-24 my-9 ml-16">
@@ -174,26 +276,31 @@ function MediumScreenProfileSection({
         <div>
           <div className="flex items-center">
             <h2 className="text-lg font-medium w-mi">{username}</h2>
-            <Button variant="secondary" className="h-8 w-32 ml-14 font-semibold" asChild>
-              <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`}>
-                Follow
-              </Link>
-            </Button>
-            <Button variant="secondary" className="h-8 w-32 ml-2 font-semibold" asChild>
-              <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`}>
-                Contact
-              </Link>
-            </Button>
+            {
+              firstButton()
+            }
+            {
+              secondButton()
+            }
             <Link className="mt-1 ml-2.5" href="/">
               <DotsHorizontalIcon className="size-5"/>
             </Link>
           </div>
           <div className="font-semibold text-sm mt-4">{displayName}</div>
-          <div className="flex items-center gap-2 pt-1">
-            <MapPin strokeWidth={1.5}/>
-            <h3 className="text-sm">{location}</h3>
-          </div>
-          <Button className="p-0 h-min" variant="link">{link}</Button>
+
+          {
+            location &&
+            <div className="flex items-center gap-2 pt-1">
+              <MapPin strokeWidth={1.5}/>
+              <h3 className="text-sm">{location}</h3>
+            </div>
+          }
+
+          {
+            link &&
+            <Button className="p-0 h-min" variant="link">{link}</Button>
+          }
+
           <h1 className="mt-2 text-sm">
             {bio}
           </h1>
@@ -210,7 +317,9 @@ interface ProfileSectionProps {
   link: string | null,
   location: string | null,
   bio: string,
-  avatarUrl: string
+  avatarUrl: string,
+  viewerUserType: ViewerUserType,
+  followUnfollowTextButton?: FollowUnfollowTextButton,
 }
 
 export function ProfileHeaderSection({
@@ -220,7 +329,9 @@ export function ProfileHeaderSection({
                                        link,
                                        location,
                                        bio,
-                                       avatarUrl
+                                       avatarUrl,
+                                       viewerUserType,
+                                       followUnfollowTextButton
                                      }: ProfileSectionProps) {
   return (
     <>
@@ -232,6 +343,8 @@ export function ProfileHeaderSection({
         location={location}
         bio={bio}
         avatarUrl={avatarUrl}
+        viewerUserType={viewerUserType}
+        followUnfollowTextButton={followUnfollowTextButton}
       />
       <MediumScreenProfileSection
         className={cn("hidden md:block", className)}
@@ -241,6 +354,8 @@ export function ProfileHeaderSection({
         location={location}
         bio={bio}
         avatarUrl={avatarUrl}
+        viewerUserType={viewerUserType}
+        followUnfollowTextButton={followUnfollowTextButton}
       />
     </>
   )
@@ -251,7 +366,8 @@ interface ProfileStatisticsSectionProps {
   nfts: number,
   followers: number,
   follows: number,
-  username: string
+  username: string,
+  subAccess: ProfileStatisticsSectionSubAccess
 }
 
 export function ProfileStatisticsSection({
@@ -259,22 +375,60 @@ export function ProfileStatisticsSection({
                                            nfts,
                                            followers,
                                            follows,
-                                           username
+                                           username,
+                                           subAccess
                                          }: ProfileStatisticsSectionProps) {
+  interface SubAccessLink {
+    visitorLink?: string,
+    loggedAccessLink?: string
+  }
+
+  const SubComponent = ({aboveText, subText, subAccessLink}: {
+    aboveText: string,
+    subText: string,
+    subAccessLink: SubAccessLink
+  }) => {
+    if (subAccess === "visitor") {
+      if (subAccessLink.visitorLink) {
+        return (
+          <Link href={subAccessLink.visitorLink} className="hover:text-primary">
+            <div className="font-semibold text-sm text-center">{aboveText}</div>
+            <div className="text-sm text-neutral-500 text-center">{subText}</div>
+          </Link>
+        )
+      }
+    } else if (subAccess === "logged_access") {
+      if (subAccessLink.loggedAccessLink) {
+        return (
+          <Link href={subAccessLink.loggedAccessLink} className="hover:text-primary">
+            <div className="font-semibold text-sm text-center">{aboveText}</div>
+            <div className="text-sm text-neutral-500 text-center">{subText}</div>
+          </Link>
+        )
+      }
+    }
+
+    return (
+      <div className="hover:text-primary cursor-default">
+        <div className="font-semibold text-sm text-center">{aboveText}</div>
+        <div className="text-sm text-neutral-500 text-center">{subText}</div>
+      </div>
+    )
+  }
+
   return (
     <section className={cn("flex h-16 justify-around items-center", className)}>
-      <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`} className="hover:text-primary">
-        <div className="font-semibold text-sm text-center">{nfts}</div>
-        <div className="text-sm text-neutral-500 text-center">ntfs</div>
-      </Link>
-      <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`} className="hover:text-primary">
-        <div className="font-semibold text-sm text-center">{followers}</div>
-        <div className="text-sm text-neutral-500 text-center">followers</div>
-      </Link>
-      <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`} className="hover:text-primary">
-        <div className="font-semibold text-sm text-center">{follows}</div>
-        <div className="text-sm text-neutral-500 text-center">follows</div>
-      </Link>
+      <SubComponent aboveText={String(nfts)} subText="ntfs" subAccessLink={{
+        visitorLink: `/login${createRedirectQueryParam(`/profile/${username}`)}`
+      }}/>
+      <SubComponent aboveText={String(followers)} subText="followers" subAccessLink={{
+        visitorLink: `/login${createRedirectQueryParam(`/profile/${username}`)}`,
+        loggedAccessLink: `/profile/${username}/followers`
+      }}/>
+      <SubComponent aboveText={String(follows)} subText="follows" subAccessLink={{
+        visitorLink: `/login${createRedirectQueryParam(`/profile/${username}`)}`,
+        loggedAccessLink: `/profile/${username}/follows`
+      }}/>
     </section>
   )
 }
@@ -319,7 +473,7 @@ export function ProfileDoesNotExist() {
   )
 }
 
-function VisitorPrivateProfileConnectionSection({username} : {username: string}) {
+function VisitorPrivateProfileConnectionSection({username}: { username: string }) {
   return (
     <section className="grid justify-center mt-10 gap-4">
       <h2 className="text-center font-semibold text-sm">
@@ -366,6 +520,7 @@ export function VisitorPrivateProfile(props: VisitorPrivateProfileProps) {
             displayName={props.profile.displayName}
             location={props.profile.location}
             avatarUrl={props.profile.avatarUrl}
+            viewerUserType="visitor"
           />
           <Separator/>
           <ProfileStatisticsSection
@@ -373,6 +528,7 @@ export function VisitorPrivateProfile(props: VisitorPrivateProfileProps) {
             follows={props.followsCount}
             nfts={props.nftsCount}
             username={props.profile.username}
+            subAccess="visitor"
           />
           <Separator/>
           <VisitorPrivateProfileConnectionSection username={props.profile.username}/>
@@ -403,7 +559,8 @@ interface VisitorPrivateProfileProps {
   },
   followersCount: number,
   followsCount: number,
-  nftsCount: number
+  nftsCount: number,
+  followUnfollowTextButton?: FollowUnfollowTextButton,
 }
 
 export function NotFollowPrivateProfile(props: VisitorPrivateProfileProps) {
@@ -418,6 +575,8 @@ export function NotFollowPrivateProfile(props: VisitorPrivateProfileProps) {
             displayName={props.profile.displayName}
             location={props.profile.location}
             avatarUrl={props.profile.avatarUrl}
+            viewerUserType="logged"
+            followUnfollowTextButton={props.followUnfollowTextButton}
           />
           <Separator/>
           <ProfileStatisticsSection
@@ -425,11 +584,101 @@ export function NotFollowPrivateProfile(props: VisitorPrivateProfileProps) {
             follows={props.followsCount}
             nfts={props.nftsCount}
             username={props.profile.username}
+            subAccess="logged_denial"
           />
           <Separator/>
           <NotFollowPrivateProfileSection/>
         </div>
       </div>
     </main>
+  )
+}
+
+function ShareMyProfileButton({className}: { className?: string }) {
+  return (
+    <Button className={cn("h-8 min-w-32 font-semibold", className)} variant="tertiary">
+      <Link href="/">
+        Share the profile
+      </Link>
+    </Button>
+  )
+}
+
+function ModifyMyProfileButton({className}: { className?: string }) {
+  return (
+    <Button className={cn("h-8 min-w-32 font-semibold", className)} variant="tertiary">
+      <Link href="/settings/profile">
+        Modify
+      </Link>
+    </Button>
+  )
+}
+
+function VisitorFollowButton({className, username}: { className?: string, username: string }) {
+  return (
+    <Button variant="default" className={cn("h-8 min-w-32 font-semibold", className)} asChild>
+      <Link href={`/login${createRedirectQueryParam(`/profile/${username}`)}`}>
+        Follow
+      </Link>
+    </Button>
+  )
+}
+
+function LoggedFollowUnfollowButton({className, username, followUnfollowTextButton}: {
+  className?: string,
+  username: string,
+  followUnfollowTextButton?: FollowUnfollowTextButton
+}) {
+  const textFollowUnfollowButton = (): string => {
+    if (!followUnfollowTextButton) {
+      return "Follow"
+    }
+
+    switch (followUnfollowTextButton) {
+      case "follow":
+        return "Follow"
+
+      case "following":
+        return "Following"
+
+      case "pending":
+        return "Pending"
+
+      case "follow_back":
+        return "Follow back"
+    }
+  }
+  const variantFollowUnfollowButton = () => {
+    if (!followUnfollowTextButton) {
+      return "default"
+    }
+
+    switch (followUnfollowTextButton) {
+      case "follow":
+        return "default"
+
+      case "following":
+        return "tertiary"
+
+      case "pending":
+        return "tertiary"
+
+      case "follow_back":
+        return "default"
+    }
+  }
+
+  return (
+    <form method="post" action="/api/profile/follow" className={cn("h-8 min-w-32", className)}>
+      <input id="username" name="username" value={username} type="hidden" required/>
+      <Button
+        type="submit"
+        variant={variantFollowUnfollowButton()}
+        className="size-full font-semibold">
+        {
+          textFollowUnfollowButton()
+        }
+      </Button>
+    </form>
   )
 }

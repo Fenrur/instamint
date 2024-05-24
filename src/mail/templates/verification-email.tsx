@@ -46,7 +46,7 @@ export const VerificationEmail = ({
               />
             </Section>
             <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
-              <strong>Verify your email on <Link href={baseUrl}
+              <strong>Verify your email Instamint <Link href={baseUrl}
                                                  className="text-green-400 underline">Instamint</Link></strong>
             </Heading>
             <Section className="text-center mt-[32px] mb-[32px]">

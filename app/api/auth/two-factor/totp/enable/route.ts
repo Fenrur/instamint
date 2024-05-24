@@ -7,12 +7,11 @@ import {
   twoFactorSetupRequiredProblem,
   uidNotFoundProblem
 } from "@/http/problem"
-// @ts-expect-error TODO fix library not found
-import {NextAuthRequest} from "next-auth/lib"
 import {isContentType} from "@/http/content-type"
 import {userService} from "@/services"
+import {StatusCodes} from "http-status-codes"
 
-export const POST = auth(async (req: NextAuthRequest) => {
+export const POST = auth(async (req) => {
   if (!isContentType(req, "no_body")) {
     return problem({...invalidContentTypeProblem, detail: "Expected no body in the request"})
   }
@@ -39,5 +38,5 @@ export const POST = auth(async (req: NextAuthRequest) => {
 
   await userService.enableTwoFactorAuthentification(session.uid)
 
-  return NextResponse.json({message: "Two-factor authentication has been enabled"})
+  return NextResponse.json({message: "Two-factor authentication has been enabled"}, {status: StatusCodes.OK})
 })

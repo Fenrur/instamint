@@ -1,7 +1,14 @@
 import {z} from "zod"
 import {zfd} from "zod-form-data"
 import {passwordRegex, usernameRegex} from "@/utils/validator"
-import {nftTypeArray} from "../../../app/domain/types"
+import {nftTypeArray, profileVisibilityTypeArray} from "@/domain/types"
+import {datetimeIso} from "@/utils/zod"
+
+export const FollowUnfollowProfileRequest = z.object({
+  username: zfd.text(z.string())
+})
+
+export type FollowUnfollowProfileRequest = z.infer<typeof FollowUnfollowProfileRequest>
 
 export const LoginCredentials = zfd.formData({
   email: zfd.text(z.string().email())
@@ -104,9 +111,167 @@ export const GetPaginedNftsByUsernameResponse = z.array(
     contentUrl: z.string(),
     mintCount: z.number(),
     commentCount: z.number(),
-    postedAt: z.string(),
+    postedAt: datetimeIso(),
     type: z.enum(nftTypeArray)
   })
 )
 
 export type GetPaginedNftsByUsernameResponse = z.infer<typeof GetPaginedNftsByUsernameResponse>
+
+export const FollowProfileRequest = z.object({
+  username: z.string()
+})
+
+export type FollowProfileRequest = z.infer<typeof FollowProfileRequest>
+
+export const FollowProfileResponse = z.object({
+  type: z.enum(["followed", "requesting_follow"])
+})
+
+export type FollowProfileResponse = z.infer<typeof FollowProfileResponse>
+
+export const UnfollowProfileRequest = z.object({
+  username: z.string()
+})
+
+export type UnfollowProfileRequest = z.infer<typeof UnfollowProfileRequest>
+
+export const UnfollowProfileResponse = z.object({
+  type: z.enum(["unfollowed", "unrequested_follow"])
+})
+
+export type UnfollowProfileResponse = z.infer<typeof UnfollowProfileResponse>
+
+export const IgnoreProfileRequest = z.object({
+  username: z.string()
+})
+
+export type IgnoreProfileRequest = z.infer<typeof IgnoreProfileRequest>
+
+export const UnIgnoreProfileRequest = z.object({
+  username: z.string()
+})
+
+export type UnIgnoreProfileRequest = z.infer<typeof UnIgnoreProfileRequest>
+
+export const AcceptFollowProfileRequest = z.object({
+  username: z.string()
+})
+
+export type AcceptFollowProfileRequest = z.infer<typeof AcceptFollowProfileRequest>
+
+export const AcceptAllFollowProfileRequest = z.object({
+  ignored: z.boolean()
+})
+
+export type AcceptAllFollowProfileRequest = z.infer<typeof AcceptAllFollowProfileRequest>
+
+export const DeleteFollowerProfileRequest = z.object({
+  username: z.string()
+})
+
+export type DeleteFollowerProfileRequest = z.infer<typeof DeleteFollowerProfileRequest>
+
+export const FollowProfileStateResponse = z.object({
+  state: z.enum(["requesting_follow", "following", "not_following"])
+})
+
+export type FollowProfileStateResponse = z.infer<typeof FollowProfileStateResponse>
+
+export const FollowerProfileStateResponse = z.object({
+  state: z.enum(["requesting_follow", "following", "not_following", "ignored_request_follow"])
+})
+
+export type FollowerProfileStateResponse = z.infer<typeof FollowerProfileStateResponse>
+
+export const PaginatedRequestersFollowProfileResponse = z.array(z.object({
+  requestAt: datetimeIso(),
+  isIgnored: z.boolean(),
+  profile: z.object({
+    username: z.string(),
+    displayName: z.string(),
+    avatarUrl: z.string(),
+  })
+}))
+
+export type PaginatedRequestersFollowProfileResponse = z.infer<typeof PaginatedRequestersFollowProfileResponse>
+
+export type PaginatedRequesterFollowProfileElement = z.infer<typeof PaginatedRequestersFollowProfileResponse.element>
+
+export const SearchRequestersFollowProfileResponse = z.array(z.object({
+  requestAt: datetimeIso(),
+  isIgnored: z.boolean(),
+  profile: z.object({
+    username: z.string(),
+    displayName: z.string(),
+    avatarUrl: z.string(),
+  })
+}))
+
+export type SearchRequestersFollowProfileResponse = z.infer<typeof SearchRequestersFollowProfileResponse>
+
+export const MyProfileResponse = z.object({
+  username: z.string(),
+  createdAt: datetimeIso(),
+  bio: z.string(),
+  link: z.string().url().nullable(),
+  avatarUrl: z.string().url(),
+  canBeSearched: z.boolean(),
+  visibilityType: z.enum(profileVisibilityTypeArray),
+  location: z.string().nullable(),
+  displayName: z.string()
+})
+
+export type MyProfileResponse = z.infer<typeof MyProfileResponse>
+
+export const PaginatedFollowProfileResponse = z.array(z.object({
+  profile: z.object({
+    username: z.string(),
+    displayName: z.string(),
+    avatarUrl: z.string(),
+  }),
+  followAt: datetimeIso(),
+  followStateTo: z.enum(["following", "requesting_follow", "not_following"]),
+  followStateFrom: z.enum(["following", "ignored_request_follow", "requesting_follow", "not_following"])
+}))
+
+export type PaginatedFollowProfileResponse = z.infer<typeof PaginatedFollowProfileResponse>
+
+export const PaginatedFollowerProfileResponse = z.array(z.object({
+  profile: z.object({
+    username: z.string(),
+    displayName: z.string(),
+    avatarUrl: z.string(),
+  }),
+  followAt: datetimeIso(),
+  followStateTo: z.enum(["following", "requesting_follow", "not_following"]),
+  followStateFrom: z.enum(["following", "ignored_request_follow", "requesting_follow", "not_following"])
+}))
+
+export type PaginatedFollowerProfileResponse = z.infer<typeof PaginatedFollowerProfileResponse>
+
+export const SearchFollowersProfileResponse = z.array(z.object({
+  profile: z.object({
+    username: z.string(),
+    displayName: z.string(),
+    avatarUrl: z.string(),
+  }),
+  followAt: datetimeIso(),
+  followStateTo: z.enum(["following", "requesting_follow", "not_following"]),
+  followStateFrom: z.enum(["following", "ignored_request_follow", "requesting_follow", "not_following"])
+}))
+
+export type SearchFollowersProfileResponse = z.infer<typeof SearchFollowersProfileResponse>
+
+export const SearchFollowsProfileResponse = z.array(z.object({
+  profile: z.object({
+    username: z.string(),
+    displayName: z.string(),
+    avatarUrl: z.string(),
+  }),
+  followAt: datetimeIso(),
+  followStateTo: z.enum(["following", "requesting_follow", "not_following"]),
+  followStateFrom: z.enum(["following", "ignored_request_follow", "requesting_follow", "not_following"])
+}))
+
+export type SearchFollowsProfileResponse = z.infer<typeof SearchFollowsProfileResponse>

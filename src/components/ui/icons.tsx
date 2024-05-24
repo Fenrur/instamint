@@ -1,4 +1,4 @@
-export function CommentIcon({className, color = "#000000"}: { className?: string, color?: string }) {
+export function CommentFilledIcon({className, color = "#000000"}: { className?: string, color?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
          strokeWidth="1.5">
@@ -9,13 +9,27 @@ export function CommentIcon({className, color = "#000000"}: { className?: string
   )
 }
 
-export function MintIcon({className, color = "#000000"}: { className?: string, color?: string }) {
+export function MintFilledIcon({className}: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-         strokeWidth="1.5">
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path fillRule="evenodd" clipRule="evenodd"
-            d="M11.9999 3.94228C13.1757 2.85872 14.7069 2.25 16.3053 2.25C18.0313 2.25 19.679 2.95977 20.8854 4.21074C22.0832 5.45181 22.75 7.1248 22.75 8.86222C22.75 10.5997 22.0831 12.2728 20.8854 13.5137C20.089 14.3393 19.2938 15.1836 18.4945 16.0323C16.871 17.7562 15.2301 19.4985 13.5256 21.14L13.5216 21.1438C12.6426 21.9779 11.2505 21.9476 10.409 21.0754L3.11399 13.5136C0.62867 10.9374 0.62867 6.78707 3.11399 4.21085C5.54605 1.68984 9.46239 1.60032 11.9999 3.94228Z"
-            fill={color}></path>
+            d="M5.19989 20.3953C5.12432 20.6752 5.04625 20.9642 4.96473 21.2631C4.81941 21.7959 4.26967 22.1101 3.73684 21.9648C3.20402 21.8194 2.88989 21.2697 3.03521 20.7369C3.11711 20.4366 3.19659 20.141 3.27481 19.8501C3.89341 17.5496 4.43255 15.5445 5.4577 13.856C6.65976 11.8761 8.47999 10.3833 11.6153 9.07691C12.1251 8.86449 12.7106 9.10557 12.923 9.61537C13.1354 10.1252 12.8944 10.7106 12.3846 10.9231C9.51993 12.1167 8.0902 13.3738 7.16728 14.894C6.29972 16.3229 5.8386 18.0304 5.19989 20.3953Z"
+            />
+      <path
+        d="M19.7876 2.63999C13.4875 1.13059 8.1545 2.16695 4.98951 5.03284C1.93684 7.79703 1.1376 12.0409 3.15904 16.6257C3.54045 15.4554 3.98936 14.3476 4.60288 13.3371C5.94458 11.1272 7.96014 9.51658 11.2307 8.15384C12.2503 7.72901 13.4212 8.21116 13.8461 9.23076C14.2709 10.2504 13.7888 11.4213 12.7692 11.8461C10.0401 12.9833 8.80547 14.1226 8.02204 15.413C7.44205 16.3682 7.05658 17.474 6.62903 18.9706C11.9349 18.773 15.6883 17.5773 18.1717 15.2934C20.7446 12.9272 21.7683 9.56634 21.9638 5.5431C22.0302 4.17924 21.1174 2.9586 19.7876 2.63999Z"
+        />
+    </svg>
+  )
+}
+
+export function MintIcon({className, strokeWidth = 2}: { className?: string, strokeWidth?: number }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M4.44893 17.009C-0.246384 7.83762 7.34051 0.686125 19.5546 3.61245C20.416 3.81881 21.0081 4.60984 20.965 5.49452C20.5862 13.288 17.0341 17.7048 6.13252 17.9857C5.43022 18.0038 4.76908 17.6344 4.44893 17.009Z"
+         strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3.99999 21C5.50005 15.5 6 12.5 12 9.99997"  strokeWidth="2" strokeLinecap="round"
+            strokeLinejoin="round"/>
     </svg>
   )
 }
