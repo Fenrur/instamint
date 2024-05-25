@@ -8,6 +8,7 @@ import {AvatarProfileS3Repository} from "@/profile/avatar/repository"
 import {profilePageSize} from "@/services/constants"
 import {DateTime} from "luxon"
 import {followService} from "@/services"
+import {env} from "@/env"
 
 export class DefaultTeaBagService {
   private readonly teaBagPgRepository: TeaBagPgRepository
@@ -26,11 +27,11 @@ export class DefaultTeaBagService {
     return await this.teaBagPgRepository.getAllByUId(uid, profilePageSize * (page - 1), profilePageSize)
   }
 
-  public async getByProfileId(uid: string) {
-    return await this.teaBagPgRepository.getByProfileId(uid)
+  public async findByProfileId(uid: string) {
+    return await this.teaBagPgRepository.findByProfileId(uid)
   }
 
-  public async create(data: TeaBag) {
+  public async create(data: TeaBag, avatar: Buffer | null, type: string | null) {
     return await this.pgClient.transaction(async (tx) => {
       async function followUsers(whitelistUserIds: number[], profileId: number) {
         if (whitelistUserIds) {
@@ -45,12 +46,69 @@ export class DefaultTeaBagService {
       const profileRepository = new ProfilePgRepository(tx)
       const teaBagRepository = new TeaBagPgRepository(tx)
       const whitelist = new WhitelistPgRepository(tx)
-      const profile = await profileRepository.createTeaBagProfile(data.username, data.link, data.bio as string)
+
+      let avatarKey = ""
+
+      if (avatar) {
+        const uname = await this.avatarProfileS3Repository.putImage(data.username, avatar, <string>type)
+        avatarKey = `${env.S3_ENDPOINT}/${env.S3_BUCKET_NAME}/${uname}`
+      }
+
+      const profile = await profileRepository.createTeaBagProfile(data.username, data.link, data.bio as string, avatarKey)
       const teaBag = await teaBagRepository.create(profile.id)
       await whitelist.create(data.whitelistStart as DateTime<true>, data.whitelistEnd as DateTime<true>, teaBag.id, data.whitelistUserIds as number[])
+      await followUsers(data.whitelistUserIds as number[], profile.id)
+
+
+
+      return teaBag.id
+    })
+  }
+  public async update(data: any, avatar: Buffer | null, type: string | null) {
+    return await this.pgClient.transaction(async (tx) => {
+      async function followUsers(whitelistUserIds: number[], profileId: number) {
+        if (whitelistUserIds) {
+          const followPromises = whitelistUserIds.map(userId =>
+            followService.followOrRequest(userId, profileId, DateTime.utc())
+          )
+
+          await Promise.all(followPromises)
+        }
+      }
+
+      const profileRepository = new ProfilePgRepository(tx)
+      const teaBagRepository = new TeaBagPgRepository(tx)
+      const whitelist = new WhitelistPgRepository(tx)
+
+      let avatarKey = ""
+
+      if (avatar) {
+        const uname = await this.avatarProfileS3Repository.putImage(data.username, avatar, <string>type)
+        avatarKey = `${env.S3_ENDPOINT}/${env.S3_BUCKET_NAME}/${uname}`
+      }
+
+      const profile = await profileRepository.updateById(
+        data.profileId, data.username, data.link, data.bio as string, avatarKey
+      )
+
+      const teaBag = await teaBagRepository.update(profile.id, {
+        nftIds: data.nftIds,
+        whitelistUserIds: data.whitelistUserIds,
+        whitelistStart: data.whitelistStart,
+        whitelistEnd: data.whitelistEnd,
+      })
+
+      await whitelist.update(
+        data.whitelistStart as DateTime<true>,
+        data.whitelistEnd as DateTime<true>,
+        teaBag.id,
+        data.whitelistUserIds as number[]
+      )
+
       await followUsers(data.whitelistUserIds as number[], profile.id)
 
       return teaBag.id
     })
   }
+
 }

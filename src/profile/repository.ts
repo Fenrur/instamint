@@ -81,6 +81,18 @@ export class ProfilePgRepository {
       .where(eq(ProfileTable.id, profileId))
   }
 
+  public async updateById(id: string, username: string, bio: string, link: string, avatarUrl: string) {
+    return this.pgClient
+      .update(ProfileTable)
+      .set({
+        username,
+        bio,
+        link,
+        avatarUrl
+      })
+      .where(eq(ProfileTable.id, id))
+  }
+
   public async create(username: string, createdAt: DateTime<true>, avatarUrl: string) {
     const createdProfile = await this.pgClient
       .insert(ProfileTable)
@@ -95,7 +107,7 @@ export class ProfilePgRepository {
     return createdProfile[0]
   }
 
-  public async createTeaBagProfile(username: string, link: string, bio: string) {
+  public async createTeaBagProfile(username: string, link: string, bio: string, avatarUrl: string) {
     const createdProfile = await this.pgClient
       .insert(ProfileTable)
       .values({
@@ -103,7 +115,7 @@ export class ProfilePgRepository {
         displayName: username,
         link,
         bio,
-        avatarUrl: "",
+        avatarUrl,
         createdAt: DateTime.now().toSQL({includeZone: false, includeOffset: false}),
       })
       .returning({id: ProfileTable.id})

@@ -1,6 +1,6 @@
 import {PgClient} from "@/db/db-client"
 import {FollowTable, ProfileTable, TeaBagTable, WhitelistTable, WhitelistUserTable} from "@/db/schema"
-import {sql} from "drizzle-orm"
+import {eq, sql} from "drizzle-orm"
 
 export class TeaBagPgRepository {
   private readonly pgClient: PgClient
@@ -48,7 +48,7 @@ export class TeaBagPgRepository {
     return this.pgClient.execute(sqlQuery)
   }
 
-  public async getByProfileId(profileId: string) {
+  public async findByProfileId(profileId: string) {
     const sqlQuery = sql`
       SELECT ${ProfileTable.id},
              ${ProfileTable.username},
@@ -69,5 +69,17 @@ export class TeaBagPgRepository {
       .returning({id: TeaBagTable.id})
 
     return createdTeaBag[0]
+  }
+
+  public async update(id: string, {nftIds: string, bio: string, link: string, avatarUrl: string}) {
+    return this.pgClient
+      .update(ProfileTable)
+      .set({
+        username,
+        bio,
+        link,
+        avatarUrl
+      })
+      .where(eq(ProfileTable.id, id))
   }
 }

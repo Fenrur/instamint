@@ -115,14 +115,17 @@ export function TeaBagContainer({
                                   followed_count,
                                   cooks_count,
                                   onReport,
-                                  onDelete
+                                  onDelete,
+                                  onUpdate
                                 }: TeaBag) {
-
   return (
     <div className="relative pb-1 cursor-pointer h-200">
       <a href={link}>
         <div className="rounded overflow-hidden">
-          <img className="w-full" src={avatarUrl} alt="avatar image"/>
+          <img className="w-full"
+               height={220}
+               width={220}
+               src={avatarUrl} alt="avatar image"/>
           <div
             className="absolute inset-0 h-4/5 bg-black opacity-0 hover:opacity-80 transition-opacity duration-200 text-white flex gap-2 justify-center items-center">
             <div>
@@ -146,15 +149,21 @@ export function TeaBagContainer({
       </a>
       <div
         className="bg-blue-600 text-white flex flex-row justify-around items-center h-10 px-5">
-        <a href={`/settings/profile?id=${id}`}>
+        <div onClick={() => {
+          onUpdate(id as number)
+        }}>
           <EditIcon className="size-6" color={"green"}/>
-        </a>
+        </div>
 
-        <div onClick={() => onReport(id as number)}>
+        <div onClick={() => {
+          onReport(id as number)
+        }}>
           <ReportIcon className="size-6" color="red"/>
         </div>
 
-        <div onClick={() => onDelete(id as number)}>
+        <div onClick={() => {
+          onDelete(id as number)
+        }}>
           <TrashIcon className="size-6" color="red"/>
         </div>
       </div>

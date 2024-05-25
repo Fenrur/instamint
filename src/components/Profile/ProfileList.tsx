@@ -32,7 +32,12 @@ export const ProfileList = ({data}: { data: ProfileData[] }) => {
 }
 
 
-export const TeaBagList = ({data, onDelete, onReport}: { data: TeaBag[], onDelete: any, onReport: any }) => {
+export const TeaBagList = ({data, onDelete, onReport, onUpdate}: {
+  data: TeaBag[],
+  onDelete: any,
+  onReport: any,
+  onUpdate: any
+}) => {
   return (
     <section className={"grid grid-cols-3 gap-0.5"}>
       {
@@ -49,6 +54,7 @@ export const TeaBagList = ({data, onDelete, onReport}: { data: TeaBag[], onDelet
                 username={nft.username}
                 onDelete={onDelete}
                 onReport={onReport}
+                onUpdate={onUpdate}
               />
             </React.Fragment>
           )

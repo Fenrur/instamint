@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import MultiSelect from "@/components/ui/multi-select"
 import {teaBagsPageSize} from "@/services/constants"
+import {ErrorCode} from "@/http/error-code"
 
 type SignupPageError = "email_verification_limit_exceeded" | "email_exists";
 
@@ -76,6 +77,7 @@ export interface TeaBag {
 
   onDelete?: any;
   onReport?: any;
+  onUpdate?: any;
 }
 
 interface Report {
@@ -83,8 +85,22 @@ interface Report {
   reason: string
 }
 
+// A function to format the date to YYYY-MM-DD
+const formatDate = (date?: DateTime | string) => {
+  const d = new Date(date)
+  const month = `0${d.getMonth() + 1}`.slice(-2)
+  const day = `0${d.getDate()}`.slice(-2)
+
+  return `${d.getFullYear()}-${month}-${day}`
+}
+
+
 export default function TeaBagPage(props: SignupPageProps) {
   const error = parseError(props)
+  const [errors, setErrors] = useState<any>({
+    username: "",
+    link: ""
+  })
   const [formData, setFormData] = useState<TeaBag>({
     username: "",
     bio: "",
@@ -108,7 +124,7 @@ export default function TeaBagPage(props: SignupPageProps) {
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(1)
   const [selectedId, setSelectedId] = useState<number>()
-  const handleFormOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFormOnChange = (e: React.ChangeEvent<HTMLFormElement>) => {
     const {name, value} = e.target
     setFormData(prevState => ({
       ...prevState,
@@ -117,12 +133,19 @@ export default function TeaBagPage(props: SignupPageProps) {
   }
   const handleTeaBagCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const formDataWithImage = new FormData()
+    formDataWithImage.append("username", formData.username)
+    formDataWithImage.append("bio", formData.bio as string)
+    formDataWithImage.append("link", formData.link)
+    formDataWithImage.append("avatar", profileImage as string)
+    formDataWithImage.append("nftIds", JSON.stringify(formData.nftIds))
+    formDataWithImage.append("whitelistUserIds", JSON.stringify(formData.whitelistUserIds))
+    formDataWithImage.append("whitelistStart", formData.whitelistStart as unknown as string)
+    formDataWithImage.append("whitelistEnd", formData.whitelistEnd as unknown as string)
+
     const response = await fetch("/api/tea-bag", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData)
+      body: formDataWithImage
     })
 
     if (response.ok) {
@@ -130,16 +153,25 @@ export default function TeaBagPage(props: SignupPageProps) {
       const res = await fetchTeaBags({page: 1})
 
       if (res) {
+        setErrors({
+          username: "",
+          link: ""
+        })
         setTeabagsList([...res])
         setPage(1)
       }
 
       setIsOpenCreate(false)
     } else {
+      const error = await response.json()
+      setErrors({
+        username: error.errorCode === ErrorCode.USERNAME_ALREADY_USED ? error.title : "",
+        link: error.errorCode === ErrorCode.LINK_ALREADY_USED ? error.title : ""
+      })
       toast.error("Error", {description: "Failed to create Tea Bag"})
     }
   }
-  const handleReportFormOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleReportFormOnChange = (e: React.ChangeEvent<HTMLFormElement>) => {
     const {name, value} = e.target
     setReportFormData(prevState => ({
       ...prevState,
@@ -159,6 +191,7 @@ export default function TeaBagPage(props: SignupPageProps) {
   }
   const loadNextPage = useCallback(async () => {
     const res = await fetchTeaBags({page})
+
     if (res) {
       if (res.length < teaBagsPageSize) {
         setHasMore(false)
@@ -180,6 +213,26 @@ export default function TeaBagPage(props: SignupPageProps) {
   async function handleOnClickDelete(id: number) {
     setSelectedId(id)
     setIsOpenDelete(true)
+  }
+
+  async function handleOnClickUpdate(id: number) {
+    setSelectedId(id)
+
+    const response = await fetch(`/api/tea-bag/get?id=${id}`)
+    const data = await response.json()
+
+    setFormData({
+      username: data.username,
+      bio: data.bio,
+      link: data.link,
+      nftIds: data.nftIds,
+      avatarUrl: data.avatarUrl,
+      whitelistUserIds: data.whitelistUserIds,
+      whitelistStart: data.whitelistStart,
+      whitelistEnd: data.whitelistEnd
+    })
+
+    setIsOpenCreate(true)
   }
 
   async function handleOnClickReport(id: number) {
@@ -227,22 +280,23 @@ export default function TeaBagPage(props: SignupPageProps) {
 
             <Dialog open={isOpenCreate} onOpenChange={setIsOpenCreate}>
               <DialogTrigger asChild>
-                <Button className="Button violet">Create Tea Bag</Button>
+                <Button className="Button violet">Create tea-bag</Button>
               </DialogTrigger>
 
               <DialogPortal>
                 <DialogOverlay className="DialogOverlay"/>
                 <DialogContent className="DialogContent">
-                  <DialogTitle className="DialogTitle">Add TEA BAG</DialogTitle>
-                  <DialogDescription className="DialogDescription">
-                    Make changes to your profile here. Click save when you're done.
+                  <DialogTitle className="DialogTitle text-center">TEA BAG</DialogTitle>
+                  <DialogDescription className="DialogDescription  text-center">
+                    Make changes to this profile here.
                   </DialogDescription>
 
                   <form onSubmit={handleTeaBagCreateSubmit} className="grid gap-4"
                         onChange={handleFormOnChange}>
 
                     <div className="flex justify-center items-center flex-col">
-                      <div className="rounded-full overflow-hidden border-2 border-gray-300 w-36 h-36">
+                      <div
+                        className="rounded-full overflow-hidden border-2 border-gray-300 w-36 h-36">
                         <img
                           alt="Profile Image"
                           src={profileImage ?? formData.avatarUrl}
@@ -258,7 +312,8 @@ export default function TeaBagPage(props: SignupPageProps) {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label htmlFor="username" className={error ? "text-destructive" : ""}>Username</Label>
+                      <Label htmlFor="username"
+                             className={errors.username ? "text-destructive" : ""}>Username</Label>
                       <Input
                         name="username"
                         id="username"
@@ -269,7 +324,8 @@ export default function TeaBagPage(props: SignupPageProps) {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label htmlFor="link" className={error ? "text-destructive" : ""}>Link</Label>
+                      <Label htmlFor="link"
+                             className={errors.link ? "text-destructive" : ""}>Link</Label>
                       <Input
                         name="link"
                         id="link"
@@ -289,7 +345,8 @@ export default function TeaBagPage(props: SignupPageProps) {
                     </div>
 
                     <div className="grid gap-1">
-                      <Label htmlFor="nftIds" className={error ? "text-destructive" : ""}>NFTs list</Label>
+                      <Label htmlFor="nftIds" className={error ? "text-destructive" : ""}>NFTs
+                        list</Label>
                       {nftsData && <MultiSelect name={"nftIds"} onValueChange={(values) => {
                         setFormData(prevState => ({
                           ...prevState,
@@ -300,33 +357,36 @@ export default function TeaBagPage(props: SignupPageProps) {
                                                   value: item.value.toString(),
                                                   label: item.label
                                                 }))}
-                                                defaultValue={formData.nftIds.map(item => item.toString())}
+                                                defaultValue={formData.nftIds?.map(item => item.toString())}
                                                 placeholder="Select NFTs"/>}
                     </div>
 
                     <div className="grid gap-1">
-                      <Label htmlFor="whitelistUserIds" className={error ? "text-destructive" : ""}>Whitelist
+                      <Label htmlFor="whitelistUserIds"
+                             className={error ? "text-destructive" : ""}>Whitelist
                         Users</Label>
-                      {usersData && <MultiSelect name={"whitelistUserIds"} onValueChange={(values) => {
-                        setFormData(prevState => ({
-                          ...prevState,
-                          whitelistUserIds: values.map(item => Number(item))
-                        }))
-                      }}
-                                                 options={usersData.map(item => ({
-                                                   value: item.value.toString(),
-                                                   label: item.label
-                                                 }))}
-                                                 defaultValue={formData.whitelistUserIds.map(item => item.toString())}
-                                                 placeholder="Users"/>}
+                      {usersData &&
+                        <MultiSelect name={"whitelistUserIds"} onValueChange={(values) => {
+                          setFormData(prevState => ({
+                            ...prevState,
+                            whitelistUserIds: values.map(item => Number(item))
+                          }))
+                        }}
+                                     options={usersData.map(item => ({
+                                       value: item.value.toString(),
+                                       label: item.label
+                                     }))}
+                                     defaultValue={formData.whitelistUserIds?.map(item => item.toString())}
+                                     placeholder="Users"/>}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="w-full">
-                        <Label htmlFor="whitelistStart" className={error ? "text-destructive" : ""}>Whitelist
+                        <Label htmlFor="whitelistStart"
+                               className={error ? "text-destructive" : ""}>Whitelist
                           start date</Label>
                         <Input
-                          defaultValue={formData.whitelistStart.toString()}
+                          defaultValue={formatDate(formData.whitelistStart)}
                           name="whitelist.start"
                           id="whitelistStart"
                           type="date"
@@ -335,10 +395,11 @@ export default function TeaBagPage(props: SignupPageProps) {
                       </div>
 
                       <div className="w-full">
-                        <Label htmlFor="whitelistEnd" className={error ? "text-destructive" : ""}>Whitelist
+                        <Label htmlFor="whitelistEnd"
+                               className={error ? "text-destructive" : ""}>Whitelist
                           end date</Label>
                         <Input
-                          defaultValue={formData.whitelistEnd.toString()}
+                          defaultValue={formatDate(formData.whitelistEnd)}
                           name="whitelist.end"
                           id="whitelistEnd"
                           type="date"
@@ -378,7 +439,8 @@ export default function TeaBagPage(props: SignupPageProps) {
                     />
 
                     <div className="grid gap-2">
-                      <Label htmlFor="link" className={error ? "text-destructive" : ""}>Reason</Label>
+                      <Label htmlFor="link"
+                             className={error ? "text-destructive" : ""}>Reason</Label>
                       <Input
                         name="reason"
                         id="reason"
@@ -402,9 +464,11 @@ export default function TeaBagPage(props: SignupPageProps) {
               <AlertDialogPortal>
                 <AlertDialogOverlay className="AlertDialogOverlay"/>
                 <AlertDialogContent className="AlertDialogContent">
-                  <AlertDialogTitle className="AlertDialogTitle">Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle className="AlertDialogTitle">Are you absolutely
+                    sure?</AlertDialogTitle>
                   <AlertDialogDescription className="AlertDialogDescription">
-                    This action cannot be undone. This will permanently delete the account and remove
+                    This action cannot be undone. This will permanently delete the account and
+                    remove
                     data from servers.
                   </AlertDialogDescription>
                   <div style={{display: "flex", gap: 25, justifyContent: "flex-end"}}>
@@ -433,7 +497,10 @@ export default function TeaBagPage(props: SignupPageProps) {
                 </div>
               }
             >
-              <TeaBagList data={teabagsList} onDelete={handleOnClickDelete} onReport={handleOnClickReport}/>
+              <TeaBagList data={teabagsList}
+                          onDelete={handleOnClickDelete}
+                          onUpdate={handleOnClickUpdate}
+                          onReport={handleOnClickReport}/>
             </InfiniteScroll>}
           </div>
         </div>
