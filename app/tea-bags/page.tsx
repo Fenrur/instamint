@@ -206,6 +206,19 @@ export default function TeaBagPage(props: SignupPageProps) {
     }
   }
 
+  const [profileImage, setProfileImage] = useState<string | null>(null)
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0]
+
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setProfileImage(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   return (
     <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
       <div className="container max-w-screen-lg mx-auto">
@@ -227,6 +240,23 @@ export default function TeaBagPage(props: SignupPageProps) {
 
                   <form onSubmit={handleTeaBagCreateSubmit} className="grid gap-4"
                         onChange={handleFormOnChange}>
+
+                    <div className="flex justify-center items-center flex-col">
+                      <div className="rounded-full overflow-hidden border-2 border-gray-300 w-36 h-36">
+                        <img
+                          alt="Profile Image"
+                          src={profileImage ?? formData.avatarUrl}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="mt-4"
+                      />
+                    </div>
+
                     <div className="grid gap-2">
                       <Label htmlFor="username" className={error ? "text-destructive" : ""}>Username</Label>
                       <Input
