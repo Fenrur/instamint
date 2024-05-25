@@ -7,6 +7,7 @@ import {S3Client} from "@aws-sdk/client-s3"
 import {AvatarProfileS3Repository} from "@/profile/avatar/repository"
 import {profilePageSize} from "@/services/constants"
 import {DateTime} from "luxon"
+import {followService} from "@/services"
 
 export class DefaultTeaBagService {
   private readonly teaBagPgRepository: TeaBagPgRepository
@@ -31,13 +32,23 @@ export class DefaultTeaBagService {
 
   public async create(data: TeaBag) {
     return await this.pgClient.transaction(async (tx) => {
+      async function followUsers(whitelistUserIds: number[], profileId: number) {
+        if (whitelistUserIds) {
+          const followPromises = whitelistUserIds.map(userId =>
+            followService.followOrRequest(userId, profileId, DateTime.utc())
+          )
+
+          await Promise.all(followPromises)
+        }
+      }
+
       const profileRepository = new ProfilePgRepository(tx)
       const teaBagRepository = new TeaBagPgRepository(tx)
       const whitelist = new WhitelistPgRepository(tx)
-
       const profile = await profileRepository.createTeaBagProfile(data.username, data.link, data.bio as string)
       const teaBag = await teaBagRepository.create(profile.id)
-      await whitelist.create(data.whitelistStart as DateTime<true>, data.whitelistEnd  as DateTime<true>, teaBag.id, data.whitelistUserIds)
+      await whitelist.create(data.whitelistStart as DateTime<true>, data.whitelistEnd as DateTime<true>, teaBag.id, data.whitelistUserIds as number[])
+      await followUsers(data.whitelistUserIds as number[], profile.id)
 
       return teaBag.id
     })

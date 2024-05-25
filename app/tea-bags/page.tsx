@@ -130,7 +130,7 @@ export default function TeaBagPage(props: SignupPageProps) {
       const res = await fetchTeaBags({page: 1})
 
       if (res) {
-        setTeabagsList([...teabagsList, ...res])
+        setTeabagsList([...res])
         setPage(1)
       }
 
