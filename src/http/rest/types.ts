@@ -115,8 +115,14 @@ export const GetPaginedNftsByUsernameResponse = z.array(
     type: z.enum(nftTypeArray)
   })
 )
-
 export type GetPaginedNftsByUsernameResponse = z.infer<typeof GetPaginedNftsByUsernameResponse>
+
+export const ReportProfile =
+  z.object({
+    reportedProfileId: z.number(),
+    reason: z.string(),
+  })
+export type ReportProfileRequest = z.infer<typeof ReportProfile>
 
 export const FollowProfileRequest = z.object({
   username: z.string()

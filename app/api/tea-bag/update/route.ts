@@ -2,7 +2,7 @@ import {NextResponse} from "next/server"
 import {invalidQueryParameterProblem, notAuthenticatedProblem, problem, userNotFoundProblem} from "@/http/problem"
 import {profileService} from "@/services"
 import {auth, getSession} from "@/auth"
-// @ts-ignore
+// @ts-expect-error TODO fix library not found
 import {NextAuthRequest} from "next-auth/lib"
 
 export const POST = auth(async (req: NextAuthRequest) => {

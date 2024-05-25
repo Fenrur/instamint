@@ -5,6 +5,7 @@ import {TeaBag} from "../../app/tea-bags/page"
 import {WhitelistPgRepository} from "@/whitelist/repository"
 import {S3Client} from "@aws-sdk/client-s3"
 import {AvatarProfileS3Repository} from "@/profile/avatar/repository"
+import {profilePageSize} from "@/services/constants"
 
 export class DefaultTeaBagService {
   private readonly teaBagPgRepository: TeaBagPgRepository
@@ -19,8 +20,8 @@ export class DefaultTeaBagService {
     this.pgClient = pgClient
   }
 
-  public async getAll(uid: string) {
-    return await this.teaBagPgRepository.getAllByUId(uid)
+  public async getAll(uid: string, page: number) {
+    return await this.teaBagPgRepository.getAllByUId(uid, profilePageSize * (page - 1), profilePageSize)
   }
 
   public async getByProfileId(uid: string) {
@@ -32,9 +33,9 @@ export class DefaultTeaBagService {
       const profileRepository = new ProfilePgRepository(tx)
       const teaBagRepository = new TeaBagPgRepository(tx)
       const whitelist = new WhitelistPgRepository(tx)
-      const profile = await profileRepository.createTeaBagProfile(data.username, data.link, data.bio)
+      const profile = await profileRepository.createTeaBagProfile(data.username, data.link, data.bio as string)
       const teaBag = await teaBagRepository.create(profile.id)
-      await whitelist.create(data.whitelistStart, data.whitelistEnd, teaBag.id, data.whitelistUserIds)
+      await whitelist.create(data.whitelistStart , data.whitelistEnd, teaBag.id, data.whitelistUserIds)
 
 
       return teaBag.id

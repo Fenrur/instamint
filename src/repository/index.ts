@@ -13,6 +13,7 @@ import {
   PaginatedRequestersFollowProfileResponse,
   RegisterUserRequest,
   RegisterUserResponse,
+  ReportProfileRequest,
   SearchFollowersProfileResponse,
   SearchFollowsProfileResponse,
   TwoFactorAuthenticatorTypeRequest,
@@ -29,8 +30,6 @@ import {StatusCodes} from "http-status-codes"
 import {ProfileData} from "@/components/Profile/ProfileList"
 import {NFTData} from "@/components/NFT/NFTList"
 import {TeaBag, ValueLabel} from "../../app/tea-bags/page"
-import {reportProfileService} from "@/services"
-import {getServerSession} from "@/auth"
 
 export async function myProfile() {
   const res = await fetch("/api/profile/me", {
@@ -758,8 +757,9 @@ export async function fetchProfileData(): Promise<ProfileData> {
 }
 
 
-export async function fetchTeaBags() {
-  const response = await fetch("/api/tea-bag")
+export async function fetchTeaBags({page}: { page: number }) {
+
+  const response = await fetch(`/api/tea-bag?page=${page}`)
 
   if (response.ok) {
     return await response.json() as TeaBag[]
@@ -798,13 +798,14 @@ export async function fetchNFTs(): Promise<ValueLabel[]> {
   throw new Error("Network response was not ok")
 }
 
-export async function reportAction(reportedId: number, reason: string) {
-  const session = await getServerSession()
+export async function reportProfile(req: ReportProfileRequest): Promise<ValueLabel[]> {
+  await fetch("/api/tea-bag/report", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(req)
+  })
 
-  if (!session) {
-    throw new Error("not auth")
-  }
-
-  const userId = Number.parseInt(session?.uid, 10)
-  await reportProfileService.create(userId, reportedId, reason)
+  throw new Error("Network response was not ok")
 }

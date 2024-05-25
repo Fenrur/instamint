@@ -10,6 +10,7 @@ import Link from "next/link"
 import {createRedirectQueryParam} from "@/utils/url"
 import {Separator} from "@/components/ui/separator"
 import {FollowUnfollowTextButton, ProfileStatisticsSectionSubAccess, ViewerUserType} from "../types"
+import {TeaBag} from "../../tea-bags/page"
 
 export const dynamic = "force-dynamic"
 
@@ -85,6 +86,27 @@ export function NftContainer({url, type, mints, comments}: NftContainerProps) {
 }
 
 export function ProfileContainer({link, avatarUrl, username}: ProfileContainerProps) {
+  return (
+    <a href={link} className="relative pb-1 cursor-pointer">
+      <div className="rounded overflow-hidden">
+        <img className="w-full" src={avatarUrl} alt="avatar image"/>
+        <div className="px-6">
+          <div className="font-bold text-sm">{username}</div>
+        </div>
+      </div>
+    </a>
+  )
+}
+
+export function TeaBagContainer({
+                                  id,
+                                  link,
+                                  avatarUrl,
+                                  username,
+                                  followers_count,
+                                  followed_count,
+                                  cooks_count
+                                }: TeaBag) {
   return (
     <a href={link} className="relative pb-1 cursor-pointer">
       <div className="rounded overflow-hidden">
