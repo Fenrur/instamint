@@ -12,7 +12,7 @@ export class TeaBagPgRepository {
 
   public async getAllByUId(uid: string, offset: number, limit: number) {
     const sqlQuery = sql`
-      SELECT ${ProfileTable.id},
+      SELECT DISTINCT ${ProfileTable.id},
              ${ProfileTable.username},
              ${ProfileTable.link},
              ${ProfileTable.avatarUrl},
@@ -28,11 +28,9 @@ export class TeaBagPgRepository {
                                COUNT(*) AS "count"
                         FROM ${FollowTable}
                         GROUP BY "followerProfileId") followers
-                       ON ${ProfileTable.id} = followers."followerProfileId" WHERE ${ProfileTable.id} IN (SELECT ${TeaBagTable.id} FROM ${TeaBagTable})`
+                       ON ${ProfileTable.id} = followers."followerProfileId"
+      WHERE ${ProfileTable.id} IN (SELECT ${TeaBagTable.profileId} FROM ${TeaBagTable})`
     sqlQuery.append(sql`
-      ORDER BY
-      ${ProfileTable.createdAt}
-      DESC
       OFFSET
       ${offset}
       LIMIT

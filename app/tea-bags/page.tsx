@@ -32,6 +32,7 @@ import {
   AlertDialogTitle
 } from "@/components/ui/alert-dialog"
 import MultiSelect from "@/components/ui/multi-select"
+import {teaBagsPageSize} from "@/services/constants"
 
 type SignupPageError = "email_verification_limit_exceeded" | "email_exists";
 
@@ -114,7 +115,7 @@ export default function TeaBagPage(props: SignupPageProps) {
       [name]: value
     }))
   }
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleTeaBagCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const response = await fetch("/api/tea-bag", {
       method: "POST",
@@ -126,10 +127,16 @@ export default function TeaBagPage(props: SignupPageProps) {
 
     if (response.ok) {
       toast.success("Successfully created", {description: "Your Tea Bag has been created."})
+      const res = await fetchTeaBags({page: 1})
+
+      if (res) {
+        setTeabagsList([...teabagsList, ...res])
+        setPage(1)
+      }
+
       setIsOpenCreate(false)
     } else {
       toast.error("Error", {description: "Failed to create Tea Bag"})
-      throw new Error("Failed to create Tea Bag")
     }
   }
   const handleReportFormOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,33 +148,32 @@ export default function TeaBagPage(props: SignupPageProps) {
   }
   const handleReportFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const rsp = await reportProfile({reportedProfileId: selectedId as number, reason: reportFormData.reason})
+    const res = await reportProfile({reportedProfileId: selectedId as number, reason: reportFormData.reason})
 
-    if (rsp) {
+    if (res) {
       toast.success("Successfully reported", {description: "The Tea Bag has been deleted."})
       setIsOpenReport(false)
     } else {
       toast.error("Error", {description: "Failed to reported Tea Bag maybe due to already reported"})
     }
-
   }
-  const loadNextPage = useCallback(() => {
-    void fetchTeaBags({page}).then(res => {
-      if (res.length < teabagsList.length) {
+  const loadNextPage = useCallback(async () => {
+    const res = await fetchTeaBags({page})
+    if (res) {
+      if (res.length < teaBagsPageSize) {
         setHasMore(false)
       }
 
       setTeabagsList([...teabagsList, ...res])
-
       setPage(page + 1)
-    })
+    }
   }, [page, teabagsList])
   const [init, setInit] = useState(true)
 
   useEffect(() => {
     if (init) {
       setInit(false)
-      loadNextPage()
+      void loadNextPage()
     }
   }, [init, loadNextPage])
 
@@ -191,6 +197,8 @@ export default function TeaBagPage(props: SignupPageProps) {
     })
 
     if (response.ok) {
+      setPage(1)
+      setTeabagsList(prev => prev.filter(item => item.id !== selectedId))
       setIsOpenDelete(false)
       toast.success("Successfully deleted", {description: "The Tea Bag has been deleted."})
     } else {
@@ -217,7 +225,7 @@ export default function TeaBagPage(props: SignupPageProps) {
                     Make changes to your profile here. Click save when you're done.
                   </DialogDescription>
 
-                  <form onSubmit={handleSubmit} className="grid gap-4"
+                  <form onSubmit={handleTeaBagCreateSubmit} className="grid gap-4"
                         onChange={handleFormOnChange}>
                     <div className="grid gap-2">
                       <Label htmlFor="username" className={error ? "text-destructive" : ""}>Username</Label>
@@ -374,7 +382,8 @@ export default function TeaBagPage(props: SignupPageProps) {
                       <button className="Button mauve">Cancel</button>
                     </AlertDialogCancel>
                     <AlertDialogAction asChild>
-                      <button className="Button red" onClick={handleOnClickDeleteConfirmation}>Yes, delete account
+                      <button className="button  bg-red-600 hover:bg-red-700"
+                              onClick={handleOnClickDeleteConfirmation}>Yes, delete account
                       </button>
                     </AlertDialogAction>
                   </div>

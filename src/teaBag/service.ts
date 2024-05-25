@@ -6,6 +6,7 @@ import {WhitelistPgRepository} from "@/whitelist/repository"
 import {S3Client} from "@aws-sdk/client-s3"
 import {AvatarProfileS3Repository} from "@/profile/avatar/repository"
 import {profilePageSize} from "@/services/constants"
+import {DateTime} from "luxon"
 
 export class DefaultTeaBagService {
   private readonly teaBagPgRepository: TeaBagPgRepository
@@ -33,10 +34,10 @@ export class DefaultTeaBagService {
       const profileRepository = new ProfilePgRepository(tx)
       const teaBagRepository = new TeaBagPgRepository(tx)
       const whitelist = new WhitelistPgRepository(tx)
+
       const profile = await profileRepository.createTeaBagProfile(data.username, data.link, data.bio as string)
       const teaBag = await teaBagRepository.create(profile.id)
-      await whitelist.create(data.whitelistStart , data.whitelistEnd, teaBag.id, data.whitelistUserIds)
-
+      await whitelist.create(data.whitelistStart as DateTime<true>, data.whitelistEnd  as DateTime<true>, teaBag.id, data.whitelistUserIds)
 
       return teaBag.id
     })
