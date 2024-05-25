@@ -95,10 +95,10 @@ export class ProfilePgRepository {
         const createdProfile = await this.pgClient
             .insert(ProfileTable)
             .values({
-                username: username,
+                username,
                 displayName: username,
-                link: link,
-                bio: bio,
+                link,
+                bio,
                 avatarUrl: "",
                 createdAt:  DateTime.now().toSQL({includeZone: false, includeOffset: false}),
             })

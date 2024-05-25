@@ -10,6 +10,8 @@ export const searchRequesterProfileSize = 10
 
 export const nftsPageSize = 12
 
+export const teaBagsPageSize = 12
+
 export const profilePageSize = 12
 
 export const searchFollowsProfileSize = 10

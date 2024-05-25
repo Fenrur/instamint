@@ -28,6 +28,9 @@ import {ErrorCode} from "@/http/error-code"
 import {StatusCodes} from "http-status-codes"
 import {ProfileData} from "@/components/Profile/ProfileList"
 import {NFTData} from "@/components/NFT/NFTList"
+import {TeaBag, ValueLabel} from "../../app/tea-bags/page"
+import {reportProfileService} from "@/services"
+import {getServerSession} from "@/auth"
 
 export async function myProfile() {
   const res = await fetch("/api/profile/me", {
@@ -752,4 +755,56 @@ export async function fetchProfileData(): Promise<ProfileData> {
   }
 
   return {id: 0, avatarUrl: "", bio: "", link: "", username: ""}
+}
+
+
+export async function fetchTeaBags() {
+  const response = await fetch("/api/tea-bag")
+
+  if (response.ok) {
+    return await response.json() as TeaBag[]
+  }
+
+  throw new Error("Network response was not ok")
+}
+
+export async function fetchTeaBag(id: number): Promise<TeaBag> {
+  const response = await fetch(`/api/tea-bag/${id}`)
+
+  if (response.ok) {
+    return await response.json() as Promise<TeaBag>
+  }
+
+  throw new Error("Network response was not ok")
+}
+
+export async function fetchUsers(): Promise<ValueLabel[]> {
+  const response = await fetch("/api/user")
+
+  if (response.ok) {
+    return await response.json() as Promise<ValueLabel[]>
+  }
+
+  throw new Error("Network response was not ok")
+}
+
+export async function fetchNFTs(): Promise<ValueLabel[]> {
+  const response = await fetch("/api/tea-bag/nft")
+
+  if (response.ok) {
+    return await response.json() as Promise<ValueLabel[]>
+  }
+
+  throw new Error("Network response was not ok")
+}
+
+export async function reportAction(reportedId: number, reason: string) {
+  const session = await getServerSession()
+
+  if (!session) {
+    throw new Error("not auth")
+  }
+
+  const userId = Number.parseInt(session?.uid, 10)
+  await reportProfileService.create(userId, reportedId, reason)
 }

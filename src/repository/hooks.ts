@@ -1,8 +1,8 @@
 import {
   acceptAllRequestFollowProfile,
   acceptRequestFollowProfile,
-  deleteFollowerProfile,
-  fetchProfileData,
+  deleteFollowerProfile, fetchNFTs,
+  fetchProfileData, fetchTeaBag, fetchTeaBags, fetchUsers,
   followProfile,
   ignoreAllRequestFollowProfile,
   ignoreRequestFollowProfile,
@@ -364,7 +364,7 @@ export function useRegisterUser() {
 
 export function useFetchProfileData() {
   const fetchProfileDataFetcher = () => fetchProfileData()
-  const { data, error, mutate} = useSWR("useFetchProfileData", fetchProfileDataFetcher)
+  const { data, error, mutate} = useSWRMutation("useFetchProfileData", fetchProfileDataFetcher)
 
   return {
     profileData: data,
@@ -373,4 +373,46 @@ export function useFetchProfileData() {
   }
 }
 
+export function useFetchTeaBags() {
+  const fetchTeaBagsFetcher = () => fetchTeaBags()
+  const { data, error, mutate } = useSWRMutation("useFetchTeaBags", fetchTeaBagsFetcher)
 
+  return {
+    teaBagsData: data,
+    teaBagsDataMutate: mutate,
+    errorTeaBagsData: error,
+  }
+}
+
+export function useFetchTeaBag(id: number) {
+  const fetchTeaBagFetcher = () => fetchTeaBag(id)
+  const { data, error, mutate } = useSWRMutation(`useFetchTeaBag-${id}`, fetchTeaBagFetcher)
+
+  return {
+    teaBagData: data,
+    teaBagDataMutate: mutate,
+    errorTeaBagData: error,
+  }
+}
+
+export function useFetchUsers() {
+  const fetchUsersFetcher = () => fetchUsers()
+  const { data, error, mutate } = useSWRMutation("useFetchUsers", fetchUsersFetcher)
+
+  return {
+    usersData: data,
+    usersDataMutate: mutate,
+    errorUsersData: error,
+  }
+}
+
+export function useFetchNFTs() {
+  const fetchNFTsFetcher = () => fetchNFTs()
+  const { data, error, mutate } = useSWRMutation("useFetchNFTs", fetchNFTsFetcher)
+
+  return {
+    nftsData: data,
+    nftsDataMutate: mutate,
+    errorNFTsData: error,
+  }
+}

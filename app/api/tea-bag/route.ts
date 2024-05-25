@@ -17,22 +17,23 @@ export const GET = auth(async (req: NextAuthRequest) => {
 })
 
 export const POST = auth(async (req: NextAuthRequest) => {
-    const data = await req.json();
-
-    const {username, bio, link, nftIds, whitelistUserIds, whitelistStart, whitelistEnd} = data;
+    const data = await req.json()
+    const {username, bio, link, nftIds, whitelistUserIds, whitelistStart, whitelistEnd} = data
 
     if (!username || !bio || !link) {
-        return problem({...invalidQueryParameterProblem, detail: "username, bio, and link are required"});
+        return problem({...invalidQueryParameterProblem, detail: "username, bio, and link are required"})
     }
 
-    const session = getSession(req);
+    const session = getSession(req)
+
     if (!session) {
-        return problem({...notAuthenticatedProblem, detail: "You need to be authenticated to create this profile"});
+        return problem({...notAuthenticatedProblem, detail: "You need to be authenticated to create this profile"})
     }
 
-    const myUserAndProfile = await profileService.findByUserUid(session.uid);
+    const myUserAndProfile = await profileService.findByUserUid(session.uid)
+
     if (!myUserAndProfile) {
-        return problem({...userNotFoundProblem, detail: "User profile not found"});
+        return problem({...userNotFoundProblem, detail: "User profile not found"})
     }
 
 
@@ -44,8 +45,8 @@ export const POST = auth(async (req: NextAuthRequest) => {
         whitelistUserIds,
         whitelistStart,
         whitelistEnd,
-    });
+    })
 
-    return NextResponse.json(result);
-});
+    return NextResponse.json(result)
+})
 

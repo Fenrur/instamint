@@ -34,13 +34,13 @@ export class TeaBagPgRepository {
         return this.pgClient.execute(sqlQuery)
     }
 
-    public async getByProfileId(profileId: number) {
+    public async getByProfileId(profileId: string) {
         const sqlQuery = sql`
             SELECT ${ProfileTable.id},
                    ${ProfileTable.username},
                    ${ProfileTable.link},
                    ${ProfileTable.bio},
-            FROM ${ProfileTable} `
+            FROM ${ProfileTable} WHERE ${ProfileTable.id} = ${profileId}`
 
         return this.pgClient.execute(sqlQuery)
     }
@@ -52,8 +52,7 @@ export class TeaBagPgRepository {
                 profileId,
             })
             .returning({id: TeaBagTable.id})
+
         return createdTeaBag[0]
     }
-
-
 }
