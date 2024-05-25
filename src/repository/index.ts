@@ -798,14 +798,16 @@ export async function fetchNFTs(): Promise<ValueLabel[]> {
   throw new Error("Network response was not ok")
 }
 
-export async function reportProfile(req: ReportProfileRequest): Promise<ValueLabel[]> {
-  await fetch("/api/tea-bag/report", {
+export async function reportProfile(req: ReportProfileRequest): Promise<boolean> {
+  const resp = await fetch("/api/tea-bag/report", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify(req)
   })
-
-  throw new Error("Network response was not ok")
+  if (resp.ok) {
+    return await resp.json() as Promise<boolean>
+  }
+  return false
 }

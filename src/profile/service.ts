@@ -22,6 +22,10 @@ export class DefaultProfileService {
     return this.profilePgRepository.findByUsername(username)
   }
 
+  public async deleteProfile(id: number) {
+    return await this.profilePgRepository.deleteProfile(id)
+  }
+
   public async findByUserUid(uid: string) {
     const result = await this.pgClient.query.UserTable
       .findFirst({

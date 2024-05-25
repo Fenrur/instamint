@@ -2,7 +2,7 @@
 
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
-import React, {useCallback, useState} from "react"
+import React, {useCallback, useEffect, useState} from "react"
 import {RightPanel} from "./right-panel"
 import {NFTData, NFTList} from "@/components/NFT/NFTList"
 import {Slider} from "@/components/ui/slider"
@@ -78,6 +78,20 @@ export default function SignupPage() {
 
     setPage(page + 1)
   }, [isNfts, page, query, location, priceRange, nftsList, profilesList])
+
+  const [init, setInit] = useState(true)
+  useEffect(() => {
+    if (init) {
+      setInit(false)
+      void loadNextPage()
+
+      const nftSection = document.getElementById("nfts-section-ssr")
+
+      if (nftSection) {
+        nftSection.classList.add("hidden")
+      }
+    }
+  }, [init, loadNextPage])
 
   function onTabChange(value: string) {
     const x = value === "nfts"

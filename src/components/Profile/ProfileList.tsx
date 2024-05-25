@@ -11,7 +11,7 @@ export interface ProfileData {
 
 }
 
-export const ProfileList = ({data}: { data: ProfileData[]}) => {
+export const ProfileList = ({data}: { data: ProfileData[] }) => {
   return (
     <section className={"grid grid-cols-3 gap-0.5"}>
       {
@@ -32,7 +32,7 @@ export const ProfileList = ({data}: { data: ProfileData[]}) => {
 }
 
 
-export const TeaBagList = ({data}: { data: TeaBag[]}) => {
+export const TeaBagList = ({data, onDelete, onReport}: { data: TeaBag[], onDelete: any, onReport: any }) => {
   return (
     <section className={"grid grid-cols-3 gap-0.5"}>
       {
@@ -43,7 +43,13 @@ export const TeaBagList = ({data}: { data: TeaBag[]}) => {
                 id={nft.id}
                 link={nft.link}
                 avatarUrl={nft.avatarUrl === "" ? "https://api.dicebear.com/8.x/notionists-neutral/svg?seed=Buddy" : nft.avatarUrl}
-                username={nft.username}/>
+                followers_count={nft.followers_count}
+                followed_count={nft.followed_count}
+                cooks_count={nft.cooks_count}
+                username={nft.username}
+                onDelete={onDelete}
+                onReport={onReport}
+              />
             </React.Fragment>
           )
         })

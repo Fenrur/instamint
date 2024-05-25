@@ -28,7 +28,7 @@ export class TeaBagPgRepository {
                                COUNT(*) AS "count"
                         FROM ${FollowTable}
                         GROUP BY "followerProfileId") followers
-                       ON ${ProfileTable.id} = followers."followerProfileId"`
+                       ON ${ProfileTable.id} = followers."followerProfileId" WHERE ${ProfileTable.id} IN (SELECT ${TeaBagTable.id} FROM ${TeaBagTable})`
     sqlQuery.append(sql`
       ORDER BY
       ${ProfileTable.createdAt}

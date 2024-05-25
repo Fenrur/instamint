@@ -34,7 +34,7 @@ export default async function LayoutSearchPage(props: SearchPageProps) {
           ? <LoggedLayout
             avatarUrl={userAndProfile ? userAndProfile.profile.avatarUrl : ""}
             headerText={username}
-            selectedNavigation="search"
+            selectedNavigation="settings"
             username={userAndProfile ? userAndProfile.profile.username : ""}
             navigationHeader={true}
           >

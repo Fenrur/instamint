@@ -12,15 +12,26 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
+
 import {DateTime} from "luxon"
 import {toast} from "sonner"
-import MultiSelect from "@/components/ui/multi-select"
 import {useFetchNFTs, useFetchUsers, useReportProfile} from "@/repository/hooks"
 import React, {useCallback, useEffect, useState} from "react"
 import {TeaBagList} from "@/components/Profile/ProfileList"
 import InfiniteScroll from "react-infinite-scroll-component"
 import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
 import {fetchTeaBags} from "@/repository"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogOverlay,
+  AlertDialogPortal,
+  AlertDialogTitle
+} from "@/components/ui/alert-dialog"
+import MultiSelect from "@/components/ui/multi-select"
 
 type SignupPageError = "email_verification_limit_exceeded" | "email_exists";
 
@@ -61,6 +72,14 @@ export interface TeaBag {
   whitelistUserIds?: number[];
   whitelistStart?: DateTime;
   whitelistEnd?: DateTime;
+
+  onDelete?: any;
+  onReport?: any;
+}
+
+interface Report {
+  reportedProfileId: number,
+  reason: string
 }
 
 export default function TeaBagPage(props: SignupPageProps) {
@@ -74,14 +93,27 @@ export default function TeaBagPage(props: SignupPageProps) {
     whitelistStart: DateTime.now(),
     whitelistEnd: DateTime.now(),
   })
+  const [reportFormData, setReportFormData] = useState<Report>({
+    reportedProfileId: 0,
+    reason: ""
+  })
   const [teabagsList, setTeabagsList] = useState<TeaBag[]>([])
   const {usersData, usersDataMutate} = useFetchUsers()
   const {nftsData, nftsDataMutate} = useFetchNFTs()
   const {isFetchingReport, reportProfile, errorReport, dataReport} = useReportProfile()
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpenCreate, setIsOpenCreate] = useState(false)
+  const [isOpenReport, setIsOpenReport] = useState(false)
+  const [isOpenDelete, setIsOpenDelete] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(1)
-
+  const [selectedId, setSelectedId] = useState<number>()
+  const handleFormOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const {name, value} = e.target
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }))
+  }
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const response = await fetch("/api/tea-bag", {
@@ -94,48 +126,31 @@ export default function TeaBagPage(props: SignupPageProps) {
 
     if (response.ok) {
       toast.success("Successfully created", {description: "Your Tea Bag has been created."})
-      setIsOpen(false)
+      setIsOpenCreate(false)
     } else {
       toast.error("Error", {description: "Failed to create Tea Bag"})
       throw new Error("Failed to create Tea Bag")
     }
   }
-  const handleFormOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleReportFormOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target
-    setFormData(prevState => ({
+    setReportFormData(prevState => ({
       ...prevState,
       [name]: value
     }))
   }
+  const handleReportFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const rsp = await reportProfile({reportedProfileId: selectedId as number, reason: reportFormData.reason})
 
-  async function handleOnClickDelete(id: number) {
-    try {
-      const response = await fetch(`/api/tea-bag/delete?id=${id}`, {
-        method: "POST",
-      })
-
-      if (response.ok) {
-        toast.success("Successfully deleted", {description: "The Tea Bag has been deleted."})
-      } else {
-        toast.error("Error", {description: "Failed to delete Tea Bag"})
-      }
-    } catch (error) {
-      console.error("Error:", error)
+    if (rsp) {
+      toast.success("Successfully reported", {description: "The Tea Bag has been deleted."})
+      setIsOpenReport(false)
+    } else {
+      toast.error("Error", {description: "Failed to reported Tea Bag maybe due to already reported"})
     }
-  }
-
-  async function handleOnClickReport(id: number) {
-    reportProfile({reportedProfileId: id, reason: "tea-bag"}).then(() => {
-      toast.success("Successfully deleted", {description: "The Tea Bag has been deleted."})
-    }).catch(() => {
-      toast.error("Error", {description: "Failed to delete Tea Bag"})
-    })
-  }
-
-  function handleOnClickEdite(id: number) {
 
   }
-
   const loadNextPage = useCallback(() => {
     void fetchTeaBags({page}).then(res => {
       if (res.length < teabagsList.length) {
@@ -153,21 +168,43 @@ export default function TeaBagPage(props: SignupPageProps) {
     if (init) {
       setInit(false)
       loadNextPage()
-
-      const nftSection = document.getElementById("nfts-section-ssr")
-
-      if (nftSection) {
-        nftSection.classList.add("hidden")
-      }
     }
   }, [init, loadNextPage])
+
+  async function handleOnClickDelete(id: number) {
+    setSelectedId(id)
+    setIsOpenDelete(true)
+  }
+
+  async function handleOnClickReport(id: number) {
+    setSelectedId(id)
+    setIsOpenReport(true)
+  }
+
+  async function handleOnClickDeleteConfirmation() {
+    const response = await fetch(`/api/tea-bag/delete`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({profileId: selectedId as number})
+    })
+
+    if (response.ok) {
+      setIsOpenDelete(false)
+      toast.success("Successfully deleted", {description: "The Tea Bag has been deleted."})
+    } else {
+      toast.error("Error", {description: "Failed to delete Tea Bag"})
+    }
+  }
 
   return (
     <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
       <div className="container max-w-screen-lg mx-auto">
         <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
           <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+
+            <Dialog open={isOpenCreate} onOpenChange={setIsOpenCreate}>
               <DialogTrigger asChild>
                 <Button className="Button violet">Create Tea Bag</Button>
               </DialogTrigger>
@@ -282,8 +319,70 @@ export default function TeaBagPage(props: SignupPageProps) {
               </DialogPortal>
             </Dialog>
 
-            {teabagsList && <InfiniteScroll
+            <Dialog open={isOpenReport} onOpenChange={setIsOpenReport}>
+              <DialogPortal>
+                <DialogOverlay className="DialogOverlay"/>
+                <DialogContent className="DialogContent">
+                  <DialogTitle className="DialogTitle">Reporting</DialogTitle>
+                  <DialogDescription className="DialogDescription">
+                    please specify your reason why you want to report this profile
+                  </DialogDescription>
 
+                  <form className="grid gap-4" id="reportForm"
+                        onSubmit={handleReportFormSubmit}
+                        onChange={handleReportFormOnChange}>
+                    <Input
+                      name="reportedProfileId"
+                      id="reportedProfileId"
+                      type="hidden"
+                      required
+                      value={selectedId}
+                    />
+
+                    <div className="grid gap-2">
+                      <Label htmlFor="link" className={error ? "text-destructive" : ""}>Reason</Label>
+                      <Input
+                        name="reason"
+                        id="reason"
+                        type="text"
+                        required
+                        defaultValue={reportFormData.reason}
+                      />
+                    </div>
+
+                    <div className="flex justify-around">
+                      <Button type="submit" className="w-1/2">
+                        Validate
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </DialogPortal>
+            </Dialog>
+
+            <AlertDialog open={isOpenDelete} onOpenChange={setIsOpenDelete}>
+              <AlertDialogPortal>
+                <AlertDialogOverlay className="AlertDialogOverlay"/>
+                <AlertDialogContent className="AlertDialogContent">
+                  <AlertDialogTitle className="AlertDialogTitle">Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription className="AlertDialogDescription">
+                    This action cannot be undone. This will permanently delete the account and remove
+                    data from servers.
+                  </AlertDialogDescription>
+                  <div style={{display: "flex", gap: 25, justifyContent: "flex-end"}}>
+                    <AlertDialogCancel asChild>
+                      <button className="Button mauve">Cancel</button>
+                    </AlertDialogCancel>
+                    <AlertDialogAction asChild>
+                      <button className="Button red" onClick={handleOnClickDeleteConfirmation}>Yes, delete account
+                      </button>
+                    </AlertDialogAction>
+                  </div>
+                </AlertDialogContent>
+              </AlertDialogPortal>
+            </AlertDialog>
+
+            {teabagsList && <InfiniteScroll
               dataLength={teabagsList.length}
               next={loadNextPage}
               hasMore={hasMore}
@@ -295,7 +394,7 @@ export default function TeaBagPage(props: SignupPageProps) {
                 </div>
               }
             >
-              <TeaBagList data={teabagsList}/>
+              <TeaBagList data={teabagsList} onDelete={handleOnClickDelete} onReport={handleOnClickReport}/>
             </InfiniteScroll>}
           </div>
         </div>

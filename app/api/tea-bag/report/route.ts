@@ -4,11 +4,13 @@ import {NextAuthRequest} from "next-auth/lib"
 import {invalidQueryParameterProblem, notAuthenticatedProblem, problem} from "@/http/problem"
 import {profileService, reportProfileService} from "@/services"
 import {NextResponse} from "next/server"
+import {ReportProfileRequest} from "@/http/rest/types"
+import {StatusCodes} from "http-status-codes"
 
 export const POST = auth(async (req: NextAuthRequest) => {
-  const formData = await req.formData()
-  const reportedProfileId = formData.get("reportedProfileId") as number
-  const reason = formData.get("reason") as string
+  const formData = ReportProfileRequest.parse(await req.json())
+  const reportedProfileId = formData.reportedProfileId
+  const reason = formData.reason
 
   if (!reportedProfileId) {
     return problem({...invalidQueryParameterProblem, detail: "reportedProfileId is required"})
@@ -21,11 +23,12 @@ export const POST = auth(async (req: NextAuthRequest) => {
   }
 
   const myUserAndProfile = await profileService.findByUserUid(session.uid)
+
   if (!myUserAndProfile) {
     return problem({...notAuthenticatedProblem, detail: "user profile not found"})
   }
 
   const result = await reportProfileService.create(myUserAndProfile.id, reportedProfileId, reason)
 
-  return NextResponse.json(result)
+  return NextResponse.json(Boolean(result), {status: StatusCodes.OK})
 })

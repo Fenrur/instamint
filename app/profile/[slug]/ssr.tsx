@@ -1,5 +1,13 @@
 import {AudioLinesIcon, ImageIcon, MapPin, SquarePlayIcon} from "lucide-react"
-import {CommentFilledIcon, MintFilledIcon} from "@/components/ui/icons"
+import {
+  CommentFilledIcon,
+  CooksIcon,
+  EditIcon,
+  MintFilledIcon,
+  MintIcon,
+  ReportIcon,
+  TrashIcon
+} from "@/components/ui/icons"
 import React from "react"
 import {NftType} from "@/domain/types"
 import {Button} from "@/components/ui/button"
@@ -105,17 +113,52 @@ export function TeaBagContainer({
                                   username,
                                   followers_count,
                                   followed_count,
-                                  cooks_count
+                                  cooks_count,
+                                  onReport,
+                                  onDelete
                                 }: TeaBag) {
+
   return (
-    <a href={link} className="relative pb-1 cursor-pointer">
-      <div className="rounded overflow-hidden">
-        <img className="w-full" src={avatarUrl} alt="avatar image"/>
-        <div className="px-6">
-          <div className="font-bold text-sm">{username}</div>
+    <div className="relative pb-1 cursor-pointer h-200">
+      <a href={link}>
+        <div className="rounded overflow-hidden">
+          <img className="w-full" src={avatarUrl} alt="avatar image"/>
+          <div
+            className="absolute inset-0 h-4/5 bg-black opacity-0 hover:opacity-80 transition-opacity duration-200 text-white flex gap-2 justify-center items-center">
+            <div>
+              <MintFilledIcon className="size-6 fill-white"/>
+              <MintIcon className="size-6 mt-2 fill-white"/>
+              <CooksIcon className="size-6 mt-2"/>
+            </div>
+            <div>
+              {/* eslint-disable-next-line camelcase */}
+              <div className="font-extrabold">{followers_count}</div>
+              {/* eslint-disable-next-line camelcase */}
+              <div className="font-extrabold mt-2">{followed_count}</div>
+              {/* eslint-disable-next-line camelcase */}
+              <div className="font-extrabold mt-2">{cooks_count}</div>
+            </div>
+          </div>
+          <div className="px-6 text-center">
+            <div className="font-bold text-sm">{username}</div>
+          </div>
+        </div>
+      </a>
+      <div
+        className="bg-blue-600 text-white flex flex-row justify-around items-center h-10 px-5">
+        <a href={`/settings/profile?id=${id}`}>
+          <EditIcon className="size-6" color={"green"}/>
+        </a>
+
+        <div onClick={() => onReport(id as number)}>
+          <ReportIcon className="size-6" color="red"/>
+        </div>
+
+        <div onClick={() => onDelete(id as number)}>
+          <TrashIcon className="size-6" color="red"/>
         </div>
       </div>
-    </a>
+    </div>
   )
 }
 
