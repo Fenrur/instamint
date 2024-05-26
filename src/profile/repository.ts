@@ -44,8 +44,8 @@ export class ProfilePgRepository {
     return rows.length > 0
   }
 
-  public findByProfileId(profileId: number) {
-    return this.pgClient.query.ProfileTable
+  public async findByProfileId(profileId: number) {
+    return await this.pgClient.query.ProfileTable
       .findFirst({
         where: (profile, {eq}) => eq(profile.id, profileId)
       })
@@ -81,7 +81,7 @@ export class ProfilePgRepository {
       .where(eq(ProfileTable.id, profileId))
   }
 
-  public async updateById(id: string, username: string, bio: string, link: string, avatarUrl: string) {
+  public async updateById(id: number, username: string, bio: string, link: string, avatarUrl: string) {
     return this.pgClient
       .update(ProfileTable)
       .set({
@@ -90,7 +90,7 @@ export class ProfilePgRepository {
         link,
         avatarUrl
       })
-      .where(eq(ProfileTable.id, id))
+      .where(eq(ProfileTable.id, id)).returning()
   }
 
   public async create(username: string, createdAt: DateTime<true>, avatarUrl: string) {

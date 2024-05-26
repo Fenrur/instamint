@@ -53,6 +53,9 @@ export class DefaultProfileService {
 
     return result
   }
+  public async findByProfileId(id: number) {
+    return await this.profilePgRepository.findByProfileId(id)
+  }
 
   public existUsername(username: string) {
     return this.profilePgRepository.existUsername(username)

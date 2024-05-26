@@ -120,14 +120,19 @@ export function TeaBagContainer({
                                 }: TeaBag) {
   return (
     <div className="relative pb-1 cursor-pointer h-200">
-      <a href={link}>
-        <div className="rounded overflow-hidden">
+
+      <div className="rounded overflow-hidden">
+        <a href={link}>
           <img className="w-full"
-               height={220}
-               width={220}
+               style={{height: 220, width: 220}}
                src={avatarUrl} alt="avatar image"/>
+
+
           <div
-            className="absolute inset-0 h-4/5 bg-black opacity-0 hover:opacity-80 transition-opacity duration-200 text-white flex gap-2 justify-center items-center">
+            className="absolute inset-0 h-5/6 bg-black
+            opacity-0 hover:opacity-50 transition-opacity
+             duration-200 text-white flex gap-2
+             justify-center items-center">
             <div>
               <MintFilledIcon className="size-6 fill-white"/>
               <MintIcon className="size-6 mt-2 fill-white"/>
@@ -145,8 +150,8 @@ export function TeaBagContainer({
           <div className="px-6 text-center">
             <div className="font-bold text-sm">{username}</div>
           </div>
-        </div>
-      </a>
+        </a>
+      </div>
       <div
         className="bg-blue-600 text-white flex flex-row justify-around items-center h-10 px-5">
         <div onClick={() => {

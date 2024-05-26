@@ -86,7 +86,11 @@ interface Report {
 }
 
 // A function to format the date to YYYY-MM-DD
-const formatDate = (date?: DateTime | string) => {
+const formatDate = (date?: Date | string) => {
+  if (!date) {
+    return null
+  }
+
   const d = new Date(date)
   const month = `0${d.getMonth() + 1}`.slice(-2)
   const day = `0${d.getDate()}`.slice(-2)
@@ -107,6 +111,7 @@ export default function TeaBagPage(props: SignupPageProps) {
     link: "",
     nftIds: [],
     whitelistUserIds: [],
+    avatarUrl: "",
     whitelistStart: DateTime.now(),
     whitelistEnd: DateTime.now(),
   })
@@ -134,6 +139,11 @@ export default function TeaBagPage(props: SignupPageProps) {
   const handleTeaBagCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formDataWithImage = new FormData()
+
+    if (selectedId) {
+      formDataWithImage.append("profileId", selectedId.toString())
+    }
+
     formDataWithImage.append("username", formData.username)
     formDataWithImage.append("bio", formData.bio as string)
     formDataWithImage.append("link", formData.link)
@@ -143,7 +153,7 @@ export default function TeaBagPage(props: SignupPageProps) {
     formDataWithImage.append("whitelistStart", formData.whitelistStart as unknown as string)
     formDataWithImage.append("whitelistEnd", formData.whitelistEnd as unknown as string)
 
-    const response = await fetch("/api/tea-bag", {
+    const response = await fetch(selectedId ? "/api/tea-bag/update" : "/api/tea-bag", {
       method: "POST",
       body: formDataWithImage
     })
@@ -185,6 +195,7 @@ export default function TeaBagPage(props: SignupPageProps) {
     if (res) {
       toast.success("Successfully reported", {description: "The Tea Bag has been deleted."})
       setIsOpenReport(false)
+      setSelectedId(undefined)
     } else {
       toast.error("Error", {description: "Failed to reported Tea Bag maybe due to already reported"})
     }
@@ -253,6 +264,7 @@ export default function TeaBagPage(props: SignupPageProps) {
       setPage(1)
       setTeabagsList(prev => prev.filter(item => item.id !== selectedId))
       setIsOpenDelete(false)
+      setSelectedId(undefined)
       toast.success("Successfully deleted", {description: "The Tea Bag has been deleted."})
     } else {
       toast.error("Error", {description: "Failed to delete Tea Bag"})
@@ -376,7 +388,7 @@ export default function TeaBagPage(props: SignupPageProps) {
                                        value: item.value.toString(),
                                        label: item.label
                                      }))}
-                                     defaultValue={formData.whitelistUserIds?.map(item => item.toString())}
+                                     defaultValue={formData.whitelistUserIds?.filter(item => item).map(item => item.toString())}
                                      placeholder="Users"/>}
                     </div>
 
@@ -386,7 +398,7 @@ export default function TeaBagPage(props: SignupPageProps) {
                                className={error ? "text-destructive" : ""}>Whitelist
                           start date</Label>
                         <Input
-                          defaultValue={formatDate(formData.whitelistStart)}
+                          defaultValue={formatDate(formData.whitelistStart as unknown as Date) as string}
                           name="whitelist.start"
                           id="whitelistStart"
                           type="date"
@@ -399,7 +411,7 @@ export default function TeaBagPage(props: SignupPageProps) {
                                className={error ? "text-destructive" : ""}>Whitelist
                           end date</Label>
                         <Input
-                          defaultValue={formatDate(formData.whitelistEnd)}
+                          defaultValue={formatDate(formData.whitelistEnd as unknown as Date) as string}
                           name="whitelist.end"
                           id="whitelistEnd"
                           type="date"

@@ -10,6 +10,10 @@ import {DateTime} from "luxon"
 import {followService} from "@/services"
 import {env} from "@/env"
 
+type TeaBagUpdate = {
+  profileId: number;
+} & TeaBag
+
 export class DefaultTeaBagService {
   private readonly teaBagPgRepository: TeaBagPgRepository
   private readonly avatarProfileS3Repository: AvatarProfileS3Repository
@@ -59,13 +63,12 @@ export class DefaultTeaBagService {
       await whitelist.create(data.whitelistStart as DateTime<true>, data.whitelistEnd as DateTime<true>, teaBag.id, data.whitelistUserIds as number[])
       await followUsers(data.whitelistUserIds as number[], profile.id)
 
-
-
       return teaBag.id
     })
   }
-  public async update(data: any, avatar: Buffer | null, type: string | null) {
-    return await this.pgClient.transaction(async (tx) => {
+
+  public async update(data: TeaBagUpdate, avatar: Buffer | null, type: string | null) {
+     await this.pgClient.transaction(async (tx) => {
       async function followUsers(whitelistUserIds: number[], profileId: number) {
         if (whitelistUserIds) {
           const followPromises = whitelistUserIds.map(userId =>
@@ -77,7 +80,6 @@ export class DefaultTeaBagService {
       }
 
       const profileRepository = new ProfilePgRepository(tx)
-      const teaBagRepository = new TeaBagPgRepository(tx)
       const whitelist = new WhitelistPgRepository(tx)
 
       let avatarKey = ""
@@ -87,28 +89,18 @@ export class DefaultTeaBagService {
         avatarKey = `${env.S3_ENDPOINT}/${env.S3_BUCKET_NAME}/${uname}`
       }
 
-      const profile = await profileRepository.updateById(
+      await profileRepository.updateById(
         data.profileId, data.username, data.link, data.bio as string, avatarKey
       )
 
-      const teaBag = await teaBagRepository.update(profile.id, {
-        nftIds: data.nftIds,
-        whitelistUserIds: data.whitelistUserIds,
-        whitelistStart: data.whitelistStart,
-        whitelistEnd: data.whitelistEnd,
-      })
-
       await whitelist.update(
+        data.profileId,
         data.whitelistStart as DateTime<true>,
         data.whitelistEnd as DateTime<true>,
-        teaBag.id,
         data.whitelistUserIds as number[]
       )
 
-      await followUsers(data.whitelistUserIds as number[], profile.id)
-
-      return teaBag.id
+      await followUsers(data.whitelistUserIds as number[], data.profileId)
     })
   }
-
 }

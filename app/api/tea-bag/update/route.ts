@@ -12,6 +12,7 @@ import {auth, getSession} from "@/auth"
 // @ts-expect-error TODO fix library not found
 import {NextAuthRequest} from "next-auth/lib"
 import {DateTime} from "luxon"
+import {StatusCodes} from "http-status-codes"
 
 export const POST = auth(async (req: NextAuthRequest) => {
   const data = await req.formData()
@@ -47,13 +48,13 @@ export const POST = auth(async (req: NextAuthRequest) => {
     return problem({...notAuthenticatedProblem, detail: "You need to be authenticated to update this profile"})
   }
 
-  const myUserAndProfile = await profileService.findByUserUid(session.uid)
+  const profile = await profileService.findByProfileId(profileId)
 
-  if (!myUserAndProfile || myUserAndProfile.profile.id !== profileId) {
-    return problem({...userNotFoundProblem, detail: "User profile not found or unauthorized"})
+  if (!profile) {
+    return problem({...userNotFoundProblem, detail: "Profile not found"})
   }
 
-  if (username !== myUserAndProfile.profile.username) {
+  if (username !== profile.username) {
     const isUsernameAlreadyUsed = await profileService.isUsernameExist(username)
 
     if (isUsernameAlreadyUsed) {
@@ -61,7 +62,7 @@ export const POST = auth(async (req: NextAuthRequest) => {
     }
   }
 
-  if (link !== myUserAndProfile.profile.link) {
+  if (link !== profile.link) {
     const isLinkAlreadyUsed = await profileService.isLinkExist(link)
 
     if (isLinkAlreadyUsed) {
@@ -72,7 +73,7 @@ export const POST = auth(async (req: NextAuthRequest) => {
   let imageBuffer = null
   let imageType = null
 
-  if (imageFile) {
+  if (imageFile && imageFile !== "null") {
     imageType = (imageFile).split(";")[0].split(":")[1].split("/")[1]
 
     if (!imageType) {
@@ -84,7 +85,7 @@ export const POST = auth(async (req: NextAuthRequest) => {
     imageBuffer = Buffer.from(data, "base64")
   }
 
-  const result = await teaBagService.update({
+  await teaBagService.update({
     profileId,
     username,
     bio,
@@ -95,5 +96,5 @@ export const POST = auth(async (req: NextAuthRequest) => {
     whitelistEnd,
   }, imageBuffer, imageType)
 
-  return NextResponse.json(result)
+  return NextResponse.json({}, {status: StatusCodes.OK})
 })

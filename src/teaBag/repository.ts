@@ -1,6 +1,6 @@
 import {PgClient} from "@/db/db-client"
 import {FollowTable, ProfileTable, TeaBagTable, WhitelistTable, WhitelistUserTable} from "@/db/schema"
-import {eq, sql} from "drizzle-orm"
+import {sql} from "drizzle-orm"
 
 export class TeaBagPgRepository {
   private readonly pgClient: PgClient
@@ -69,17 +69,5 @@ export class TeaBagPgRepository {
       .returning({id: TeaBagTable.id})
 
     return createdTeaBag[0]
-  }
-
-  public async update(id: string, {nftIds: string, bio: string, link: string, avatarUrl: string}) {
-    return this.pgClient
-      .update(ProfileTable)
-      .set({
-        username,
-        bio,
-        link,
-        avatarUrl
-      })
-      .where(eq(ProfileTable.id, id))
   }
 }
