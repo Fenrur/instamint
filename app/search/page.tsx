@@ -2,7 +2,7 @@
 
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
-import React, {useCallback, useState} from "react"
+import React, {useCallback, useEffect, useState} from "react"
 import {RightPanel} from "./right-panel"
 import {NFTData, NFTList} from "@/components/NFT/NFTList"
 import {debounce} from "next/dist/server/utils"
@@ -13,6 +13,7 @@ import {getPaginatedNftsWithSearch, getPaginatedUsersWithSearch} from "@/reposit
 import {nftsPageSize, profilePageSize} from "@/services/constants"
 import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
 import InfiniteScroll from "react-infinite-scroll-component"
+import {Slider} from "@/components/ui/slider"
 
 const debounceTime = 300
 
@@ -77,6 +78,19 @@ export default function SignupPage() {
 
     setPage(page + 1)
   }, [isNfts, page, query, location, priceRange, nftsList, profilesList])
+  const [init, setInit] = useState(true)
+  useEffect(() => {
+    if (init) {
+      setInit(false)
+      void loadNextPage()
+
+      const nftSection = document.getElementById("nfts-section-ssr")
+
+      if (nftSection) {
+        nftSection.classList.add("hidden")
+      }
+    }
+  }, [init, loadNextPage])
 
   function onTabChange(value: string) {
     const x = value === "nfts"
@@ -84,6 +98,13 @@ export default function SignupPage() {
     fetchData(query, location, priceRange, page)
     setPage(1)
     setHasMore(true)
+  }
+
+  // State to manage the visibility of the advanced options
+  const [showAdvanced, setShowAdvanced] = useState(false)
+  // Function to toggle the advanced options visibility
+  const toggleAdvancedOptions = () => {
+    setShowAdvanced(!showAdvanced)
   }
 
   return (
@@ -94,8 +115,8 @@ export default function SignupPage() {
                 onTabChange(value)
               }}>
           <div className="md:grid lg:grid-cols-4 md:grid-cols-1 gap-1 items-center justify-center align-middle">
-            <div className="lg:col-span-3 ">
-              <Label htmlFor="query">Query</Label>
+            <div className="lg:col-span-3">
+              <Label htmlFor="query">Keyword</Label>
               <Input
                 name="query"
                 id="query"
@@ -116,27 +137,36 @@ export default function SignupPage() {
               </TabsTrigger>
             </TabsList>
 
-            {/*<div>
-              <div className="">
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  name="location"
-                  id="location"
-                  type="text"
-                  className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                  onChange={handleLocationChange}
-                />
+            <div className="text-center col-span-4">
+              <div className="text-end ">
+                <button onClick={toggleAdvancedOptions} className="mt-4">
+                  {showAdvanced ? "▲" : "▼"} Advanced Options
+                </button>
               </div>
 
-             <div className="w-11/12">
-                <Label htmlFor="price">Price</Label>
-                <Slider
-                  defaultValue={priceRange}
-                  onValueChange={handlePriceChange}
-                />
-              </div>
+              {showAdvanced && (
+                <div className="flex lg:flex-row md:flex-col sm:flex-col text-start justify-center  gap-2">
+                  <div className="md:w-full lg:w-1/2">
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                      name="location"
+                      id="location"
+                      type="text"
+                      className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                      onChange={handleLocationChange}
+                    />
+                  </div>
+
+                  <div className="md:w-full lg:w-1/2 mt-5">
+                    <Label htmlFor="price">Price</Label>
+                    <Slider
+                      defaultValue={priceRange}
+                      onValueChange={handlePriceChange}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-          */}
 
           </div>
 
