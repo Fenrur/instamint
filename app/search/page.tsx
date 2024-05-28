@@ -5,7 +5,6 @@ import {Label} from "@/components/ui/label"
 import React, {useCallback, useState} from "react"
 import {RightPanel} from "./right-panel"
 import {NFTData, NFTList} from "@/components/NFT/NFTList"
-import {Slider} from "@/components/ui/slider"
 import {debounce} from "next/dist/server/utils"
 import {TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import {Tabs} from "@radix-ui/react-tabs"
@@ -89,102 +88,93 @@ export default function SignupPage() {
 
   return (
     <RightPanel title="Search" text="you can search what you want" width="w-full">
-      <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
-        <div className="container max-w-screen-lg mx-auto">
-          <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
-            <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
-              <div className="text-gray-600">
-                <p className="font-medium text-lg">Search Parameters</p>
-                <p>Fill out the fields below to search.</p>
+      <div className="flex items-center justify-center px-20">
+        <Tabs defaultValue="nfts" className="flex flex-col max-w-[940px] justify-center w-full"
+              onValueChange={value => {
+                onTabChange(value)
+              }}>
+          <div className="md:grid lg:grid-cols-4 md:grid-cols-1 gap-1 items-center justify-center align-middle">
+            <div className="lg:col-span-3 ">
+              <Label htmlFor="query">Query</Label>
+              <Input
+                name="query"
+                id="query"
+                type="text"
+                className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                onChange={handleQueryChange}
+              />
+            </div>
+            <TabsList className="lg:col-span-1 flex h-10 mt-7">
+              <TabsTrigger className="w-1/2 text-center"
+                           value="nfts">
+                NFTs
+              </TabsTrigger>
+              <TabsTrigger className="w-1/2 text-center"
+                           value="profiles">
+
+                Users
+              </TabsTrigger>
+            </TabsList>
+
+            {/*<div>
+              <div className="">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  name="location"
+                  id="location"
+                  type="text"
+                  className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                  onChange={handleLocationChange}
+                />
               </div>
 
-              <div className="lg:col-span-2">
-                <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-2">
-                  <div className="md:col-span-1">
-                    <Label htmlFor="query">Query</Label>
-                    <Input
-                      name="query"
-                      id="query"
-                      type="text"
-                      className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                      onChange={handleQueryChange}
-                    />
-                  </div>
-
-                  <div className="md:col-span-1">
-                    <Label htmlFor="location">Location</Label>
-                    <Input
-                      name="location"
-                      id="location"
-                      type="text"
-                      className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                      onChange={handleLocationChange}
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <Label htmlFor="price">Price</Label>
-                    <Slider
-                      defaultValue={priceRange}
-                      onValueChange={handlePriceChange}
-                    />
-                  </div>
-                </div>
+             <div className="w-11/12">
+                <Label htmlFor="price">Price</Label>
+                <Slider
+                  defaultValue={priceRange}
+                  onValueChange={handlePriceChange}
+                />
               </div>
             </div>
+          */}
 
-            <div className="mt-6">
-              <Tabs defaultValue="nfts" onValueChange={value => { onTabChange(value) }}>
-                <TabsList className="flex w-full">
-                  <TabsTrigger className="w-1/2 text-center"
-                               value="nfts">
-                    NFTs
-                  </TabsTrigger>
-                  <TabsTrigger className="w-1/2 text-center"
-                               value="profiles">
-
-                    Users
-                  </TabsTrigger>
-                </TabsList>
-
-                <div className="mt-4">
-                  <TabsContent value="nfts">
-                    <InfiniteScroll
-                      dataLength={nftsList.length}
-                      next={loadNextPage}
-                      hasMore={hasMore}
-                      loader={
-                        <div className="grid justify-center">
-                          {
-                            <BackgroundLoadingDots size={50}/>
-                          }
-                        </div>
-                      }
-                    >
-                      <NFTList data={nftsList}/>
-                    </InfiniteScroll>
-                  </TabsContent>
-                  <TabsContent value="profiles">
-                    <InfiniteScroll
-                      dataLength={profilesList.length}
-                      next={loadNextPage}
-                      hasMore={hasMore}
-                      loader={
-                        <div className="grid justify-center">
-                          {
-                            <BackgroundLoadingDots size={50}/>
-                          }
-                        </div>
-                      }
-                    >
-                      <ProfileList data={profilesList}/>
-                    </InfiniteScroll>
-                  </TabsContent>
-                </div>
-              </Tabs>
-            </div>
           </div>
-        </div>
+
+          <div className="mt-4 justify-center text-center">
+            <TabsContent value="nfts">
+              <InfiniteScroll
+                dataLength={nftsList.length}
+                next={loadNextPage}
+                hasMore={hasMore}
+                loader={
+                  <div className="grid justify-center">
+                    {
+                      <BackgroundLoadingDots size={50}/>
+                    }
+                  </div>
+                }
+              >
+                <NFTList data={nftsList}/>
+              </InfiniteScroll>
+            </TabsContent>
+            <TabsContent value="profiles">
+              <InfiniteScroll
+                dataLength={profilesList.length}
+                next={loadNextPage}
+                hasMore={hasMore}
+                loader={
+                  <div className="grid justify-center">
+                    {
+                      <BackgroundLoadingDots size={50}/>
+                    }
+                  </div>
+                }
+              >
+                <ProfileList data={profilesList}/>
+              </InfiniteScroll>
+            </TabsContent>
+          </div>
+        </Tabs>
       </div>
     </RightPanel>
   )
