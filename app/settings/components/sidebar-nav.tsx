@@ -1,5 +1,4 @@
 "use client"
-
 import Link from "next/link"
 
 import {cn} from "@/lib/utils"
@@ -7,14 +6,56 @@ import {buttonVariants} from "@/components/ui/button"
 import React from "react"
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
-  items: {
-    buttonVariant: any
-    href: string
-    title: string
-  }[]
 }
 
-export function SidebarNav({className, items, ...props}: SidebarNavProps) {
+type ButtonType =
+  "link"
+  | "default"
+  | "destructive"
+  | "outline"
+  | "secondary"
+  | "ghost"
+  | "tertiary"
+  | null
+  | undefined;
+
+const sidebarNavItems: {
+  title: string,
+  href: string,
+  buttonVariant: ButtonType,
+}[] = [
+  {
+    title: "TEA BAGs list",
+    href: "/tea-bags",
+    buttonVariant: "secondary",
+  },
+  {
+    title: "Reset password",
+    href: "/forgot-password",
+    buttonVariant: "secondary",
+  },
+  {
+    title: "Reset email",
+    href: "/reset-email",
+    buttonVariant: "secondary",
+  },
+  {
+    title: "Log out",
+    href: "/logout",
+    buttonVariant: "secondary",
+  },
+  {
+    title: "Edite profile",
+    href: "/settings/profile",
+    buttonVariant: "outline",
+  }, {
+    title: "Delete account",
+    href: "/delete-account",
+    buttonVariant: "destructive",
+  },
+]
+
+export function SidebarNav({className, ...props}: SidebarNavProps) {
   return (
     <nav
       className={cn(
@@ -23,7 +64,7 @@ export function SidebarNav({className, items, ...props}: SidebarNavProps) {
       )}
       {...props}
     >
-      {items.map((item) => (
+      {sidebarNavItems.map((item) => (
         <Link
           key={item.href}
           href={item.href}

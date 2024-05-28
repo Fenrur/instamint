@@ -3,13 +3,13 @@ import {CommentFilledIcon, MintFilledIcon} from "@/components/ui/icons"
 import React from "react"
 import {NftType} from "@/domain/types"
 import {Button} from "@/components/ui/button"
-import {DotsHorizontalIcon} from "@radix-ui/react-icons"
 import {cn} from "@/lib/utils"
 import {Pacifico} from "next/font/google"
 import Link from "next/link"
 import {createRedirectQueryParam} from "@/utils/url"
 import {Separator} from "@/components/ui/separator"
 import {FollowUnfollowTextButton, ProfileStatisticsSectionSubAccess, ViewerUserType} from "../types"
+import {SettingsPopover} from "@/components/section/SettingsPopover"
 
 export const dynamic = "force-dynamic"
 
@@ -156,9 +156,7 @@ function SmallScreenProfileSection({
         <div className="flex flex-col justify-between mt-2 ml-8">
           <div className="flex items-center">
             <h2 className="text-lg font-medium">{username}</h2>
-            <Link className="ml-4 mt-1" href="/">
-              <DotsHorizontalIcon className="size-5"/>
-            </Link>
+            <SettingsPopover/>
           </div>
           <div className="flex gap-2">
             {
@@ -263,9 +261,8 @@ function MediumScreenProfileSection({
             {
               secondButton()
             }
-            <Link className="mt-1 ml-2.5" href="/">
-              <DotsHorizontalIcon className="size-5"/>
-            </Link>
+            <SettingsPopover/>
+
           </div>
           <div className="font-semibold text-sm mt-4">{displayName}</div>
 
@@ -378,8 +375,7 @@ export function ProfileStatisticsSection({
           </Link>
         )
       }
-    }
-    else if (subAccess === "logged_access") {
+    } else if (subAccess === "logged_access") {
       if (subAccessLink.loggedAccessLink) {
         return (
           <Link href={subAccessLink.loggedAccessLink} className="hover:text-primary">
