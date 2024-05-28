@@ -10,6 +10,7 @@ import {cn} from "@/lib/utils"
 import {ErrorCode} from "@/http/error-code"
 import {RightPanel} from "../../signup/right-panel"
 import {useFetchProfileData} from "@/repository/hooks"
+import {Textarea} from "@/components/ui/textarea"
 
 
 export interface ProfileData {
@@ -126,6 +127,7 @@ export default function MePage() {
               id="username"
               type="text"
               required
+              placeholder="username"
               defaultValue={formData.username}
               onChange={handleInputChange}
             />
@@ -140,6 +142,7 @@ export default function MePage() {
               id="link"
               type="text"
               required
+              placeholder="your unique link"
               defaultValue={formData.link}
               onChange={handleInputChange}
             />
@@ -149,19 +152,25 @@ export default function MePage() {
 
           <div className="grid gap-2">
             <Label htmlFor="bio" className={errors.bio ? "text-destructive" : ""}>Bio</Label>
-            <textarea
+            <Textarea
+              placeholder="Tell us a little bit about yourself"
+              className="resize-none"
               name="bio"
               id="bio"
-              required
-              defaultValue={formData.bio}
               onChange={handleInputChange}
             />
           </div>
 
           <div className="justify-around" style={{display: "flex", justifyContent: "space-around"}}>
-            <Button type="submit" className="w-1/2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2 w-1/2 bg-amber-100"
+              type="submit"
+            >
               Validate
             </Button>
+
           </div>
         </div>
       </form>
