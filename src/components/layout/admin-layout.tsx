@@ -11,7 +11,6 @@ export async function AdminLayout({
                                        }: Readonly<{
   children: React.ReactNode
 }>) {
-
   return (
     <div className="w-screen h-screen flex">
       <ScrollArea className="h-100 w-1/6 border-r-2">
@@ -19,10 +18,10 @@ export async function AdminLayout({
           <h4 className="mb-4 text-2xl text-center text-primary font-semibold leading-none">Admin</h4>
           {categories.map((category : {name: string, url: string}) => (
             <>
-              <div key={category["name"]} className="text-lg text-center bg-primary rounded">
+              <div key={category.name} className="text-lg text-center bg-primary rounded">
 
-                <Link href={category["url"]} className="text-white">
-                  {category["name"]}
+                <Link href={category.url} className="text-white">
+                  {category.name}
                 </Link>
               </div>
               <Separator className="my-2" />
@@ -30,7 +29,9 @@ export async function AdminLayout({
           ))}
         </div>
       </ScrollArea>
+      <div className="w-5/6">
       {children}
+      </div>
     </div>
   )
 }

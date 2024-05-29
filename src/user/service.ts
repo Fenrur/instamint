@@ -254,4 +254,14 @@ export class DefaultUserService {
     const hashedPassword = await hashPassword(password, this.pepperPasswordSecret)
     await this.userPgRepository.updatePassword(user.uid, hashedPassword)
   }
+
+  public async deleteUserById(userId: string) {
+    const user = await this.findById(userId)
+
+    if (!user) {
+      return "uid_not_found"
+    }
+
+    await this.userPgRepository.deleteUser(user.uid)
+  }
 }

@@ -9,10 +9,10 @@ import {
   notAuthenticatedProblem,
   problem,
   profileNotFoundProblem,
-  notActivated
+  notActivatedProblem
 } from "@/http/problem"
 import {AcceptFollowProfileRequest} from "@/http/rest/types"
-import {followService, profileService, userService} from "@/services"
+import {followService, profileService} from "@/services"
 import {NextResponse} from "next/server"
 import {DateTime} from "luxon"
 import {isContentType} from "@/http/content-type"
@@ -43,10 +43,8 @@ export const POST = auth(async (req) => {
     return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
   }
 
-  const userActivated = await userService.findByUid(session.uid)
-
-  if (userActivated && !userActivated.isActivated) {
-    return problem({...notActivated, detail: "your are not enable to access the app"})
+  if (!myUserAndProfile.isActivated) {
+    return problem({...notActivatedProblem, detail: "your are not enable to access the app"})
   }
 
   const targetProfile = await profileService.findByUsername(body.username)

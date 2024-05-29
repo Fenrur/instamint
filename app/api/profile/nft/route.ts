@@ -4,11 +4,11 @@ import {
   dontFollowProfileProblem,
   invalidQueryParameterProblem,
   notAuthenticatedProblem,
-  notActivated,
+  notActivatedProblem,
   problem,
   profileNotFoundProblem
 } from "@/http/problem"
-import {followService, nftService, profileService, userService} from "@/services"
+import {followService, nftService, profileService} from "@/services"
 import {usernameRegex} from "@/utils/validator"
 import {auth, getSession} from "@/auth"
 import {DateTime} from "luxon"
@@ -19,7 +19,6 @@ export const GET = auth(async (req) => {
   const url = req.nextUrl.clone()
   const page = url.searchParams.get("page")
   const targetUsername = url.searchParams.get("username")
-
   const session = getSession(req)
 
   if (!session) {
@@ -32,10 +31,8 @@ export const GET = auth(async (req) => {
     return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
   }
 
-  const userActivated = await userService.findByUid(session.uid)
-
-  if (userActivated && !userActivated.isActivated) {
-    return problem({...notActivated, detail: "your are not enable to access the app"})
+  if (myUserAndProfile.isActivated) {
+    return problem({...notActivatedProblem, detail: "your are not enable to access the app"})
   }
 
   if (!page) {

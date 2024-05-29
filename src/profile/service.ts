@@ -23,9 +23,6 @@ export class DefaultProfileService {
     const result = await this.pgClient.query.UserTable
       .findFirst({
         where: (user, {eq}) => eq(user.uid, uid),
-        columns: {
-          id: true,
-        },
         with: {
           profile: true,
         }
@@ -33,7 +30,7 @@ export class DefaultProfileService {
 
     if (result) {
       return {
-        id: result.id,
+        ...result,
         profile: {
           ...result.profile,
           createdAt: DateTime.fromSQL(result.profile.createdAt.replace("T", " "), {zone: "UTC"}) as DateTime<true>

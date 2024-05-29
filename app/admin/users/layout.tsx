@@ -8,7 +8,6 @@ export default async function LayoutAdminUserPage({
                                               }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <>
       <AdminLayout>

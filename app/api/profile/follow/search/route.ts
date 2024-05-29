@@ -6,10 +6,10 @@ import {
   notAuthenticatedProblem,
   problem,
   profileNotFoundProblem,
-  notActivated
+  notActivatedProblem
 } from "@/http/problem"
 import {usernameCharactersRegex} from "@/utils/validator"
-import {followService, profileService, userService} from "@/services"
+import {followService, profileService} from "@/services"
 import {SearchFollowsProfileResponse} from "@/http/rest/types"
 import {NextResponse} from "next/server"
 import {StatusCodes} from "http-status-codes"
@@ -28,10 +28,8 @@ export const GET = auth(async (req) => {
     return problem({...badSessionProblem, detail: "user not found"})
   }
 
-  const userActivated = await userService.findByUid(session.uid)
-
-  if (userActivated && !userActivated.isActivated) {
-    return problem({...notActivated, detail: "your are not enable to access the app"})
+  if (!myUserAndProfile.isActivated) {
+    return problem({...notActivatedProblem, detail: "your are not enable to access the app"})
   }
 
   const targetProfileUsername = url.searchParams.get("targetProfileUsername")

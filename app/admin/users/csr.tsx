@@ -1,26 +1,25 @@
 "use client"
 
+import {AdminTable} from "./adminTable"
 import React, {useEffect, useState, useCallback} from "react"
 import {usersPageSize} from "@/services/constants"
 import {getPaginatedUsers} from "@/repository"
 import {useRouter} from "next/navigation"
-import {RoleType} from "@/domain/types"
 import InfiniteScroll from "react-infinite-scroll-component"
 import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
-import {MyTable} from "./MyTable"
 
 export function UsersRow() {
-  const [page, setPage] = useState(2)
+  const [page, setPage] = useState(1)
   const [users, setUsers] = useState<{
     id:number,
     email : string,
     isActivated : boolean,
-    role: RoleType
   }[]>([])
   const [init, setInit] = useState(true)
   const router = useRouter()
   const [hasMore, setHasMore] = useState(true)
-  const loadNextPage = useCallback((page) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadNextPage = useCallback(() => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     setTimeout(async () => {
       const paginatedUsers = await getPaginatedUsers(page)
@@ -46,23 +45,17 @@ export function UsersRow() {
       setUsers([...users, ...paginatedUsers])
       setPage(page + 1)
     })
-  }, [])
+  }, [page, router, users])
 
   useEffect(() => {
     if (init) {
       setInit(false)
       loadNextPage()
-
-      const nftSection = document.getElementById("nfts-section-ssr")
-
-      if (nftSection) {
-        nftSection.classList.add("hidden")
-      }
     }
-  }, [init, loadNextPage])
+  }, [init, users, loadNextPage])
 
   return (
-    <>
+    <div className="relative">
       <InfiniteScroll
         dataLength={users.length}
         next={loadNextPage}
@@ -75,8 +68,8 @@ export function UsersRow() {
           </div>
         }
       >
-        <MyTable users={users}/>
+        <AdminTable users={users}/>
       </InfiniteScroll>
-    </>
+    </div>
   )
 }

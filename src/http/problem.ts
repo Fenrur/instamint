@@ -26,7 +26,7 @@ export const invalidBodyProblem = {title: "Invalid request body", errorCode: Err
 
 export const notAuthenticatedProblem = {title: "Not authenticated", errorCode: ErrorCode.NOT_AUTHENTICATED, status: StatusCodes.UNAUTHORIZED}
 
-export const notActivated = {title: "Not activated user", errorCode: ErrorCode.NOT_ACTIVATED, status: StatusCodes.UNAUTHORIZED}
+export const notActivatedProblem = {title: "Not activated user", errorCode: ErrorCode.NOT_ACTIVATED, status: StatusCodes.UNAUTHORIZED}
 
 export const uidNotFoundProblem = {title: "UID not found", errorCode: ErrorCode.UID_NOT_FOUND, status: StatusCodes.NOT_FOUND}
 

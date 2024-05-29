@@ -1,18 +1,22 @@
 import {NextResponse} from "next/server"
 import {
+  invalidContentTypeProblem,
   problem,
   invalidQueryParameterProblem,
   badSessionProblem,
   notAuthenticatedProblem,
   notActivatedProblem
 } from "@/http/problem"
+import {isContentType} from "@/http/content-type"
 import {auth, getSession} from "@/auth"
 
 import {userService, profileService} from "@/services"
 
-const initialNumber = 0
+export const POST  = auth(async (req) => {
+  if (!isContentType(req, "form")) {
+    return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/x-www-form-urlencoded"})
+  }
 
-export const GET  = auth(async (req) => {
   const url = req.nextUrl.clone()
   const id = url.searchParams.get("id")
   const session = getSession(req)
@@ -35,21 +39,11 @@ export const GET  = auth(async (req) => {
     return problem({...badSessionProblem, detail: "you don't have the right permissions"})
   }
 
-  let parseId = initialNumber
-
-  if (id) {
-    parseId = parseInt(id, 10)
-  } else {
+  if (!id) {
     return problem({...invalidQueryParameterProblem, detail: "id query parameter is required"})
   }
 
-  const user = await userService.findWithId(parseId)
-
-  if (user[0].isActivated) {
-    await userService.disableIsActivated(parseId)
-  } else {
-    await userService.enableIsActivated(parseId)
-  }
+  await userService.deleteUserById(id)
 
   url.pathname = "/admin/users"
 

@@ -42,6 +42,7 @@ export class UserPgRepository {
       FROM ${UserTable} WHERE id = ${id}
     `
     const result = await this.pgClient.execute(query)
+
     return this.UserObject.parse(result)
   }
 
@@ -143,6 +144,12 @@ export class UserPgRepository {
       .where(eq(UserTable.uid, uid))
   }
 
+  public async deleteUser(uid: string) {
+    return this.pgClient
+      .delete(UserTable)
+      .where(eq(UserTable.uid, uid))
+  }
+
   public async create(email: string, hashedPassword: string, profileId: number) {
     const createdUser = await this.pgClient
       .insert(UserTable)
@@ -167,6 +174,7 @@ export class UserPgRepository {
       OFFSET ${offset} LIMIT ${limit}
     `
     const result = await this.pgClient.execute(query)
+
     return this.FindUsersPaginated.parse(result)
   }
 }
