@@ -104,7 +104,6 @@ export default function MePage() {
       <form onSubmit={handleSubmit}>
         <div className="grid gap-4">
           <div className="flex justify-center items-center flex-col">
-
             <div className="rounded-full overflow-hidden border-2 border-gray-300 w-36 h-36">
               <img
                 alt="Profile Image"
@@ -116,8 +115,12 @@ export default function MePage() {
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="mt-4"
+              id="fileInput"
+              className="hidden"
             />
+            <label htmlFor="fileInput" className="mt-4 text-blue-500 cursor-pointer underline">
+              Choose avatar
+            </label>
           </div>
 
           <div className="grid gap-2">
