@@ -34,6 +34,8 @@ import {
 import MultiSelect from "@/components/ui/multi-select"
 import {teaBagsPageSize} from "@/services/constants"
 import {ErrorCode} from "@/http/error-code"
+import {cn} from "@/lib/utils"
+import {Textarea} from "@/components/ui/textarea"
 
 type SignupPageError = "email_verification_limit_exceeded" | "email_exists";
 
@@ -288,7 +290,7 @@ export default function TeaBagPage(props: SignupPageProps) {
     <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
       <div className="container max-w-screen-lg mx-auto">
         <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
-          <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
+          <div className="grid gap-4 gap-y-2 text-sm grid-cols-1">
 
             <Dialog open={isOpenCreate} onOpenChange={setIsOpenCreate}>
               <DialogTrigger asChild>
@@ -305,10 +307,8 @@ export default function TeaBagPage(props: SignupPageProps) {
 
                   <form onSubmit={handleTeaBagCreateSubmit} className="grid gap-4"
                         onChange={handleFormOnChange}>
-
                     <div className="flex justify-center items-center flex-col">
-                      <div
-                        className="rounded-full overflow-hidden border-2 border-gray-300 w-36 h-36">
+                      <div className="rounded-full overflow-hidden border-2 border-gray-300 w-36 h-36">
                         <img
                           alt="Profile Image"
                           src={profileImage ?? formData.avatarUrl}
@@ -319,40 +319,49 @@ export default function TeaBagPage(props: SignupPageProps) {
                         type="file"
                         accept="image/*"
                         onChange={handleImageChange}
-                        className="mt-4"
+                        id="fileInput"
+                        className="hidden"
                       />
+                      <label htmlFor="fileInput" className="mt-4 text-blue-500 cursor-pointer underline">
+                        Choose avatar
+                      </label>
                     </div>
 
                     <div className="grid gap-2">
-                      <Label htmlFor="username"
-                             className={errors.username ? "text-destructive" : ""}>Username</Label>
+                      <Label htmlFor="username" className={errors.username ? "text-destructive" : ""}>Username</Label>
                       <Input
                         name="username"
                         id="username"
                         type="text"
                         required
+                        placeholder="username"
                         defaultValue={formData.username}
                       />
+                      <div hidden={errors.username === ""}
+                           className={cn("text-sm", errors.username ? "text-destructive" : "")}>{errors.username}</div>
                     </div>
 
                     <div className="grid gap-2">
-                      <Label htmlFor="link"
-                             className={errors.link ? "text-destructive" : ""}>Link</Label>
+                      <Label htmlFor="link" className={errors.link ? "text-destructive" : ""}>Link</Label>
                       <Input
                         name="link"
                         id="link"
                         type="text"
                         required
+                        placeholder="your unique link"
                         defaultValue={formData.link}
                       />
+                      <div hidden={errors.link === ""}
+                           className={cn("text-sm", errors.link ? "text-destructive" : "")}>{errors.link}</div>
                     </div>
 
                     <div className="grid gap-2">
-                      <Label htmlFor="bio" className={error ? "text-destructive" : ""}>Bio</Label>
-                      <textarea
+                      <Label htmlFor="bio" className={errors.bio ? "text-destructive" : ""}>Bio</Label>
+                      <Textarea
+                        placeholder="Tell us a little bit about yourself"
+                        className="resize-none"
                         name="bio"
                         id="bio"
-                        defaultValue={formData.bio}
                       />
                     </div>
 
@@ -421,7 +430,11 @@ export default function TeaBagPage(props: SignupPageProps) {
                     </div>
 
                     <div className="flex justify-around">
-                      <Button type="submit" className="w-1/2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2 w-1/2 bg-amber-100"
+                        type="submit">
                         Validate
                       </Button>
                     </div>
