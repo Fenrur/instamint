@@ -9,7 +9,8 @@ import { MoreHorizontal } from "lucide-react"
 import Modal from "react-modal"
 import {useState} from "react"
 import { Button } from "@/components/ui/button"
-import {deleteUser} from "@/repository"
+import {useDeleteUser} from "@/repository/hooks"
+
 
 export interface AdminDropDownMenuProps {
   enable : boolean
@@ -19,9 +20,10 @@ export interface AdminDropDownMenuProps {
 
 export const AdminDropDownMenu = ({...props} : AdminDropDownMenuProps) => {
   const [isOpen, setIsOpen] = useState(false)
+  const {deleteUser} = useDeleteUser(props.id)
   const closePopupAndDelete = async() => {
     setIsOpen(false)
-    const response = await deleteUser(props.id)
+    const response = await deleteUser()
 
     if (response === "deleted") {
       props.onDelete()

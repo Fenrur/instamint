@@ -290,3 +290,27 @@ export const SearchFollowsProfileResponse = z.array(z.object({
 }))
 
 export type SearchFollowsProfileResponse = z.infer<typeof SearchFollowsProfileResponse>
+
+export const EnableOrDisableRequest = z.object({
+  id: z.number().int().positive()
+})
+
+export type EnableOrDisableRequest = z.infer<typeof EnableOrDisableRequest>
+
+export const EnableOrDisableResponse = z.object({
+  type: z.enum(["enabled", "disabled"])
+})
+
+export type EnableOrDisableResponse = z.infer<typeof EnableOrDisableResponse>
+
+export const  DeleteUserRequest = z.object({
+  id: z.number().int().positive()
+})
+
+export type DeleteUserRequest = z.infer<typeof DeleteUserRequest>
+
+export const DeleteUserResponse = z.object({
+  deleted: z.boolean()
+})
+
+export type DeleteUserResponse = z.infer<typeof DeleteUserResponse>

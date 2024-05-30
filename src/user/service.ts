@@ -36,10 +36,6 @@ export class DefaultUserService {
     return this.userPgRepository.findById(uid)
   }
 
-  public findWithId(id: number) {
-    return this.userPgRepository.findWithId(id)
-  }
-
   public findByEmail(email: string) {
     return this.userPgRepository.findByEmail(email)
   }
@@ -255,13 +251,15 @@ export class DefaultUserService {
     await this.userPgRepository.updatePassword(user.uid, hashedPassword)
   }
 
-  public async deleteUserById(userId: string) {
-    const user = await this.findById(userId)
+  public async deleteUserById(id: string) {
+    const user = await this.findById(id)
 
     if (!user) {
-      return "uid_not_found"
+      return "user_not_found"
     }
 
     await this.userPgRepository.deleteUser(user.uid)
+
+    return "deleted"
   }
 }

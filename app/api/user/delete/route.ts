@@ -4,21 +4,36 @@ import {
   invalidQueryParameterProblem,
   badSessionProblem,
   notAuthenticatedProblem,
-  notActivatedProblem
+  notActivatedProblem,
+  invalidContentTypeProblem,
+  invalidBodyProblem,
+  userNotFoundProblem
 } from "@/http/problem"
 import {auth, getSession} from "@/auth"
 
 import {userService, profileService} from "@/services"
+import {isContentType} from "@/http/content-type"
+import {DeleteUserResponse, DeleteUserRequest} from "@/http/rest/types"
 
 export const DELETE  = auth(async (req) => {
-  const url = req.nextUrl.clone()
-  const id = url.searchParams.get("id")
+  if (!isContentType(req, "json")) {
+    return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/json"})
+  }
+
   const session = getSession(req)
 
   if (!session) {
     return problem(notAuthenticatedProblem)
   }
 
+  const bodyParsedResult = DeleteUserRequest.safeParse(await req.json())
+
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
+  }
+
+  const body = bodyParsedResult.data
+  const id = body.id
   const myUserAndProfile = await profileService.findByUserUid(session.uid)
 
   if (!myUserAndProfile) {
@@ -37,9 +52,13 @@ export const DELETE  = auth(async (req) => {
     return problem({...invalidQueryParameterProblem, detail: "id query parameter is required"})
   }
 
-  await userService.deleteUserById(id)
+  const result = await userService.deleteUserById(String(id))
 
-  url.pathname = "/admin/users"
+  switch(result) {
+    case "user_not_found":
+      return problem(userNotFoundProblem)
 
-  return NextResponse.redirect(url)
+    case "deleted":
+      return NextResponse.json({deleted: true} satisfies DeleteUserResponse)
+  }
 })

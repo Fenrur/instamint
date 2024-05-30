@@ -1,7 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import {useState} from "react"
-import {enableOrDisableUser} from "@/repository"
-
+import {useEnableOrDisable} from "@/repository/hooks"
 
 interface IdSectionProps {
     activate: boolean,
@@ -10,9 +9,16 @@ interface IdSectionProps {
 
 const DropDownEnableCheckbox = ({...props} : IdSectionProps) => {
   const [activated, setActivated] = useState(props.activate)
+  const {enableOrDisable} = useEnableOrDisable(props.id)
   const enableActivate = async() => {
-    await enableOrDisableUser(props.id)
-    setActivated(!activated)
+    const result = await enableOrDisable()
+
+    if (result === "disabled") {
+      setActivated(false)
+    }
+    else if (result === "enabled") {
+      setActivated(true)
+    }
   }
 
   return (

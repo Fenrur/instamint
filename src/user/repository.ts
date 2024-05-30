@@ -33,19 +33,6 @@ export class UserPgRepository {
       })
   }
 
-  public async findWithId(id: number) {
-    const query = sql`
-      SELECT ${UserTable.id},
-             ${UserTable.email},
-             ${UserTable.isActivated},
-             ${UserTable.role}
-      FROM ${UserTable} WHERE id = ${id}
-    `
-    const result = await this.pgClient.execute(query)
-
-    return this.UserObject.parse(result)
-  }
-
   public findByUid(uid: string) {
     return this.pgClient.query.UserTable
       .findFirst({
