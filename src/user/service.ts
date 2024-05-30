@@ -44,12 +44,30 @@ export class DefaultUserService {
     return this.userPgRepository.findByUid(uid)
   }
 
+  public async enableOrDisable(id: number) {
+    const user = await this.findById(String(id))
+
+    if (!user) {
+      return "user_not_found"
+    }
+
+    if (user.isActivated) {
+      await this.userPgRepository.disable(id)
+
+      return "disabled"
+    }
+
+    await this.userPgRepository.enable(id)
+
+    return "enabled"
+  }
+
   public enableIsActivated(id: number) {
-    return this.userPgRepository.enableIsActivated(id)
+    return this.userPgRepository.enable(id)
   }
 
   public disableIsActivated(id: number) {
-    return this.userPgRepository.disableIsActivated(id)
+    return this.userPgRepository.disable(id)
   }
 
   public existUsername(username: string) {

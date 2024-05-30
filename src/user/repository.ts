@@ -95,7 +95,7 @@ export class UserPgRepository {
       .where(eq(UserTable.uid, uid))
   }
 
-  public async enableIsActivated(id: number) {
+  public async enable(id: number) {
     return this.pgClient
       .update(UserTable)
       .set({
@@ -104,7 +104,7 @@ export class UserPgRepository {
       .where(eq(UserTable.id, id))
   }
 
-  public async disableIsActivated(id: number) {
+  public async disable(id: number) {
     return this.pgClient
       .update(UserTable)
       .set({
