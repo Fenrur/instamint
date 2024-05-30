@@ -5,19 +5,28 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import DropDownEnable from "@/components/ui/dropDownEnable"
 import { MoreHorizontal } from "lucide-react"
 import Modal from "react-modal"
 import {useState} from "react"
 import { Button } from "@/components/ui/button"
+import {deleteUser} from "@/repository"
 
-interface AdminSectionProps {
+export interface AdminDropDownMenuProps {
   enable : boolean
   id : number
+  onDelete : () => void
 }
 
-const AdminDropDownMenu = ({...props} : AdminSectionProps) => {
+export const AdminDropDownMenu = ({...props} : AdminDropDownMenuProps) => {
   const [isOpen, setIsOpen] = useState(false)
+  const closePopupAndDelete = async() => {
+    setIsOpen(false)
+    const response = await deleteUser(props.id)
+
+    if (response === "deleted") {
+      props.onDelete()
+    }
+  }
 
   return (
     <>
@@ -25,9 +34,9 @@ const AdminDropDownMenu = ({...props} : AdminSectionProps) => {
         <h3 className="text-5xl mb-32">
           Do you want to remove this element ?
         </h3>
-        <form className="flex" method="post" action={`/api/admin/users/user/delete?id=${props.id}`}>
+        <div className="flex">
           <Button
-            type="submit"
+            onClick={closePopupAndDelete}
             className="w-24 h-16 ml-8 mr-8 bg-red-600 w-100 hover:bg-red-500 text-3xl">
             yes
           </Button>
@@ -37,7 +46,7 @@ const AdminDropDownMenu = ({...props} : AdminSectionProps) => {
                text-3xl">
             No
           </Button>
-        </form>
+        </div>
       </Modal>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -48,11 +57,6 @@ const AdminDropDownMenu = ({...props} : AdminSectionProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          {props.enable ? (
-          <DropDownEnable id={props.id} />) : (
-            <></>
-          )
-          }
           <DropdownMenuItem onClick={() => {setIsOpen(true)}} className="text-destructive w-100 bg-white border-none">
             Delete
           </DropdownMenuItem>
@@ -61,5 +65,3 @@ const AdminDropDownMenu = ({...props} : AdminSectionProps) => {
     </>
   )
 }
-
-export default AdminDropDownMenu

@@ -1,6 +1,6 @@
 "use client"
 
-import {AdminTable} from "./adminTable"
+import {AdminTable} from "./admin-table"
 import React, {useEffect, useState, useCallback} from "react"
 import {usersPageSize} from "@/services/constants"
 import {getPaginatedUsers} from "@/repository"
@@ -55,7 +55,6 @@ export function UsersRow() {
   }, [init, users, loadNextPage])
 
   return (
-    <div className="relative">
       <InfiniteScroll
         dataLength={users.length}
         next={loadNextPage}
@@ -70,6 +69,5 @@ export function UsersRow() {
       >
         <AdminTable users={users}/>
       </InfiniteScroll>
-    </div>
   )
 }

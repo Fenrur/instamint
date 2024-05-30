@@ -12,7 +12,7 @@ import {userService, profileService} from "@/services"
 
 const initialNumber = 0
 
-export const GET  = auth(async (req) => {
+export const PUT  = auth(async (req) => {
   const url = req.nextUrl.clone()
   const id = url.searchParams.get("id")
   const session = getSession(req)

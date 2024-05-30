@@ -1,22 +1,16 @@
 import {NextResponse} from "next/server"
 import {
-  invalidContentTypeProblem,
   problem,
   invalidQueryParameterProblem,
   badSessionProblem,
   notAuthenticatedProblem,
   notActivatedProblem
 } from "@/http/problem"
-import {isContentType} from "@/http/content-type"
 import {auth, getSession} from "@/auth"
 
 import {userService, profileService} from "@/services"
 
-export const POST  = auth(async (req) => {
-  if (!isContentType(req, "form")) {
-    return problem({...invalidContentTypeProblem, detail: "Content-Type must be application/x-www-form-urlencoded"})
-  }
-
+export const DELETE  = auth(async (req) => {
   const url = req.nextUrl.clone()
   const id = url.searchParams.get("id")
   const session = getSession(req)

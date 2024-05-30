@@ -291,6 +291,33 @@ export async function deleteFollowerProfile(req: DeleteFollowerProfileRequest) {
   }
 }
 
+export async function deleteUser(id: number) {
+  const url = encodeURI(`/api/admin/users/user/delete?id=${id}`)
+  const res = await fetch(url, {
+    method: "DELETE",
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return "deleted"
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "user_not_found"
+  }
+}
+
 export async function acceptRequestFollowProfile(req: AcceptFollowProfileRequest) {
   const res = await fetch("/api/profile/follow/request/accept", {
     method: "POST",
@@ -547,6 +574,35 @@ export async function getPaginatedUsers(page: number) {
   const url = encodeURI(`/api/admin/users?page=${page}`)
   const res = await fetch(url, {
     method: "GET"
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return GetPaginedUsersResponse.parse(await res.json())
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  throw new Error("Undefined error code from server")
+}
+
+export async function enableOrDisableUser(id: number) {
+  const url = encodeURI(`/api/admin/users/user?id=${id}`)
+  const res = await fetch(url, {
+    method: "PUT"
   })
 
   if (res.status === StatusCodes.OK) {
