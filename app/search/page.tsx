@@ -14,6 +14,9 @@ import {nftsPageSize, profilePageSize} from "@/services/constants"
 import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
 import InfiniteScroll from "react-infinite-scroll-component"
 import {Slider} from "@/components/ui/slider"
+import {redirect} from "next/navigation"
+import {createRedirectQueryParam} from "@/utils/url"
+import {useSession} from "@/auth/session"
 
 const debounceTime = 300
 
@@ -26,6 +29,12 @@ export default function SignupPage() {
   const [isNfts, setIsNfts] = useState<boolean>(true)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
+  const {session} = useSession()
+
+  if (!session) {
+    redirect(`/login${createRedirectQueryParam("/search")}`)
+  }
+
   const handleQueryChange = debounce((event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
     fetchData(event.target.value, location, priceRange, page)
