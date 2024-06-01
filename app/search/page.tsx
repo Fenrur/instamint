@@ -11,12 +11,13 @@ import {Tabs} from "@radix-ui/react-tabs"
 import {ProfileData, ProfileList} from "@/components/Profile/ProfileList"
 import {getPaginatedNftsWithSearch, getPaginatedUsersWithSearch} from "@/repository"
 import {nftsPageSize, profilePageSize} from "@/services/constants"
-import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
-import InfiniteScroll from "react-infinite-scroll-component"
 import {Slider} from "@/components/ui/slider"
 import {redirect} from "next/navigation"
 import {createRedirectQueryParam} from "@/utils/url"
 import {useSession} from "@/auth/session"
+import {getMaxPrice} from "@/actions"
+import InfiniteScroll from "react-infinite-scroll-component"
+import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
 
 const debounceTime = 300
 
@@ -29,9 +30,11 @@ export default function SignupPage() {
   const [isNfts, setIsNfts] = useState<boolean>(true)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
-  const {session} = useSession()
+  const {status} = useSession()
+  const [maxPrice, setMaxPrice] = useState<number>()
 
-  if (!session) {
+
+  if (status === "unauthenticated") {
     redirect(`/login${createRedirectQueryParam("/search")}`)
   }
 
@@ -90,6 +93,10 @@ export default function SignupPage() {
   const [init, setInit] = useState(true)
   useEffect(() => {
     if (init) {
+      void getMaxPrice().then(res => {
+        setMaxPrice(res)
+        setPriceRange([1, res])
+      })
       setInit(false)
       void loadNextPage()
 
@@ -154,8 +161,8 @@ export default function SignupPage() {
               </div>
 
               {showAdvanced && (
-                <div className="flex lg:flex-row md:flex-col sm:flex-col text-start justify-center  gap-2">
-                  <div className="md:w-full lg:w-1/2">
+                <div className="flex flex-col lg:flex-row text-start justify-center  gap-2">
+                  <div className="w-full lg:w-1/2">
                     <Label htmlFor="location">Location</Label>
                     <Input
                       name="location"
@@ -166,9 +173,11 @@ export default function SignupPage() {
                     />
                   </div>
 
-                  <div className="md:w-full lg:w-1/2 mt-5">
-                    <Label htmlFor="price">Price</Label>
+                  <div className="w-full lg:w-1/2 mt-5 flex flex-col gap-2">
+                    <Label htmlFor="price">Price range : [{priceRange[0]} - {priceRange[1]}]</Label>
                     <Slider
+                      max={maxPrice}
+                      min={0}
                       defaultValue={priceRange}
                       onValueChange={handlePriceChange}
                     />
