@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useState} from "react"
+import React, {useState} from "react"
 import {useSession} from "@/auth/session"
 import {useRouter} from "next/navigation"
 import {Button} from "@/components/ui/button"
@@ -14,14 +14,6 @@ export default function Home() {
   }
   const {status, session} = useSession()
   const router = useRouter()
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/settings")
-    } else {
-      router.push("/login")
-    }
-  }, [router, status])
 
   const routingToLoginPage = () => {
     router.push("/login")
