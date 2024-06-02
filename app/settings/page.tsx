@@ -7,7 +7,7 @@ import {SidebarNav} from "./components/sidebar-nav"
 export default function SettingsProfilePage() {
   return (
     <aside className="w-full">
-      <SidebarNav/>
+      <SidebarNav className="gap-1"/>
     </aside>
   )
 }

@@ -1,6 +1,5 @@
 "use client"
 import React from "react"
-import {MixerHorizontalIcon} from "@radix-ui/react-icons"
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
 import {PopoverArrow, PopoverPortal} from "@radix-ui/react-popover"
 import {SidebarNav} from "../../../app/settings/components/sidebar-nav"
@@ -17,8 +16,8 @@ export function SettingsPopover() {
       </PopoverTrigger>
       <PopoverPortal>
         <PopoverContent className="PopoverContent" sideOffset={5}>
-          <div style={{display: "flex", flexDirection: "column", gap: 10}}>
-            <SidebarNav/>
+          <div style={{display: "flex", flexDirection: "column", gap: 1}}>
+            <SidebarNav className="gap-1"/>
           </div>
           <PopoverArrow className="PopoverArrow"/>
         </PopoverContent>

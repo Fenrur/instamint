@@ -49,7 +49,7 @@ export function SidebarNav({className, ...props}: SidebarNavProps) {
   return (
     <nav
       className={cn(
-        "flex flex-col space-y-1",
+        "flex flex-col",
         className
       )}
       {...props}
