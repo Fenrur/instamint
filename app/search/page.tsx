@@ -115,7 +115,7 @@ export default function SignupPage() {
   }
 
   return (
-    <RightPanel title="Search" text="" width="w-full">
+    <RightPanel title="Search" width="w-full" className="mt-4">
       <div className="flex items-center justify-center px-20">
         <Tabs defaultValue="profiles" className="flex flex-col max-w-[940px] justify-center w-full"
               onValueChange={value => {
@@ -134,13 +134,14 @@ export default function SignupPage() {
             </div>
             <TabsList className="h-10 mt-1 px-4 w-full">
               <TabsTrigger className="w-1/2 text-center"
-                           value="nfts">
-                NFTs
-              </TabsTrigger>
-              <TabsTrigger className="w-1/2 text-center"
                            value="profiles">
 
                 Users
+              </TabsTrigger>
+
+              <TabsTrigger className="w-1/2 text-center"
+                           value="nfts">
+                NFTs
               </TabsTrigger>
             </TabsList>
 
