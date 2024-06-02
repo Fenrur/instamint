@@ -24,15 +24,14 @@ const debounceTime = 300
 export default function SignupPage() {
   const [query, setQuery] = useState("")
   const [location, setLocation] = useState("")
-  const [priceRange, setPriceRange] = React.useState<number[]>([1, 100])
+  const [priceRange, setPriceRange] = React.useState<number[]>([0, 100])
   const [nftsList, setNftsList] = useState<NFTData[]>(new Array<NFTData>())
   const [profilesList, setProfilesList] = useState<ProfileData[]>(new Array<ProfileData>())
-  const [isNfts, setIsNfts] = useState<boolean>(true)
+  const [isNfts, setIsNfts] = useState(false)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const {status} = useSession()
   const [maxPrice, setMaxPrice] = useState<number>()
-
 
   if (status === "unauthenticated") {
     redirect(`/login${createRedirectQueryParam("/search")}`)
@@ -50,8 +49,8 @@ export default function SignupPage() {
     setPriceRange([newValue[0], newValue[1]])
     fetchData(query, location, newValue, page)
   }, debounceTime)
-  const fetchData = (query: string, location: string, priceRange: number[], page: number) => {
-    if (isNfts) {
+  const fetchData = (query: string, location: string, priceRange: number[], page: number, nftPanel = isNfts) => {
+    if (nftPanel) {
       void fetchNftsData(query, location, priceRange, page).then(res => {
         setNftsList([...res])
       })
@@ -95,53 +94,45 @@ export default function SignupPage() {
     if (init) {
       void getMaxPrice().then(res => {
         setMaxPrice(res)
-        setPriceRange([1, res])
+        setPriceRange([0, res])
       })
       setInit(false)
       void loadNextPage()
-
-      const nftSection = document.getElementById("nfts-section-ssr")
-
-      if (nftSection) {
-        nftSection.classList.add("hidden")
-      }
     }
   }, [init, loadNextPage])
 
   function onTabChange(value: string) {
-    const x = value === "nfts"
-    setIsNfts(x)
-    fetchData(query, location, priceRange, page)
+    const isNftPanel = value === "nfts"
+    setIsNfts(isNftPanel)
     setPage(1)
     setHasMore(true)
+    fetchData(query, location, priceRange, page, isNftPanel)
   }
 
-  // State to manage the visibility of the advanced options
   const [showAdvanced, setShowAdvanced] = useState(false)
-  // Function to toggle the advanced options visibility
   const toggleAdvancedOptions = () => {
     setShowAdvanced(!showAdvanced)
   }
 
   return (
-    <RightPanel title="Search" text="you can search what you want" width="w-full">
+    <RightPanel title="Search" text="" width="w-full">
       <div className="flex items-center justify-center px-20">
-        <Tabs defaultValue="nfts" className="flex flex-col max-w-[940px] justify-center w-full"
+        <Tabs defaultValue="profiles" className="flex flex-col max-w-[940px] justify-center w-full"
               onValueChange={value => {
                 onTabChange(value)
               }}>
-          <div className="md:grid lg:grid-cols-4 md:grid-cols-1 gap-1 items-center justify-center align-middle">
+          <div className="md:grid lg:grid-cols-4 md:grid-cols-1 gap-2 items-center justify-center align-middle">
             <div className="lg:col-span-3">
-              <Label htmlFor="query">Keyword</Label>
               <Input
                 name="query"
+                placeholder="recherche"
                 id="query"
                 type="text"
                 className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                 onChange={handleQueryChange}
               />
             </div>
-            <TabsList className="lg:col-span-1 flex h-10 mt-7">
+            <TabsList className="h-10 mt-1 px-4 w-full">
               <TabsTrigger className="w-1/2 text-center"
                            value="nfts">
                 NFTs
@@ -154,18 +145,18 @@ export default function SignupPage() {
             </TabsList>
 
             <div className="text-center col-span-4">
-              <div className="text-end ">
+              <div className="text-end">
                 <button onClick={toggleAdvancedOptions} className="mt-4">
                   {showAdvanced ? "▲" : "▼"} Advanced Options
                 </button>
               </div>
 
               {showAdvanced && (
-                <div className="flex flex-col lg:flex-row text-start justify-center  gap-2">
+                <div className="flex flex-col lg:flex-row text-start justify-center gap-2">
                   <div className="w-full lg:w-1/2">
-                    <Label htmlFor="location">Location</Label>
                     <Input
                       name="location"
+                      placeholder="location"
                       id="location"
                       type="text"
                       className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
@@ -173,7 +164,7 @@ export default function SignupPage() {
                     />
                   </div>
 
-                  <div className="w-full lg:w-1/2 mt-5 flex flex-col gap-2">
+                  {isNfts && <div className="w-full lg:w-1/2 mt-5 flex flex-col gap-2">
                     <Label htmlFor="price">Price range : [{priceRange[0]} - {priceRange[1]}]</Label>
                     <Slider
                       max={maxPrice}
@@ -181,7 +172,7 @@ export default function SignupPage() {
                       defaultValue={priceRange}
                       onValueChange={handlePriceChange}
                     />
-                  </div>
+                  </div>}
                 </div>
               )}
             </div>
