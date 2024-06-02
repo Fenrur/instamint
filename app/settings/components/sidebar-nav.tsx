@@ -27,31 +27,26 @@ const sidebarNavItems: {
   {
     title: "TEA BAGs list",
     href: "/tea-bags",
-    buttonVariant: "secondary",
-  },
-  {
-    title: "Reset password",
-    href: "/forgot-password",
-    buttonVariant: "secondary",
-  },
-  {
-    title: "Reset email",
-    href: "/reset-email",
-    buttonVariant: "secondary",
+    buttonVariant: "outline",
   },
   {
     title: "Log out",
     href: "/logout",
-    buttonVariant: "secondary",
+    buttonVariant: "outline",
   },
   {
-    title: "Edite profile",
-    href: "/settings/profile",
+    title: "Change profile",
+    href: "/change-profile",
     buttonVariant: "outline",
   }, {
-    title: "Delete account",
-    href: "/delete-account",
-    buttonVariant: "destructive",
+    title: "Switch theme",
+    href: "/switch-mode",
+    buttonVariant: "outline",
+  },
+  {
+    title: "Settings",
+    href: "/settings",
+    buttonVariant: "outline",
   },
 ]
 

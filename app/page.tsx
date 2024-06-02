@@ -14,7 +14,6 @@ export default function Home() {
   }
   const {status, session} = useSession()
   const router = useRouter()
-
   const routingToLoginPage = () => {
     router.push("/login")
   }
