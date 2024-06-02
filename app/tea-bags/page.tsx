@@ -414,9 +414,9 @@ export default function TeaBagPage(props: SignupPageProps) {
 
                     <div className="flex justify-around">
                       <Button
-                        variant="outline"
+                        variant="default"
                         size="sm"
-                        className="mt-2 w-1/2 bg-amber-100"
+                        className="mt-2 w-1/2"
                         type="submit">
                         Validate
                       </Button>
