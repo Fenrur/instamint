@@ -4,6 +4,7 @@ import {MixerHorizontalIcon} from "@radix-ui/react-icons"
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
 import {PopoverArrow, PopoverPortal} from "@radix-ui/react-popover"
 import {SidebarNav} from "../../../app/settings/components/sidebar-nav"
+import {MenuIcon} from "lucide-react"
 
 
 export function SettingsPopover() {
@@ -11,7 +12,7 @@ export function SettingsPopover() {
     <Popover>
       <PopoverTrigger asChild>
         <button className="IconButton p-5" aria-label="Update dimensions">
-          <MixerHorizontalIcon/>
+          <MenuIcon/>
         </button>
       </PopoverTrigger>
       <PopoverPortal>

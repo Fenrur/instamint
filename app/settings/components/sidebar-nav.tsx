@@ -25,11 +25,6 @@ const sidebarNavItems: {
   buttonVariant: ButtonType,
 }[] = [
   {
-    title: "TEA BAGs list",
-    href: "/tea-bags",
-    buttonVariant: "outline",
-  },
-  {
     title: "Log out",
     href: "/logout",
     buttonVariant: "outline",
@@ -54,7 +49,7 @@ export function SidebarNav({className, ...props}: SidebarNavProps) {
   return (
     <nav
       className={cn(
-        "flex flex-col space-x-0 space-y-1",
+        "flex flex-col space-y-1",
         className
       )}
       {...props}
