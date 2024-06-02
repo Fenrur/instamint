@@ -366,23 +366,6 @@ export default function TeaBagPage(props: SignupPageProps) {
                     </div>
 
                     <div className="grid gap-1">
-                      <Label htmlFor="nftIds" className={error ? "text-destructive" : ""}>NFTs
-                        list</Label>
-                      {nftsData && <MultiSelect name={"nftIds"} onValueChange={(values) => {
-                        setFormData(prevState => ({
-                          ...prevState,
-                          nftIds: values.map(item => Number(item))
-                        }))
-                      }}
-                                                options={nftsData.map(item => ({
-                                                  value: item.value.toString(),
-                                                  label: item.label
-                                                }))}
-                                                defaultValue={formData.nftIds?.map(item => item.toString())}
-                                                placeholder="Select NFTs"/>}
-                    </div>
-
-                    <div className="grid gap-1">
                       <Label htmlFor="whitelistUserIds"
                              className={error ? "text-destructive" : ""}>Whitelist
                         Users</Label>
