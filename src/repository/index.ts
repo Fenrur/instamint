@@ -711,11 +711,11 @@ export async function registerUser(req: RegisterUserRequest) {
 }
 
 
-export async function fetchProfileData(): Promise<ProfileData> {
+export async function getProfileData() {
   const res = await fetch("/api/profile/me")
 
   if (res.status === StatusCodes.CREATED) {
-    return await res.json() as ProfileData
+    return await res.json()
   }
 
   return {avatarUrl: "", bio: "", link: "", username: ""}

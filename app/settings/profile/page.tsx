@@ -9,7 +9,7 @@ import {toast} from "sonner"
 import {cn} from "@/lib/utils"
 import {ErrorCode} from "@/http/error-code"
 import {RightPanel} from "../../signup/right-panel"
-import {useFetchProfileData} from "@/repository/hooks"
+import {useGetProfileData} from "@/repository/hooks"
 import {Textarea} from "@/components/ui/textarea"
 
 
@@ -33,7 +33,7 @@ export default function MePage() {
     link: "",
     avatarUrl: ""
   })
-  const {profileData, profileDataMutate} = useFetchProfileData()
+  const {profileData, profileDataMutate} = useGetProfileData()
   void profileDataMutate()
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export default function MePage() {
 
 
   return (
-    <RightPanel title="Profile" text="You can edit your profile details" width="w-[350px]">
+    <RightPanel title="Profile" text="You can edit your profile details" width="w-[350px]" className="mt-4">
       <form onSubmit={handleSubmit}>
         <div className="grid gap-4">
           <div className="flex justify-center items-center flex-col">
@@ -166,9 +166,9 @@ export default function MePage() {
 
           <div className="justify-around" style={{display: "flex", justifyContent: "space-around"}}>
             <Button
-              variant="outline"
+              variant="default"
               size="sm"
-              className="mt-2 w-1/2 bg-amber-100"
+              className="mt-2 w-1/2"
               type="submit"
             >
               Validate

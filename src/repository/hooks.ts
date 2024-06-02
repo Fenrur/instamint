@@ -2,7 +2,7 @@ import {
   acceptAllRequestFollowProfile,
   acceptRequestFollowProfile,
   deleteFollowerProfile,
-  fetchProfileData,
+  getProfileData,
   followProfile,
   ignoreAllRequestFollowProfile,
   ignoreRequestFollowProfile,
@@ -362,9 +362,9 @@ export function useRegisterUser() {
   }
 }
 
-export function useFetchProfileData() {
-  const fetchProfileDataFetcher = () => fetchProfileData()
-  const { data, error, mutate} = useSWR("useFetchProfileData", fetchProfileDataFetcher)
+export function useGetProfileData() {
+  const getProfileDataFetcher = () => getProfileData()
+  const {data, error, mutate} = useSWR("useFetchProfileData", getProfileDataFetcher)
 
   return {
     profileData: data,
