@@ -25,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
 import {AdminDropDownMenu, AdminDropDownMenuProps} from "./admin-dropdown-menu"
 
 const defaultPagination: number = 0
@@ -85,6 +86,7 @@ export function generateColumns(onDelete: (id: number) => void): ColumnDef<Admin
           enable: true,
           id:user.id,
           onDelete: () => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             onDelete(user.id)
           }
         }

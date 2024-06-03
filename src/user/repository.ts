@@ -3,24 +3,10 @@ import {env} from "@/env"
 import {UserTable} from "@/db/schema"
 import {desc, eq} from "drizzle-orm"
 import {symmetricEncrypt} from "@/utils/crypto"
-import {z} from "zod"
-import {userRoleArray} from "@/domain/types"
 
 
 export class UserPgRepository {
   private readonly pgClient: PgClient
-  private readonly FindUsersPaginated = z.array(z.object({
-    id: z.number().int().positive(),
-    email: z.string(),
-    isActivated: z.boolean(),
-    role: z.enum(userRoleArray),
-  }))
-  private readonly  UserObject = z.array(z.object({
-    id: z.number().int().positive(),
-    email: z.string(),
-    isActivated: z.boolean(),
-    role: z.enum(userRoleArray),
-  }))
 
   constructor(pqClient: PgClient) {
     this.pgClient = pqClient

@@ -15,6 +15,7 @@
       * [DrizzleORM](#drizzleorm)
       * [Auth.js](#authjs)
       * [Vercel](#vercel)
+      * [Minio](#minio)
   * [🚀 Initialization](#-initialization)
     * [🔑 Prerequisites](#-prerequisites)
     * [⚙️ Environment Variables](#-environment-variables)
@@ -29,6 +30,14 @@
         * [🔑 Generating the Key](#-generating-the-key)
       * [🌐 Base URL Configuration](#-base-url-configuration)
       * [📧 Contact Email Configuration](#-contact-email-configuration)
+    * [🔓 Next public publishable key configuration](#-next-public-publishable-key-configuration)
+    * [🔓 Next public test data key configuration](#-next-public-test-data-key-configuration)
+    * [🤝 Next trust host configuration](#-next-trust-host-configuration)
+    * [🐦 Minio](#-minio)
+      * [👜 Minio Bucket](#-minio-bucket)
+      * [🔑 Minio access keys](#-minio-access-keys)
+      * [🌐 Minio Region](#-minio-region)
+      * [📍 Minio endpoint](#-minio-endpoint)
     * [📦 Installation](#-installation)
   * [🎬 Startup](#-startup)
     * [🗄️ Database](#-database)
@@ -65,10 +74,10 @@ The focus is not only on pure programming skills but on the entire process from 
 TypeScript is a superset of JavaScript that adds optional static typing features to the language. It is designed for developing large-scale applications and transcompiles to JavaScript.
 
 This choice was made for several reasons:
-- Static typing helps detect errors during compilation rather than at runtime.
-- Enhances code readability.
-- Improves code understanding.
-- Better code maintenance.
+- Static typing helps detect errors during compilation rather than at runtime;
+- Enhances code readability;
+- Improves code understanding;
+- Better code maintenance;
 - Facilitates teamwork.
 
 #### [Next.js](https://nextjs.org/)
@@ -76,11 +85,11 @@ This choice was made for several reasons:
 Next.js is an open-source web framework for backend and frontend development with React. It offers features such as server-side rendering and static site generation for React-based websites.
 
 This choice was made for several reasons:
-- Enables creating an application in the same environment for both backend and frontend.
-- Server-side rendering for public parts improves SEO.
-- Choice between server-side rendering and client-side rendering.
-- Built-in internationalization.
-- TypeScript support.
+- Enables creating an application in the same environment for both backend and frontend;
+- Server-side rendering for public parts improves SEO;
+- Choice between server-side rendering and client-side rendering;
+- Built-in internationalization;
+- TypeScript support;
 - Rich ecosystem.
 
 #### [Tailwind CSS](https://tailwindcss.com/)
@@ -88,8 +97,8 @@ This choice was made for several reasons:
 Tailwind CSS is a CSS framework that allows for custom designs without ever leaving the HTML file. It is based on a component design approach and utility classes.
 
 This choice was made for several reasons:
-- Eases component creation.
-- Simplifies code maintenance.
+- Eases component creation;
+- Simplifies code maintenance;
 - Facilitates teamwork.
 
 #### [Shadcn](https://ui.shadcn.com/)
@@ -97,7 +106,7 @@ This choice was made for several reasons:
 Beautifully designed components, based on Tailwind CSS for component styling.
 
 This choice was made for several reasons:
-- Extensive component library.
+- Extensive component library;
 - Facilitates style changes as needed.
 
 #### [PostgresSQL](https://www.postgresql.org/)
@@ -105,12 +114,12 @@ This choice was made for several reasons:
 PostgreSQL is a free and open-source relational database known for its reliability and robustness.
 
 This choice was made for several reasons:
-- Relational database.
-- Open-source and free.
-- ACID compliance.
-- SQL standards support.
-- Performance and reliability.
-- Security.
+- Relational database;
+- Open-source and free;
+- ACID compliance;
+- SQL standards support;
+- Performance and reliability;
+- Security;
 - Wide range of data types compared to other databases.
 
 #### [DrizzleORM](https://orm.drizzle.team/)
@@ -120,11 +129,11 @@ Drizzle is an ORM (Object-Relational Mapping) for TypeScript. It allows for mani
 Drizzle is lightweight, performant, typesafe, non-lactose, gluten-free, sober, and flexible by design.
 
 This choice was made for several reasons:
-- Eases data manipulation.
-- SQL syntax.
-- Typesafe.
-- Performant.
-- Flexible.
+- Eases data manipulation;
+- SQL syntax;
+- Typesafe;
+- Performant;
+- Flexible;
 - Facilitates joins.
 
 #### [Auth.js](https://authjs.dev/)
@@ -147,9 +156,19 @@ Vercel is a web deployment platform. It allows deploying applications such as Ne
 Vercel connects to our GitHub repository and triggers a deployment on every push.
 
 This choice was made for several reasons:
-- Facilitates deployment.
-- Eases environment management.
+- Facilitates deployment;
+- Eases environment management;
 - Eases domain management.
+
+#### [Minio](https://min.io/)
+
+Minio is an object storage designed for storing a large amount of datas.
+
+This choice was made for several reasons:
+  - Scalability;
+  - Open source;
+  - High performances;
+  - Security.
 
 ## 🚀 Initialization
 
@@ -174,6 +193,24 @@ SECURE_AUTH_COOKIES=""
 TOTP_ENCRYPTION_KEY=""
 BASE_URL=""
 CONTACT_EMAIL=""
+
+DATABASE_URL="
+GMAIL_EMAIL=""
+GMAIL_PASS=""
+PEPPER_PASSWORD_SECRET=""
+NEXT_AUTH_SECRET=""
+SECURE_AUTH_COOKIES=""
+TOTP_ENCRYPTION_KEY=""
+BASE_URL=""
+CONTACT_EMAIL=""
+NEXT_PUBLIC_PUBLISHABLE_KEY=""
+NEXT_PUBLIC_TEST_DATA=""
+TRUST_HOST=""
+S3_BUCKET_NAME=""
+S3_ACCESS_KEY_ID=""
+S3_SECRET_ACCESS_KEY=""
+S3_REGION=""
+S3_ENDPOINT=""
 ```
 
 #### 🗄️ Database Configuration
@@ -290,10 +327,105 @@ CONTACT_EMAIL="instamint.contact@gmail.com"
 
 `CONTACT_EMAIL` is the contact email address.
 
+### 🔓 Next public publishable key configuration
+
+Can fill with whatever you want (ensure it is strong)
+
+Example configuration:
+
+```dotenv
+NEXT_PUBLIC_PUBLISHABLE_KEY="Fd0SqICWjYszy4q"
+```
+
+### 🔓 Next public test data key configuration
+
+Can fill with whatever you want (ensure it is strong)
+
+Example configuration:
+
+```dotenv
+NEXT_PUBLIC_TEST_DATA="lklVNuqZBkMn9Qy"
+```
+
+### 🤝 Next trust host configuration
+
+Example configuration for the trusted host:
+
+```dotenv
+TRUST_HOST="false"
+```
+
+### 🐦 Minio
+
+Default docker compose settings will launch the minio buckets on http://localhost:8900
+
+Default username and password settings are "instamint"
+
+You can change he settings in the docker-compose.yaml file
+
+![img.png](readme_imgs/minio.png)
+
+#### 👜 Minio Bucket
+
+You must first create a bucket
+
+![img.png](readme_imgs/minio_create_bucket.png)
+
+Then name your bucket and create it
+
+![img.png](readme_imgs/create_bucket_name.png)
+
+this will be your S3_BUCKET_NAME (you can replace with whatever name you want)
+
+```dotenv
+S3_BUCKET_NAME="instamint"
+```
+
+#### 🔑 Minio access keys
+
+Go to access keys and select create access key
+
+![img.png](readme_imgs/access_key.png)
+
+The S3_ACCESS_KEY_ID will be the Access Key (Here o9l05L83ewpaEIwBVHnb)
+
+```dotenv
+S3_ACCESS_KEY_ID="o9l05L83ewpaEIwBVHnb"
+```
+
+Use the Secret Key for S3_SECRET_ACCESS_KEY (replace with yours)
+
+```dotenv
+S3_SECRET_ACCESS_KEY="S3_SECRET_ACCESS_KEY="zC0akw3NlBlzuNtxNyselr3sm5av8CmmhzGNNdSM""
+```
+
+Add a name, description ad a comment if you want, then select create
+
+![img.png](readme_imgs/create_access_key.png)
+
+#### 🌐 Minio Region
+
+For france you should ue the next settings
+
+```dotenv
+S3_REGION="eu-east-1"
+```
+
+#### 📍 Minio endpoint
+
+The default endpoint port is 9000 (it can be replace in the docker-compose.yaml file)
+
+```dotenv
+S3_ENDPOINT="http://localhost:9000"
+```
 
 ### 📦 Installation
 
 - Clone the repository
+
+```bash
+git clone https://github.com/Fenrur/instamint.git
+```
 
 - Install dependencies
 
