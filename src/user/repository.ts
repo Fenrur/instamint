@@ -1,7 +1,7 @@
 import {PgClient} from "@/db/db-client"
 import {env} from "@/env"
 import {UserTable} from "@/db/schema"
-import {eq, sql} from "drizzle-orm"
+import {desc, eq} from "drizzle-orm"
 import {symmetricEncrypt} from "@/utils/crypto"
 import {z} from "zod"
 import {userRoleArray} from "@/domain/types"
@@ -126,7 +126,7 @@ export class UserPgRepository {
     return this.pgClient
       .update(UserTable)
       .set({
-         hashedPassword
+        hashedPassword
       })
       .where(eq(UserTable.uid, uid))
   }
@@ -150,18 +150,19 @@ export class UserPgRepository {
     return createdUser[0]
   }
 
-  public async findUsersPaginatedAndSorted(offset: number, limit: number) {
-    const query = sql`
-      SELECT ${UserTable.id},
-             ${UserTable.email},
-             ${UserTable.isActivated},
-             ${UserTable.role}
-      FROM ${UserTable}
-      ORDER BY ${UserTable.email} DESC
-      OFFSET ${offset} LIMIT ${limit}
-    `
-    const result = await this.pgClient.execute(query)
-
-    return this.FindUsersPaginated.parse(result)
+  public findUsersPaginatedAndSorted(offset: number, limit: number) {
+    return this.pgClient.query
+      .UserTable
+      .findMany({
+        columns: {
+          id: true,
+          email: true,
+          isActivated: true,
+          role: true
+        },
+        offset,
+        limit,
+        orderBy: desc(UserTable.email)
+      })
   }
 }

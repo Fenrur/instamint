@@ -1,7 +1,9 @@
 import {
   AcceptAllFollowProfileRequest,
   AcceptFollowProfileRequest,
-  DeleteFollowerProfileRequest, DeleteUserRequest,
+  DeleteFollowerProfileRequest,
+  DeleteUserRequest,
+  DeleteNftRequest,
   EnableOrDisableRequest,
   EnableOrDisableResponse,
   FollowerProfileStateResponse,
@@ -10,6 +12,7 @@ import {
   FollowProfileStateResponse,
   GetPaginedNftsByUsernameResponse,
   GetPaginedUsersResponse,
+  GetPaginedNftsResponse,
   IgnoreProfileRequest,
   PaginatedFollowerProfileResponse,
   PaginatedFollowProfileResponse,
@@ -333,6 +336,44 @@ export async function deleteUser(req: DeleteUserRequest) {
   }
 }
 
+export async function deleteNft(req: DeleteNftRequest) {
+  const url = encodeURI(`/api/nft/delete`)
+  const res = await fetch(url, {
+    method: "DELETE",
+    body: JSON.stringify(req),
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return "deleted"
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.NOT_ACTIVATED:
+      return "not_activated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.INVALID_CONTENT_TYPE:
+      return "invalid_content-type"
+  }
+}
+
 export async function acceptRequestFollowProfile(req: AcceptFollowProfileRequest) {
   const res = await fetch("/api/profile/follow/request/accept", {
     method: "POST",
@@ -585,7 +626,7 @@ export async function searchFollowersProfile(signal: AbortSignal, username: stri
   throw new Error("Undefined error code from server")
 }
 
-export async function getPaginatedUsers(page: number) {
+export async function getPaginatedAdminUsers(page: number) {
   const url = encodeURI(`/api/admin/users?page=${page}`)
   const res = await fetch(url, {
     method: "GET"
@@ -593,6 +634,35 @@ export async function getPaginatedUsers(page: number) {
 
   if (res.status === StatusCodes.OK) {
     return GetPaginedUsersResponse.parse(await res.json())
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  throw new Error("Undefined error code from server")
+}
+
+export async function getPaginatedAdminNfts(page: number) {
+  const url = encodeURI(`/api/admin/nfts?page=${page}`)
+  const res = await fetch(url, {
+    method: "GET"
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return GetPaginedNftsResponse.parse(await res.json())
   }
 
   const errorCode = getErrorCodeFromProblem(await res.json())

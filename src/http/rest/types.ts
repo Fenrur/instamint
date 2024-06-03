@@ -114,6 +114,13 @@ export const GetPaginedUsersResponse = z.array(
   })
 )
 
+export const GetPaginedNftsResponse = z.array(
+  z.object({
+    id: z.number().int().positive(),
+    title: z.string(),
+  })
+)
+
 export const VerifyExistUsernameResponse = z.object({
   exist: z.boolean()
 })
@@ -314,3 +321,16 @@ export const DeleteUserResponse = z.object({
 })
 
 export type DeleteUserResponse = z.infer<typeof DeleteUserResponse>
+
+export const  DeleteNftRequest = z.object({
+  id: z.number().int().positive()
+})
+
+export type DeleteNftRequest = z.infer<typeof DeleteNftRequest>
+
+export const DeleteNftResponse = z.object({
+  deleted: z.boolean()
+})
+
+export type DeleteNftResponse = z.infer<typeof DeleteNftResponse>
+

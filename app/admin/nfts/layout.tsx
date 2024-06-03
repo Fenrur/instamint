@@ -32,7 +32,7 @@ export default async function LayoutAdminUserPage({
     <>
       <AdminLayout>
         <h3 className="w-5/6 mx-auto text-center font-bold text-3xl mt-20">
-          Users
+          Nfts
           <div className="w-5/6 mt-12 mx-auto">
             {children}
           </div>

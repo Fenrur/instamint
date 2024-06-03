@@ -1,7 +1,6 @@
 "use client"
 
 import {useEffect, useState} from "react"
-import DropDownEnableCheckbox from "@/components/section/admin/drop-down-enable-checkbox"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -30,62 +29,46 @@ import {AdminDropDownMenu, AdminDropDownMenuProps} from "./admin-dropdown-menu"
 const defaultPagination: number = 0
 const maxPagination: number = 50
 
-interface UsersSectionProps {
-  users: {
-    isActivated: boolean,
-    email: string,
+interface NftsSectionProps {
+  nfts: {
+    title: string,
     id: number,
   }[]
 }
 
-type AdminUsersType = {
+type AdminNftsType = {
   id: number
-  isActivated: boolean
-  email: string
+  title: string
 }
 
-export function generateColumns(onDelete: (id: number) => void): ColumnDef<AdminUsersType>[] {
+export function generateColumns(onDelete: (id: number) => void): ColumnDef<AdminNftsType>[] {
   return [
     {
-      accessorKey: "isActivated",
-      header: "enabled",
-      cell: ({ row }) => {
-        const user = row.original
-        const props = {
-          id: user.id,
-          activate: user.isActivated
-        }
-
-        return (
-          <DropDownEnableCheckbox {...props} />
-        )},
-    },
-    {
-      accessorKey: "email",
+      accessorKey: "title",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => {column.toggleSorting(column.getIsSorted() === "asc")}}
           >
-            Email
+            Title
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
       },
-      cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+      cell: ({ row }) => <div className="lowercase">{row.getValue("title")}</div>,
     },
     {
       id: "actions",
       header: "Actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const user = row.original
+        const nft = row.original
         const props: AdminDropDownMenuProps = {
           enable: true,
-          id:user.id,
+          id:nft.id,
           onDelete: () => {
-            onDelete(user.id)
+            onDelete(nft.id)
           }
         }
 
@@ -97,8 +80,8 @@ export function generateColumns(onDelete: (id: number) => void): ColumnDef<Admin
   ]
 }
 
-export function AdminTable({users}:UsersSectionProps) {
-  const [data, setData] = useState<AdminUsersType[]>([])
+export function AdminTable({nfts}:NftsSectionProps) {
+  const [data, setData] = useState<AdminNftsType[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
@@ -118,8 +101,8 @@ export function AdminTable({users}:UsersSectionProps) {
   })
 
   useEffect(() => {
-    setData(users)
-  }, [users])
+    setData(nfts)
+  }, [nfts])
   const table = useReactTable({
     data,
     columns,
@@ -146,10 +129,10 @@ export function AdminTable({users}:UsersSectionProps) {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter titles..."
+          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) => {
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("title")?.setFilterValue(event.target.value)
           }
 
           }
@@ -160,7 +143,7 @@ export function AdminTable({users}:UsersSectionProps) {
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="grid grid-cols-3">
+              <TableRow key={headerGroup.id} className="grid grid-cols-2">
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} className="flex justify-center items-center">
@@ -180,7 +163,7 @@ export function AdminTable({users}:UsersSectionProps) {
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
-                  className="grid grid-cols-3"
+                  className="grid grid-cols-2"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
