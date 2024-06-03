@@ -8,10 +8,6 @@ import {signOut} from "next-auth/react"
 import {useRouter} from "next/navigation"
 
 export default function Home() {
-  const [count, setCount] = useState(0)
-  const handleClick = () => {
-    setCount(prevState => prevState + 1)
-  }
   const {status, session} = useSession()
   const router = useRouter()
   const routingToLoginPage = () => {
@@ -24,10 +20,7 @@ export default function Home() {
   return (
     <main>
       <div className="flex flex-col gap-4">
-        <Button className="w-24" onClick={handleClick}>
-          Click me
-        </Button>
-        <Label>{count}</Label>
+        <h1 className="text-2xl font-bold">Home - Debug panel, landing page will be integrated soon</h1>
         { status === "authenticated" && <Button className="w-24" onClick={() => { router.push("/me") }}>My Profile</Button> }
         <Button className="w-24" onClick={routingToSignupPage}>
           Signup

@@ -3,13 +3,20 @@ import {
   acceptRequestFollowProfile,
   deleteFollowerProfile,
   followProfile,
+  getPaginatedComments,
+  getPaginatedReplyComments,
   ignoreAllRequestFollowProfile,
   ignoreRequestFollowProfile,
+  mintComment,
+  mintNft,
   registerUser,
   searchFollowersProfile,
+  searchFollowsProfile,
   searchRequesterProfile,
   twoFactorAuthenticatorUserType,
   unfollowProfile,
+  unmintComment,
+  unmintNft,
   verifyExistUsername,
   verifyTwoFactorAuthenticatorTotpCode,
   verifyUserPassword
@@ -22,6 +29,92 @@ import {
   VerifyTotpCodeRequest
 } from "@/http/rest/types"
 import {useRef} from "react"
+
+export function useGetPaginatedComments(nftId: number) {
+  const getPaginatedCommentsFetcher = (_: any, {arg}: {
+    arg: { page: number }
+  }) => getPaginatedComments(nftId, arg.page)
+  const {
+    trigger,
+    data,
+    error,
+    isMutating
+  } = useSWRMutation(`GetPaginatedComments/${nftId}`, getPaginatedCommentsFetcher)
+
+  return {
+    getPaginatedComments: (page: number) => trigger({page}),
+    dataComments: data,
+    errorComments: error,
+    isFetchingComments: isMutating
+  }
+}
+
+export function useGetPaginatedReplyComments(commentId: number) {
+  const getPaginatedReplyCommentsFetcher = (_: any, {arg}: {
+    arg: { page: number }
+  }) => getPaginatedReplyComments(commentId, arg.page)
+  const {
+    trigger,
+    data,
+    error,
+    isMutating
+  } = useSWRMutation(`GetPaginatedReplyComments/${commentId}`, getPaginatedReplyCommentsFetcher)
+
+  return {
+    getPaginatedReplyComments: (page: number) => trigger({page}),
+    dataReplyComments: data,
+    errorReplyComments: error,
+    isFetchingReplyComments: isMutating
+  }
+}
+
+export function useMintComment(commentId: number) {
+  const mintCommentFetcher = () => mintComment({commentId})
+  const {trigger, data, error, isMutating} = useSWRMutation(`MintComment/${commentId}`, mintCommentFetcher)
+
+  return {
+    mintComment: () => trigger(),
+    dataMint: data,
+    errorMint: error,
+    isFetchingMint: isMutating
+  }
+}
+
+export function useUnmintComment(commentId: number) {
+  const unmintCommentFetcher = () => unmintComment({commentId})
+  const {trigger, data, error, isMutating} = useSWRMutation(`UnmintComment/${commentId}`, unmintCommentFetcher)
+
+  return {
+    unmintComment: () => trigger(),
+    dataUnmint: data,
+    errorUnmint: error,
+    isFetchingUnmint: isMutating
+  }
+}
+
+export function useMintNft(nftId: number) {
+  const mintNftFetcher = () => mintNft({nftId})
+  const {trigger, data, error, isMutating} = useSWRMutation(`MintNft/${nftId}`, mintNftFetcher)
+
+  return {
+    mintNft: () => trigger(),
+    dataMint: data,
+    errorMint: error,
+    isFetchingMint: isMutating
+  }
+}
+
+export function useUnmintNft(nftId: number) {
+  const unmintNftFetcher = () => unmintNft({nftId})
+  const {trigger, data, error, isMutating} = useSWRMutation(`UnmintNft/${nftId}`, unmintNftFetcher)
+
+  return {
+    unmintNft: () => trigger(),
+    dataUnmint: data,
+    errorUnmint: error,
+    isFetchingUnmint: isMutating
+  }
+}
 
 export function useFollowProfile(username: string) {
   const followProfileFetcher = () => followProfile({username})
@@ -250,7 +343,7 @@ export function useSearchFollowsProfile(username: string) {
       throw new Error("AbortController.signal is undefined")
     }
 
-    return searchFollowersProfile(signal, arg.searchedUsername, username)
+    return searchFollowsProfile(signal, username, arg.searchedUsername)
   }
   const {
     trigger,

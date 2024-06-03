@@ -275,3 +275,44 @@ export const SearchFollowsProfileResponse = z.array(z.object({
 }))
 
 export type SearchFollowsProfileResponse = z.infer<typeof SearchFollowsProfileResponse>
+
+export const MintNftRequest = z.object({
+  nftId: z.number(),
+})
+
+export type MintNftRequest = z.infer<typeof MintNftRequest>
+
+export const UnmintNftRequest = z.object({
+  nftId: z.number(),
+})
+
+export type UnmintNftRequest = z.infer<typeof UnmintNftRequest>
+
+export const MintCommentRequest = z.object({
+  commentId: z.number(),
+})
+
+export type MintCommentRequest = z.infer<typeof MintCommentRequest>
+
+export const UnmintCommentRequest = z.object({
+  commentId: z.number(),
+})
+
+export type UnmintCommentRequest = z.infer<typeof UnmintCommentRequest>
+
+export const PaginatedCommentElement = z.object({
+  commentId: z.number().int().min(0),
+  commentary: z.string(),
+  commentedAt: datetimeIso(),
+  commenterAvatarUrl: z.string(),
+  commenterUsername: z.string(),
+  mintCommentCount: z.number().int().min(0),
+  replyCount: z.number().int().min(0),
+  minted: z.boolean(),
+})
+
+export type PaginatedCommentElement = z.infer<typeof PaginatedCommentElement>
+
+export const PaginatedCommentsResponse = z.array(PaginatedCommentElement)
+
+export type PaginatedCommentsResponse = z.infer<typeof PaginatedCommentsResponse>

@@ -75,7 +75,7 @@ function NotificationRequestFollowRow({username, requestFollowAt, avatarUrl}: No
           <span className="font-semibold">{username}</span>
           <span className="font-normal"> has requested to follow your account. </span>
           <span className="font-normal text-gray-500">
-            {requestFollowAt.toRelative({style: "short"})}
+            {requestFollowAt.toRelative({style: "short", locale: "en"})}
           </span>
         </div>
       </div>

@@ -7,6 +7,7 @@ import {DefaultFollowService} from "@/follow/service"
 import {DefaultPasswordResetService} from "@/password-reset/service"
 import {env} from "@/env"
 import {
+  commentNftSize,
   durationExpireOffset,
   followersPageSize,
   followRequestIgnoredPageSize,
@@ -17,6 +18,9 @@ import {
   searchFollowsProfileSize,
   searchRequesterProfileSize
 } from "@/services/constants"
+import {DefaultMintService} from "@/mint/service"
+import {DefaultCommentService} from "@/comment/service";
+import {DefaultMintCommentService} from "@/mint-comment/service";
 
 export const userService = new DefaultUserService(pgClient, env.PEPPER_PASSWORD_SECRET, env.TOTP_ENCRYPTION_KEY)
 
@@ -38,3 +42,9 @@ export const followService = new DefaultFollowService(
     searchFollowsProfileSize,
     searchFollowersProfileSize
 )
+
+export const mintNftService = new DefaultMintService(pgClient)
+
+export const commentService = new DefaultCommentService(pgClient, commentNftSize)
+
+export const mintCommentService = new DefaultMintCommentService(pgClient)
