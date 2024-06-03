@@ -359,3 +359,17 @@ CREATE TABLE "EmailVerification"
   "expireAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
   "isVerified"     BOOLEAN                        NOT NULL
 );
+
+CREATE TABLE "MintComment"
+(
+  "commentId" INTEGER                       NOT NULL
+    CONSTRAINT "mintCommentCommentFk"
+      REFERENCES "Comment" ("id")
+      ON DELETE CASCADE,
+  "profileId" INTEGER                       NOT NULL
+    CONSTRAINT "mintCommentProfileFk"
+      REFERENCES "Profile" ("id")
+      ON DELETE CASCADE,
+  "mintAt"    TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+  PRIMARY KEY ("commentId", "profileId")
+);

@@ -44,4 +44,56 @@ export class DefaultProfileService {
   public existUsername(username: string) {
     return this.profilePgRepository.existUsername(username)
   }
+
+  public async findByNftId(nftId: number) {
+    const result = await this.pgClient.query
+      .NftTable
+      .findFirst({
+        where: (nft, {eq}) => eq(nft.id, nftId),
+        columns: {
+
+        },
+        with: {
+          profile: {
+
+          }
+        }
+      })
+
+    if (result) {
+      return result.profile
+    }
+
+    return "no_profile"
+  }
+
+  public async findByCommentId(commentId: number) {
+    const result = await this.pgClient.query
+      .CommentTable
+      .findFirst({
+        where: (comment, {eq}) => eq(comment.id, commentId),
+        columns: {
+
+        },
+        with: {
+          nft: {
+            columns: {
+
+            },
+            with: {
+              profile: {
+
+              }
+            }
+          }
+        }
+      })
+
+    if (result) {
+      return result.nft.profile
+    }
+ 
+      
+return "no_profile"
+  }
 }

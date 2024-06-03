@@ -31,7 +31,7 @@ export function NftsSection({username}: TestButtonProps) {
   const [init, setInit] = useState(true)
   const router = useRouter()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadNextPage =useCallback(() => {
+  const loadNextPage = useCallback(() => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     setTimeout(async () => {
       const paginatedNfts = await getPaginatedNfts(username, page)
@@ -88,9 +88,7 @@ export function NftsSection({username}: TestButtonProps) {
       hasMore={hasMore}
       loader={
         <div className="grid justify-center">
-          {
-            <BackgroundLoadingDots size={50}/>
-          }
+          <BackgroundLoadingDots size={50}/>
         </div>
       }
     >
