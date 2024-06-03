@@ -14,12 +14,13 @@ import {
   followsPageSize,
   nftsPageSize,
   profilePageSize,
+  usersPageSize,
   searchFollowersProfileSize,
   searchFollowsProfileSize,
   searchRequesterProfileSize
 } from "@/services/constants"
 
-export const userService = new DefaultUserService(pgClient, env.PEPPER_PASSWORD_SECRET, env.TOTP_ENCRYPTION_KEY)
+export const userService = new DefaultUserService(pgClient, env.PEPPER_PASSWORD_SECRET, env.TOTP_ENCRYPTION_KEY, usersPageSize)
 
 export const emailVerificationService = new DefaultEmailVerificationService(pgClient, durationExpireOffset)
 

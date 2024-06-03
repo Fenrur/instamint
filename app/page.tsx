@@ -26,6 +26,9 @@ export default function Home() {
   const routingToMe = () => {
     router.push("/me")
   }
+  const routingToAdminUserPage = () => {
+    router.push("/admin/users")
+  }
 
   return (
     <main>
@@ -42,6 +45,9 @@ export default function Home() {
         </Button>
         <Button className="w-24" onClick={routingToLoginPage}>
           Login
+        </Button>
+        <Button className="w-24" onClick={routingToAdminUserPage}>
+          admin users
         </Button>
         <Button className="w-24" onClick={() => signOut()}>
           Logout

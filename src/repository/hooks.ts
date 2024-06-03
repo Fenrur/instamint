@@ -3,6 +3,7 @@ import {
   acceptRequestFollowProfile,
   deleteFollowerProfile,
   fetchProfileData,
+  deleteUser, enableOrDisableUser,
   followProfile,
   ignoreAllRequestFollowProfile,
   ignoreRequestFollowProfile,
@@ -374,3 +375,27 @@ export function useFetchProfileData() {
 }
 
 
+
+export function useEnableOrDisable(id: number) {
+  const enableOrDisableFetcher = () => enableOrDisableUser({id})
+  const {trigger, data, error, isMutating} = useSWRMutation(`EnableOrDisable/${id}`, enableOrDisableFetcher)
+
+  return {
+    enableOrDisable: () => trigger(),
+    dataEnableOrDisable: data,
+    errorEnableOrDisable: error,
+    isFetchingEnableOrDisable: isMutating
+  }
+}
+
+export function useDeleteUser(id: number) {
+  const deleteUserFetcher = () => deleteUser({id})
+  const {trigger, data, error, isMutating} = useSWRMutation(`DeleteUser/${id}`, deleteUserFetcher)
+
+  return {
+    deleteUser: () => trigger(),
+    dataDeleteUser: data,
+    errorDeleteUser: error,
+    isFetchingDeleteUser: isMutating
+  }
+}
