@@ -890,6 +890,7 @@ export async function getProfileData() {
   const res = await fetch("/api/profile/me")
 
   if (res.status === StatusCodes.CREATED) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await res.json()
   }
 
