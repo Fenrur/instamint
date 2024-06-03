@@ -53,9 +53,3 @@ export const nftTypeArray = [
 ] as const
 
 export type NftType = typeof nftTypeArray[number]
-
-export type AdminUsersType = {
-  id: number
-  isActivated: boolean
-  email: string
-}

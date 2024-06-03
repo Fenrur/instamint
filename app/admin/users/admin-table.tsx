@@ -1,6 +1,5 @@
 "use client"
 
-import {AdminUsersType} from "@/domain/types"
 import {useEffect, useState} from "react"
 import DropDownEnableCheckbox from "@/components/section/admin/drop-down-enable-checkbox"
 import {
@@ -37,6 +36,12 @@ interface UsersSectionProps {
     email: string,
     id: number,
   }[]
+}
+
+type AdminUsersType = {
+  id: number
+  isActivated: boolean
+  email: string
 }
 
 export function generateColumns(onDelete: (id: number) => void): ColumnDef<AdminUsersType>[] {
@@ -80,6 +85,7 @@ export function generateColumns(onDelete: (id: number) => void): ColumnDef<Admin
           enable: true,
           id:user.id,
           onDelete: () => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             onDelete(user.id)
           }
         }
@@ -104,7 +110,8 @@ export function AdminTable({users}:UsersSectionProps) {
   const [pagination, setPagination] = useState({
     pageIndex: defaultPagination,
     pageSize: maxPagination,
-  })  const columns = generateColumns(id => {
+  })
+  const columns = generateColumns(id => {
     setData(prevState =>
       prevState
         .filter(value => value.id !== id)
