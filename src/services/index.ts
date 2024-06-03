@@ -14,10 +14,11 @@ import {
   followRequestPageSize,
   followsPageSize,
   nftsPageSize,
-  usersPageSize,
+  profilePageSize,
   searchFollowersProfileSize,
   searchFollowsProfileSize,
-  searchRequesterProfileSize
+  searchRequesterProfileSize,
+  usersPageSize
 } from "@/services/constants"
 import {DefaultMintService} from "@/mint/service"
 import {DefaultCommentService} from "@/comment/service"
@@ -29,7 +30,7 @@ export const emailVerificationService = new DefaultEmailVerificationService(pgCl
 
 export const passwordResetService = new DefaultPasswordResetService(pgClient)
 
-export const profileService = new DefaultProfileService(pgClient, s3client, env.S3_BUCKET_NAME)
+export const profileService = new DefaultProfileService(pgClient, s3client, env.S3_BUCKET_NAME, profilePageSize)
 
 export const nftService = new DefaultNftService(pgClient, nftsPageSize)
 

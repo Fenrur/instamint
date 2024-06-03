@@ -13,7 +13,8 @@ import {DateTime} from "luxon"
 import {
   useDeleteFollowerProfile,
   useFollowProfile,
-  useSearchFollowersProfile, useSearchFollowsProfile,
+  useSearchFollowersProfile,
+  useSearchFollowsProfile,
   useUnfollowProfile
 } from "@/repository/hooks"
 import Link from "next/link"

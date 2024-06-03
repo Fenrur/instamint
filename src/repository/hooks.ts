@@ -6,6 +6,7 @@ import {
   createComment,
   deleteFollowerProfile,
   enableOrDisableUser,
+  fetchProfileData,
   followProfile,
   getPaginatedComments,
   getPaginatedReplyComments,
@@ -32,6 +33,7 @@ import {
   VerifyTotpCodeRequest
 } from "@/http/rest/types"
 import {useRef} from "react"
+import useSWR from "swr"
 
 export function useCreateComment(nftId: number) {
   const createCommentFetcher = (_: any, {arg}: {
@@ -497,6 +499,18 @@ export function useRegisterUser() {
     isFetchingRegister: isMutating
   }
 }
+
+export function useFetchProfileData() {
+  const fetchProfileDataFetcher = () => fetchProfileData()
+  const {data, error, mutate} = useSWR("useFetchProfileData", fetchProfileDataFetcher)
+
+  return {
+    profileData: data,
+    profileDataMutate: mutate,
+    errorProfileData: error,
+  }
+}
+
 
 export function useEnableOrDisable(id: number) {
   const enableOrDisableFetcher = () => enableOrDisableUser({id})

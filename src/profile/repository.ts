@@ -1,6 +1,6 @@
 import {PgClient} from "@/db/db-client"
-import {ProfileTable} from "@/db/schema"
-import {ilike} from "drizzle-orm"
+import {ProfileTable, UserTable} from "@/db/schema"
+import {eq, ilike, sql} from "drizzle-orm"
 import {DateTime} from "luxon"
 
 export class ProfilePgRepository {
@@ -26,6 +26,24 @@ export class ProfilePgRepository {
     return result
   }
 
+  public async isUsernameExist(username: string) {
+    const rows = await this.pgClient.query.ProfileTable
+      .findMany({
+        where: (profile, {eq}) => eq(profile.username, username)
+      })
+
+    return rows.length > 0
+  }
+
+  public async isLinkExist(link: string) {
+    const rows = await this.pgClient.query.ProfileTable
+      .findMany({
+        where: (profile, {eq}) => eq(profile.link, link)
+      })
+
+    return rows.length > 0
+  }
+
   public updateAvatarUrl(username: string, avatarUrl: string) {
     return this.pgClient
       .update(ProfileTable)
@@ -33,6 +51,23 @@ export class ProfilePgRepository {
         avatarUrl
       })
       .where(ilike(ProfileTable.username, username))
+  }
+
+  public async updateProfileByUserUid(uid: string, username: string, bio: string, link: string, avatarUrl: string) {
+    const users = await this.pgClient
+      .select({profileId: UserTable.profileId}).from(UserTable)
+      .where(eq(UserTable.uid, uid))
+    const profileId = users[0].profileId
+
+    return this.pgClient
+      .update(ProfileTable)
+      .set({
+        username,
+        bio,
+        link,
+        avatarUrl
+      })
+      .where(eq(ProfileTable.id, profileId))
   }
 
   public async create(username: string, createdAt: DateTime<true>, avatarUrl: string) {
@@ -74,5 +109,55 @@ export class ProfilePgRepository {
       .findFirst({
         where: (profile, {eq}) => eq(profile.id, followedProfileId)
       })
+  }
+
+
+  public async findUsersOrTeaPaginatedByUsernameOrLocation(username: string, location: string, offset: number, limit: number) {
+    const sqlQuery = sql`
+      SELECT ${ProfileTable.id},
+             ${ProfileTable.username},
+             ${ProfileTable.createdAt},
+             ${ProfileTable.bio},
+             ${ProfileTable.link},
+             ${ProfileTable.avatarUrl},
+             ${ProfileTable.canBeSearched},
+             ${ProfileTable.visibilityType},
+             ${ProfileTable.location},
+             ${ProfileTable.displayName}
+      FROM ${ProfileTable}
+      WHERE 1 = 1 `
+
+    // Add search criteria dynamically based on provided parameters
+    if (username) {
+      sqlQuery.append(sql` AND
+      ${ProfileTable.username}
+      ILIKE
+      '%'
+      ||
+      ${username}
+      ||
+      '%'`)
+    }
+
+    if (location) {
+      sqlQuery.append(sql` AND
+      ${ProfileTable.location}
+      ILIKE
+      '%'
+      ||
+      ${location}
+      ||
+      '%'`)
+    }
+
+    sqlQuery.append(sql` ORDER BY
+    ${ProfileTable.createdAt}
+    DESC
+    OFFSET
+    ${offset}
+    LIMIT
+    ${limit}`)
+
+    return this.pgClient.execute(sqlQuery)
   }
 }

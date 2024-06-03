@@ -2,8 +2,8 @@
 
 import {Button} from "@/components/ui/button"
 import {useSession} from "@/auth/session"
-import {signOut} from "next-auth/react"
 import {useRouter} from "next/navigation"
+import {signOut} from "next-auth/react"
 
 export default function Home() {
   const {status, session} = useSession()
@@ -14,6 +14,12 @@ export default function Home() {
   const routingToSignupPage = () => {
     router.push("/signup")
   }
+  const routingToSearch = () => {
+    router.push("/search")
+  }
+  const routingToMe = () => {
+    router.push("/me")
+  }
   const routingToAdminUserPage = () => {
     router.push("/admin/users")
   }
@@ -22,7 +28,9 @@ export default function Home() {
     <main>
       <div className="flex flex-col gap-4">
         <h1 className="text-2xl font-bold">Home - Debug panel, landing page will be integrated soon</h1>
-        { status === "authenticated" && <Button className="w-24" onClick={() => { router.push("/me") }}>My Profile</Button> }
+        {status === "authenticated" && <Button className="w-24" onClick={() => {
+          router.push("/me")
+        }}>My Profile</Button>}
         <Button className="w-24" onClick={routingToSignupPage}>
           Signup
         </Button>
@@ -35,6 +43,13 @@ export default function Home() {
         <Button className="w-24" onClick={() => signOut()}>
           Logout
         </Button>
+        <Button className="w-24" onClick={routingToSearch}>
+          Search
+        </Button>
+        <Button className="w-24" onClick={routingToMe}>
+          Me
+        </Button>
+
         <div>{status}</div>
         <div>{session?.uid}</div>
       </div>

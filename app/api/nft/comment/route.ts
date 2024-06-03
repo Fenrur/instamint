@@ -1,7 +1,12 @@
 import {auth, getSession} from "@/auth"
 import {
-  badSessionProblem, commentNotFoundProblem, dontFollowProfileProblem, invalidBodyProblem, invalidContentTypeProblem,
-  invalidQueryParameterProblem, nftNotFoundProblem,
+  badSessionProblem,
+  commentNotFoundProblem,
+  dontFollowProfileProblem,
+  invalidBodyProblem,
+  invalidContentTypeProblem,
+  invalidQueryParameterProblem,
+  nftNotFoundProblem,
   notAuthenticatedProblem,
   problem,
   profileNotFoundProblem
@@ -14,7 +19,7 @@ import {DateTime} from "luxon"
 import {StatusCodes} from "http-status-codes"
 
 export const POST = auth(async (req) => {
-  if (! isContentType(req, "json")) {
+  if (!isContentType(req, "json")) {
     return problem({...invalidContentTypeProblem, detail: "only application/json is supported"})
   }
 
@@ -47,14 +52,14 @@ export const POST = auth(async (req) => {
 
     return NextResponse.json({success: true}, {status: StatusCodes.CREATED})
   }
- 
-    const result = await commentService.createReplyComment(body.nftId, myUserAndProfile.profile.id, commentAt, body.commentary, body.commentId)
 
-    if (result === "comment_not_found") {
-      return problem({...commentNotFoundProblem, detail: "commentId is not valid"})
-    }
+  const result = await commentService.createReplyComment(body.nftId, myUserAndProfile.profile.id, commentAt, body.commentary, body.commentId)
 
-    return NextResponse.json({success: true}, {status: StatusCodes.CREATED})
+  if (result === "comment_not_found") {
+    return problem({...commentNotFoundProblem, detail: "commentId is not valid"})
+  }
+
+  return NextResponse.json({success: true}, {status: StatusCodes.CREATED})
 })
 
 export const GET = auth(async (req) => {
@@ -113,8 +118,7 @@ export const GET = auth(async (req) => {
     }
 
     return problem({...dontFollowProfileProblem, detail: "you must follow the profile to see the comments"})
-  }
-  else if (parsedCommentId && !isNaN(parsedCommentId)) {
+  } else if (parsedCommentId && !isNaN(parsedCommentId)) {
     const showOnProfile = await profileService.findByCommentId(parsedCommentId)
 
     if (showOnProfile === "no_profile") {
