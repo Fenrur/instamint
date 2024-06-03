@@ -2,7 +2,9 @@ import {
   acceptAllRequestFollowProfile,
   acceptRequestFollowProfile,
   createComment,
-  deleteFollowerProfile, deleteUser, enableOrDisableUser,
+  deleteFollowerProfile,
+  deleteUser,
+  enableOrDisableUser,
   followProfile,
   getPaginatedComments,
   getPaginatedReplyComments,
@@ -12,7 +14,6 @@ import {
   mintNft,
   registerUser,
   searchFollowersProfile,
-  searchFollowsProfile,
   searchRequesterProfile,
   twoFactorAuthenticatorUserType,
   unfollowProfile,
@@ -58,7 +59,12 @@ export function useCreateReplyComment(nftId: number, commentId: number) {
     commentary: arg.commentary,
     commentId
   })
-  const {trigger, data, error, isMutating} = useSWRMutation(`CreateReplyComment/${nftId}/${commentId}`, createReplyCommentFetcher)
+  const {
+    trigger,
+    data,
+    error,
+    isMutating
+  } = useSWRMutation(`CreateReplyComment/${nftId}/${commentId}`, createReplyCommentFetcher)
 
   return {
     createReplyComment: (commentary: string) => trigger({commentary}),

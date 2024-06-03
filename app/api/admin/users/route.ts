@@ -8,7 +8,7 @@ import {
 } from "@/http/problem"
 import {userService} from "@/services"
 import {auth, getSession} from "@/auth"
-import {GetPaginatedUsersResponse} from "@/http/rest/types";
+import {GetPaginatedUsersResponse} from "@/http/rest/types"
 
 export const GET = auth(async (req) => {
   const url = req.nextUrl.clone()

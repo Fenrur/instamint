@@ -381,7 +381,6 @@ export function ThreadElement(props: ThreadElementProps) {
   const handleSendCommentClick = () => {
     // eslint-disable-next-line no-empty
     if (commentAreaRef.current && commentAreaRef.current.value) {
-      // TODO later
     }
   }
 
