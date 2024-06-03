@@ -18,6 +18,8 @@ import {useSession} from "@/auth/session"
 import {getMaxPrice} from "@/actions"
 import InfiniteScroll from "react-infinite-scroll-component"
 import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
+import {StatusCodes} from "http-status-codes"
+import {toast} from "sonner"
 
 const debounceTime = 300
 
@@ -52,39 +54,59 @@ export default function SignupPage() {
   const fetchData = (query: string, location: string, priceRange: number[], page: number, nftPanel = isNfts) => {
     if (nftPanel) {
       void fetchNftsData(query, location, priceRange, page).then(res => {
-        setNftsList([...res])
+        if (res) {
+          setNftsList([...res])
+        }
       })
     } else {
       void fetchUsersData(query, location, page).then(res => {
-        setProfilesList([...res])
+        if (res) {
+          setProfilesList([...res])
+        }
       })
     }
 
     setPage(1)
   }
   const fetchUsersData = async (query: string, location: string, page: number) => {
-    return await getPaginatedUsersWithSearch(query, location, page)
+    const resp = await getPaginatedUsersWithSearch(query, location, page)
+
+    if (resp.status === StatusCodes.OK) {
+      return await resp.json() as ProfileData[]
+    }
+
+    toast.error("Error", {description: resp.json()})
   }
   const fetchNftsData = async (query: string, location: string, priceRange: number[], page: number) => {
-    return await getPaginatedNftsWithSearch(query, location, priceRange, page)
+    const resp = await getPaginatedNftsWithSearch(query, location, priceRange, page)
+
+    if (resp.status === StatusCodes.OK) {
+      return await resp.json() as NFTData[]
+    }
+
+    toast.error("Error", {description: resp.json()})
   }
   const loadNextPage = useCallback(async () => {
     if (isNfts) {
       const paginatedNfts = await fetchNftsData(query, location, priceRange, page)
 
-      if (paginatedNfts.length < nftsPageSize) {
-        setHasMore(false)
-      }
+      if (paginatedNfts) {
+        if (paginatedNfts.length < nftsPageSize) {
+          setHasMore(false)
+        }
 
-      setNftsList([...nftsList, ...paginatedNfts])
+        setNftsList([...nftsList, ...paginatedNfts])
+      }
     } else {
       const paginatedUsers = await fetchUsersData(query, location, page)
 
-      if (paginatedUsers.length < profilePageSize) {
-        setHasMore(false)
-      }
+      if (paginatedUsers) {
+        if (paginatedUsers.length < profilePageSize) {
+          setHasMore(false)
+        }
 
-      setProfilesList([...profilesList, ...paginatedUsers])
+        setProfilesList([...profilesList, ...paginatedUsers])
+      }
     }
 
     setPage(page + 1)

@@ -27,7 +27,6 @@ import {getErrorCodeFromProblem} from "@/http/problem"
 import {ErrorCode} from "@/http/error-code"
 import {StatusCodes} from "http-status-codes"
 import {ProfileData} from "@/components/Profile/ProfileList"
-import {NFTData} from "@/components/NFT/NFTList"
 
 export async function myProfile() {
   const res = await fetch("/api/profile/me", {
@@ -719,13 +718,8 @@ export async function getPaginatedNftsWithSearch(query: string, location: string
     location,
     page: page.toString()
   })
-  const response = await fetch(`/api/nft/search?${queryParams.toString()}`)
 
-  if (response.status === StatusCodes.OK) {
-    return await response.json() as NFTData[]
-  }
-
-  throw new Error("Undefined error code from server")
+  return await fetch(`/api/nft/search?${queryParams.toString()}`)
 }
 
 export async function getPaginatedUsersWithSearch(query: string, location: string, page: number) {
@@ -734,13 +728,8 @@ export async function getPaginatedUsersWithSearch(query: string, location: strin
     location,
     page: page.toString()
   })
-  const response = await fetch(`/api/profile/search?${queryParams.toString()}`)
 
-  if (response.status === StatusCodes.OK) {
-    return await response.json() as ProfileData[]
-  }
-
-  throw new Error("Undefined error code from server")
+  return await fetch(`/api/profile/search?${queryParams.toString()}`)
 }
 
 
