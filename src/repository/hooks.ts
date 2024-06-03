@@ -2,8 +2,8 @@ import {
   acceptAllRequestFollowProfile,
   acceptRequestFollowProfile,
   deleteFollowerProfile,
-  getProfileData,
   followProfile,
+  getProfileData,
   ignoreAllRequestFollowProfile,
   ignoreRequestFollowProfile,
   registerUser,
@@ -11,6 +11,7 @@ import {
   searchRequesterProfile,
   twoFactorAuthenticatorUserType,
   unfollowProfile,
+  updateProfile,
   verifyExistUsername,
   verifyTwoFactorAuthenticatorTotpCode,
   verifyUserPassword
@@ -359,6 +360,20 @@ export function useRegisterUser() {
     dataRegister: data,
     errorRegister: error,
     isFetchingRegister: isMutating
+  }
+}
+
+export function useUpdateProfile() {
+  const updateProfileFetcher = (_: any, {arg}: {
+    arg: FormData
+  }) => updateProfile(arg)
+  const {trigger, data, error, isMutating} = useSWRMutation("updateProfileFetcher", updateProfileFetcher)
+
+  return {
+    updateProfile: (req: FormData) => trigger(req),
+    dataUpdateProfile: data,
+    errorUpdateProfile: error,
+    isFetchingUpdateProfile: isMutating
   }
 }
 

@@ -26,7 +26,6 @@ import {
 import {getErrorCodeFromProblem} from "@/http/problem"
 import {ErrorCode} from "@/http/error-code"
 import {StatusCodes} from "http-status-codes"
-import {ProfileData} from "../../app/settings/profile/page"
 
 export async function myProfile() {
   const res = await fetch("/api/profile/me", {
@@ -710,12 +709,56 @@ export async function registerUser(req: RegisterUserRequest) {
   throw new Error(`Undefined error code from server ${errorCode}`)
 }
 
+export async function updateProfile(req: FormData) {
+  const res = await fetch("/api/profile/update", {
+    method: "POST",
+    body: JSON.stringify(req)
+    // No Content-Type header needed, browser will set the correct multipart/form-data boundary
+  })
+
+  if (res.status === StatusCodes.CREATED) {
+    return RegisterUserResponse.parse(await res.json())
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_params"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.LINK_ALREADY_USED:
+      return "link_already_used"
+
+    case ErrorCode.USERNAME_ALREADY_USED:
+      return "username_already_used"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
+}
+
 
 export async function getProfileData() {
   const res = await fetch("/api/profile/me")
 
   if (res.status === StatusCodes.CREATED) {
+
     return await res.json()
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
   }
 
   return {avatarUrl: "", bio: "", link: "", username: ""}
