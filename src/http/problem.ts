@@ -26,6 +26,8 @@ export const invalidBodyProblem = {title: "Invalid request body", errorCode: Err
 
 export const notAuthenticatedProblem = {title: "Not authenticated", errorCode: ErrorCode.NOT_AUTHENTICATED, status: StatusCodes.UNAUTHORIZED}
 
+export const notActivatedProblem = {title: "Not activated user", errorCode: ErrorCode.NOT_ACTIVATED, status: StatusCodes.UNAUTHORIZED}
+
 export const uidNotFoundProblem = {title: "UID not found", errorCode: ErrorCode.UID_NOT_FOUND, status: StatusCodes.NOT_FOUND}
 
 export const twoFactorSetupRequiredProblem = {title: "Two-factor setup required", errorCode: ErrorCode.TWO_FACTOR_SETUP_REQUIRED, status: StatusCodes.PRECONDITION_REQUIRED}
@@ -77,6 +79,42 @@ export const cantAcceptYourselfProblem = {title: "Can't accept yourself", errorC
 export const cantDeleteFollowerYourselfProblem = {title: "Can't delete follower yourself", errorCode: ErrorCode.CANT_DELETE_FOLLOWER_YOURSELF, status: StatusCodes.BAD_REQUEST}
 
 export const linkAlreadyUsedProblem = {title: "unique link is already in use", errorCode: ErrorCode.LINK_ALREADY_USED, status: StatusCodes.BAD_REQUEST}
+
+export const alreadyMintedNftProblem = {
+  title: "Already minted NFT",
+  errorCode: ErrorCode.ALREADY_MINTED_NFT,
+  status: StatusCodes.CONFLICT
+}
+
+export const notMintedNftProblem = {
+  title: "Not minted NFT",
+  errorCode: ErrorCode.NOT_MINTED_NFT,
+  status: StatusCodes.NOT_FOUND
+}
+
+export const nftNotFoundProblem = {
+  title: "NFT not found",
+  errorCode: ErrorCode.NFT_NOT_FOUND,
+  status: StatusCodes.NOT_FOUND
+}
+
+export const commentNotFoundProblem = {
+  title: "Comment not found",
+  errorCode: ErrorCode.COMMENT_NOT_FOUND,
+  status: StatusCodes.NOT_FOUND
+}
+
+export const alreadyMintedCommentProblem = {
+  title: "Already minted comment",
+  errorCode: ErrorCode.ALREADY_MINTED_COMMENT,
+  status: StatusCodes.CONFLICT
+}
+
+export const notMintedCommentProblem = {
+  title: "Not minted comment",
+  errorCode: ErrorCode.NOT_MINTED_COMMENT,
+  status: StatusCodes.NOT_FOUND
+}
 
 const GetCode = z.object({
   errorCode: z.number().int().positive()

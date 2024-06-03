@@ -26,9 +26,6 @@ export class DefaultProfileService {
     const result = await this.pgClient.query.UserTable
       .findFirst({
         where: (user, {eq}) => eq(user.uid, uid),
-        columns: {
-          id: true,
-        },
         with: {
           profile: true,
         }
@@ -36,7 +33,7 @@ export class DefaultProfileService {
 
     if (result) {
       return {
-        id: result.id,
+        ...result,
         profile: {
           ...result.profile,
           createdAt: DateTime.fromSQL(result.profile.createdAt.replace("T", " "), {zone: "UTC"}) as DateTime<true>
@@ -72,5 +69,47 @@ export class DefaultProfileService {
 
   public isLinkExist(link: string) {
     return this.profilePgRepository.isLinkExist(link)
+  }
+
+  public async findByNftId(nftId: number) {
+    const result = await this.pgClient.query
+      .NftTable
+      .findFirst({
+        where: (nft, {eq}) => eq(nft.id, nftId),
+        columns: {},
+        with: {
+          profile: {}
+        }
+      })
+
+    if (result) {
+      return result.profile
+    }
+
+    return "no_profile"
+  }
+
+  public async findByCommentId(commentId: number) {
+    const result = await this.pgClient.query
+      .CommentTable
+      .findFirst({
+        where: (comment, {eq}) => eq(comment.id, commentId),
+        columns: {},
+        with: {
+          nft: {
+            columns: {},
+            with: {
+              profile: {}
+            }
+          }
+        }
+      })
+
+    if (result) {
+      return result.nft.profile
+    }
+
+
+    return "no_profile"
   }
 }

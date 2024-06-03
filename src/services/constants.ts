@@ -12,8 +12,12 @@ export const nftsPageSize = 12
 
 export const profilePageSize = 12
 
+export const usersPageSize = 20
+
 export const searchFollowsProfileSize = 10
 
 export const searchFollowersProfileSize = 10
 
 export const durationExpireOffset = {days: 1}
+
+export const commentNftSize = 10

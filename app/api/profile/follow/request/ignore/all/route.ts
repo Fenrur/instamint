@@ -1,5 +1,5 @@
 import {auth, getSession} from "@/auth"
-import {badSessionProblem, notAuthenticatedProblem, problem} from "@/http/problem"
+import {badSessionProblem, notAuthenticatedProblem, problem, notActivatedProblem} from "@/http/problem"
 import {followService, profileService} from "@/services"
 import {NextResponse} from "next/server"
 import {StatusCodes} from "http-status-codes"
@@ -15,6 +15,11 @@ export const PUT = auth(async (req) => {
 
   if (!myUserAndProfile) {
     return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
+  }
+
+
+  if (!myUserAndProfile.isActivated) {
+    return problem({...notActivatedProblem, detail: "your are not enable to access the app"})
   }
 
   await followService.ignoreAllRequestFollows(myUserAndProfile.profile.id)

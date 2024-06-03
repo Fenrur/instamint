@@ -1,5 +1,5 @@
 import {auth, getSession} from "@/auth"
-import {badSessionProblem, notAuthenticatedProblem, problem} from "@/http/problem"
+import {badSessionProblem, notAuthenticatedProblem, problem, notActivatedProblem} from "@/http/problem"
 import {profileService} from "@/services"
 import {NextResponse} from "next/server"
 import {MyProfileResponse} from "@/http/rest/types"
@@ -16,6 +16,11 @@ export const GET = auth(async (req) => {
 
   if (!userAndProfile) {
     return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
+  }
+
+
+  if (!userAndProfile.isActivated) {
+    return problem({...notActivatedProblem, detail: "your are not enable to access the app"})
   }
 
   const response: MyProfileResponse = userAndProfile.profile

@@ -22,6 +22,12 @@ export const SignupCredentials = zfd.formData({
 
 export type SignupCredentials = z.infer<typeof SignupCredentials>
 
+export const UserUpdate = zfd.formData({
+  isActivated: zfd.checkbox()
+})
+
+export type UserUpdate = z.infer<typeof UserUpdate>
+
 export const VerifyPasswordRequest = z.object({
   email: z.string().email("VerifyPasswordRequest.email must be an email."),
   password: z.string()
@@ -275,3 +281,90 @@ export const SearchFollowsProfileResponse = z.array(z.object({
 }))
 
 export type SearchFollowsProfileResponse = z.infer<typeof SearchFollowsProfileResponse>
+
+export const EnableOrDisableRequest = z.object({
+  id: z.number().int().positive()
+})
+
+export type EnableOrDisableRequest = z.infer<typeof EnableOrDisableRequest>
+
+export const EnableOrDisableResponse = z.object({
+  type: z.enum(["enabled", "disabled"])
+})
+
+export type EnableOrDisableResponse = z.infer<typeof EnableOrDisableResponse>
+
+export const  DeleteUserRequest = z.object({
+  id: z.number().int().positive()
+})
+
+export type DeleteUserRequest = z.infer<typeof DeleteUserRequest>
+
+export const DeleteUserResponse = z.object({
+  deleted: z.boolean()
+})
+
+export type DeleteUserResponse = z.infer<typeof DeleteUserResponse>
+
+export const MintNftRequest = z.object({
+  nftId: z.number(),
+})
+
+export type MintNftRequest = z.infer<typeof MintNftRequest>
+
+export const UnmintNftRequest = z.object({
+  nftId: z.number(),
+})
+
+export type UnmintNftRequest = z.infer<typeof UnmintNftRequest>
+
+export const MintCommentRequest = z.object({
+  commentId: z.number(),
+})
+
+export type MintCommentRequest = z.infer<typeof MintCommentRequest>
+
+export const UnmintCommentRequest = z.object({
+  commentId: z.number(),
+})
+
+export type UnmintCommentRequest = z.infer<typeof UnmintCommentRequest>
+
+export const PaginatedCommentElement = z.object({
+  commentId: z.number().int().min(0),
+  commentary: z.string(),
+  commentedAt: datetimeIso(),
+  commenterAvatarUrl: z.string(),
+  commenterUsername: z.string(),
+  mintCommentCount: z.number().int().min(0),
+  replyCount: z.number().int().min(0),
+  minted: z.boolean(),
+})
+
+export type PaginatedCommentElement = z.infer<typeof PaginatedCommentElement>
+
+export const PaginatedCommentsResponse = z.array(PaginatedCommentElement)
+
+export type PaginatedCommentsResponse = z.infer<typeof PaginatedCommentsResponse>
+
+export const CommentNftRequest = z.object({
+  nftId: z.number(),
+  commentary: z.string().min(1, "CommentNftRequest.commentary must be at least 1 character long."),
+  type: z.enum(["comment_nft"])
+}).or(z.object({
+  nftId: z.number(),
+  commentId: z.number(),
+  commentary: z.string().min(1, "CommentNftRequest.commentary must be at least 1 character long."),
+  type: z.enum(["reply_comment"])
+}))
+
+export type CommentNftRequest = z.infer<typeof CommentNftRequest>
+
+export const GetPaginatedUsersResponse = z.array(z.object({
+  id: z.number(),
+  email: z.string(),
+  isActivated: z.boolean(),
+  role: z.enum(["user", "admin"])
+}))
+
+export type GetPaginatedUsersResponse = z.infer<typeof GetPaginatedUsersResponse>

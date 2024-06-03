@@ -9,6 +9,9 @@ export const dynamic = "force-dynamic"
 
 interface ProfilePageProps {
   children: React.ReactNode,
+  params: {
+    slug: string
+  }
 }
 
 export default async function ProfileLayout(props: ProfilePageProps) {

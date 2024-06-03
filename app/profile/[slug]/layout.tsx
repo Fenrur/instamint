@@ -22,8 +22,7 @@ export default async function ProfileLayout(props: ProfilePageProps) {
       return await profileService.findByUserUid(session.uid)
     }
 
-    
-return null
+  return null
   }
   const userAndProfile = await getUserAndProfile()
 

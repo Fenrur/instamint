@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-    <body className={cn(inter.className, "light")}><Toaster richColors/>
+    <body className={cn(inter.className, "dark")}><Toaster richColors/>
     <SessionProvider>
       {children}
     </SessionProvider>
