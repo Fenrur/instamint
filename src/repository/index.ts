@@ -1,6 +1,6 @@
 import {
   AcceptAllFollowProfileRequest,
-  AcceptFollowProfileRequest,
+  AcceptFollowProfileRequest, CommentNftRequest,
   DeleteFollowerProfileRequest,
   FollowerProfileStateResponse,
   FollowProfileRequest,
@@ -918,6 +918,41 @@ export async function getPaginatedReplyComments(commentId: number, page: number)
 
     case ErrorCode.DONT_FOLLOW_PROFILE:
       return "dont_follow_profile"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
+}
+
+export async function createComment(req: CommentNftRequest) {
+  const res = await fetch("/api/nft/comment", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(req)
+  })
+
+  if (res.status === StatusCodes.CREATED) {
+    return "created"
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.COMMENT_NOT_FOUND:
+      return "comment_not_found"
+
+    case ErrorCode.NFT_NOT_FOUND:
+      return "nft_not_found"
   }
 
   throw new Error(`Undefined error code from server ${errorCode}`)

@@ -316,3 +316,16 @@ export type PaginatedCommentElement = z.infer<typeof PaginatedCommentElement>
 export const PaginatedCommentsResponse = z.array(PaginatedCommentElement)
 
 export type PaginatedCommentsResponse = z.infer<typeof PaginatedCommentsResponse>
+
+export const CommentNftRequest = z.object({
+  nftId: z.number(),
+  commentary: z.string().min(1, "CommentNftRequest.commentary must be at least 1 character long."),
+  type: z.enum(["comment_nft"])
+}).or(z.object({
+  nftId: z.number(),
+  commentId: z.number(),
+  commentary: z.string().min(1, "CommentNftRequest.commentary must be at least 1 character long."),
+  type: z.enum(["reply_comment"])
+}))
+
+export type CommentNftRequest = z.infer<typeof CommentNftRequest>

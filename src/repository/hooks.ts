@@ -1,6 +1,7 @@
 import {
   acceptAllRequestFollowProfile,
   acceptRequestFollowProfile,
+  createComment,
   deleteFollowerProfile,
   followProfile,
   getPaginatedComments,
@@ -29,6 +30,43 @@ import {
   VerifyTotpCodeRequest
 } from "@/http/rest/types"
 import {useRef} from "react"
+
+export function useCreateComment(nftId: number) {
+  const createCommentFetcher = (_: any, {arg}: {
+    arg: { commentary: string }
+  }) => createComment({
+    nftId,
+    type: "comment_nft",
+    commentary: arg.commentary
+  })
+  const {trigger, data, error, isMutating} = useSWRMutation(`CreateComment/${nftId}`, createCommentFetcher)
+
+  return {
+    createComment: (commentary: string) => trigger({commentary}),
+    dataCreate: data,
+    errorCreate: error,
+    isFetchingCreate: isMutating
+  }
+}
+
+export function useCreateReplyComment(nftId: number, commentId: number) {
+  const createReplyCommentFetcher = (_: any, {arg}: {
+    arg: { commentary: string }
+  }) => createComment({
+    nftId,
+    type: "reply_comment",
+    commentary: arg.commentary,
+    commentId
+  })
+  const {trigger, data, error, isMutating} = useSWRMutation(`CreateReplyComment/${nftId}/${commentId}`, createReplyCommentFetcher)
+
+  return {
+    createReplyComment: (commentary: string) => trigger({commentary}),
+    dataCreateReply: data,
+    errorCreateReply: error,
+    isFetchingCreateReply: isMutating
+  }
+}
 
 export function useGetPaginatedComments(nftId: number) {
   const getPaginatedCommentsFetcher = (_: any, {arg}: {

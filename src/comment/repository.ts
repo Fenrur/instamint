@@ -1,7 +1,7 @@
 import {PgClient} from "@/db/db-client"
 import {DateTime} from "luxon"
-import {CommentTable, NftTable} from "@/db/schema"
-import {count, eq, sql} from "drizzle-orm"
+import {CommentTable} from "@/db/schema"
+import {and, count, eq, isNull} from "drizzle-orm"
 
 export class CommentPgRepository {
   private readonly pgClient: PgClient
@@ -42,5 +42,39 @@ export class CommentPgRepository {
       .where(eq(CommentTable.id, commentId))
 
     return result[0].count > 0
+  }
+
+  public async findComment(profile: number, nftId: number, replyCommentId?: number) {
+    if (replyCommentId) {
+      const comment = await this.pgClient
+        .select()
+        .from(CommentTable)
+        .where(and(
+          eq(CommentTable.nftId, nftId),
+          eq(CommentTable.profileId, profile),
+          eq(CommentTable.replyCommentId, replyCommentId)
+        ))
+
+      if (comment.length > 0) {
+        return comment[0]
+      } else {
+        return null
+      }
+    }
+
+    const comment = await this.pgClient
+      .select()
+      .from(CommentTable)
+      .where(and(
+        eq(CommentTable.nftId, nftId),
+        eq(CommentTable.profileId, profile),
+        isNull(CommentTable.replyCommentId)
+      ))
+
+    if (comment.length > 0) {
+      return comment[0]
+    } else {
+      return null
+    }
   }
 }

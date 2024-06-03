@@ -1,15 +1,60 @@
 import {auth, getSession} from "@/auth";
 import {
-  badSessionProblem, dontFollowProfileProblem,
-  invalidQueryParameterProblem,
-  nftNotFoundProblem,
+  badSessionProblem, commentNotFoundProblem, dontFollowProfileProblem, invalidBodyProblem, invalidContentTypeProblem,
+  invalidQueryParameterProblem, nftNotFoundProblem,
   notAuthenticatedProblem,
   problem,
   profileNotFoundProblem
 } from "@/http/problem";
 import {commentService, followService, profileService} from "@/services";
 import {NextResponse} from "next/server";
-import {PaginatedCommentsResponse} from "@/http/rest/types";
+import {CommentNftRequest, PaginatedCommentsResponse} from "@/http/rest/types";
+import {isContentType} from "@/http/content-type";
+import {DateTime} from "luxon";
+import {StatusCodes} from "http-status-codes";
+
+export const POST = auth(async (req) => {
+  if (! isContentType(req, "json")) {
+    return problem({...invalidContentTypeProblem, detail: "only application/json is supported"})
+  }
+  const session = getSession(req)
+  const commentAt = DateTime.utc()
+
+  if (!session) {
+    return problem(notAuthenticatedProblem)
+  }
+
+  const bodyParsedResult = CommentNftRequest.safeParse(await req.json())
+
+  if (!bodyParsedResult.success) {
+    return problem({...invalidBodyProblem, detail: bodyParsedResult.error.errors})
+  }
+
+  const body = bodyParsedResult.data
+  const myUserAndProfile = await profileService.findByUserUid(session.uid)
+
+  if (!myUserAndProfile) {
+    return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
+  }
+
+  if (body.type === "comment_nft") {
+    const result = await commentService.createComment(body.nftId, myUserAndProfile.profile.id, commentAt, body.commentary)
+
+    if (result === "nft_not_found") {
+      return problem({...nftNotFoundProblem, detail: "nftId is not valid"})
+    }
+
+    return NextResponse.json({success: true}, {status: StatusCodes.CREATED})
+  } else {
+    const result = await commentService.createReplyComment(body.nftId, myUserAndProfile.profile.id, commentAt, body.commentary, body.commentId)
+
+    if (result === "comment_not_found") {
+      return problem({...commentNotFoundProblem, detail: "commentId is not valid"})
+    }
+
+    return NextResponse.json({success: true}, {status: StatusCodes.CREATED})
+  }
+})
 
 export const GET = auth(async (req) => {
   const session = getSession(req)

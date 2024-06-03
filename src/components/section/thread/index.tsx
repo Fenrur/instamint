@@ -243,7 +243,7 @@ function CommentRow(props: CommentRowProps) {
 
       {
         props.replyCount > 0 && hasMore && !hideThread
-         && <div className="flex items-center mt-2 pl-16">
+        && <div className="flex items-center mt-2 pl-16">
           <Separator className="w-8"/>
           <button
             disabled={isFetchingReplyComments}
@@ -260,7 +260,7 @@ function CommentRow(props: CommentRowProps) {
 
       {
         props.replyCount > 0 && !hasMore && !hideThread
-         && <div className="flex items-center mt-2 pl-16">
+        && <div className="flex items-center mt-2 pl-16">
           <Separator className="w-8"/>
           <button
             onClick={event => {
@@ -275,7 +275,7 @@ function CommentRow(props: CommentRowProps) {
 
       {
         props.replyCount > 0 && !hasMore && hideThread
-         && <div className="flex items-center mt-2 pl-16">
+        && <div className="flex items-center mt-2 pl-16">
           <Separator className="w-8"/>
           <button
             onClick={event => {
@@ -377,6 +377,11 @@ export function ThreadElement(props: ThreadElementProps) {
   }
   const handleCloseReplyBadge = () => {
     setReplyCommentData(null)
+  }
+  const handleSendCommentClick = () => {
+    if (commentAreaRef.current && commentAreaRef.current.value) {
+      console.log(commentAreaRef.current.value)
+    }
   }
 
   useEffect(() => {
@@ -525,7 +530,15 @@ export function ThreadElement(props: ThreadElementProps) {
                 ref={commentAreaRef}
                 className="flex-grow resize-none rounded-2xl"
                 placeholder="Enter your comment"/>
-              <Button variant="default" type="submit" className="h-full rounded-2xl">
+              <Button
+                variant="default"
+                type="submit"
+                className="h-full rounded-2xl"
+                onClick={event => {
+                  event.preventDefault()
+                  handleSendCommentClick()
+                }}
+              >
                 <MoveUp/>
               </Button>
             </form>

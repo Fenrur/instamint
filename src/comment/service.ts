@@ -2,14 +2,17 @@ import {CommentPgRepository} from "@/comment/repository"
 import {DateTime} from "luxon"
 import {PgClient} from "@/db/db-client"
 import {sql} from "drizzle-orm";
+import {NftPgRepository} from "@/nft/repository";
 
 export class DefaultCommentService {
   private readonly commentRepository: CommentPgRepository
+  private readonly nftRepository: NftPgRepository
   private readonly pgClient: PgClient
   private readonly commentNftSize: number
 
   constructor(pgClient: PgClient, commentNftSize: number) {
     this.commentRepository = new CommentPgRepository(pgClient)
+    this.nftRepository = new NftPgRepository(pgClient)
     this.pgClient = pgClient
     this.commentNftSize = commentNftSize
   }
@@ -100,6 +103,24 @@ export class DefaultCommentService {
     `
 
     return mapCommentsPaginatedAndSorted(await this.pgClient.execute(query))
+  }
+
+  public async createComment(nftId: number, profileId: number, commentedAt: DateTime<true>, commentary: string) {
+    const nft = await this.nftRepository.exists(nftId)
+    if (!nft) {
+      return "nft_not_found"
+    }
+
+    return this.commentRepository.create(nftId, profileId, commentedAt, commentary)
+  }
+
+  public async createReplyComment(nftId: number, profileId: number, commentedAt: DateTime<true>, commentary: string, replyCommentId: number) {
+    const comment = await this.commentRepository.findComment(profileId, nftId, replyCommentId)
+    if (!comment) {
+      return "comment_not_found"
+    }
+
+    return this.commentRepository.create(nftId, profileId, commentedAt, commentary, replyCommentId)
   }
 }
 
