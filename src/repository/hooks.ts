@@ -2,7 +2,7 @@ import {
   acceptAllRequestFollowProfile,
   acceptRequestFollowProfile,
   createComment,
-  deleteFollowerProfile,
+  deleteFollowerProfile, deleteUser, enableOrDisableUser,
   followProfile,
   getPaginatedComments,
   getPaginatedReplyComments,

@@ -359,3 +359,12 @@ export const CommentNftRequest = z.object({
 }))
 
 export type CommentNftRequest = z.infer<typeof CommentNftRequest>
+
+export const GetPaginatedUsersResponse = z.array(z.object({
+  id: z.number(),
+  email: z.string(),
+  isActivated: z.boolean(),
+  role: z.enum(["user", "admin"])
+}))
+
+export type GetPaginatedUsersResponse = z.infer<typeof GetPaginatedUsersResponse>

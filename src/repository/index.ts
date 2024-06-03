@@ -1,15 +1,20 @@
 import {
   AcceptAllFollowProfileRequest,
-  AcceptFollowProfileRequest, CommentNftRequest,
+  AcceptFollowProfileRequest,
+  CommentNftRequest,
   DeleteFollowerProfileRequest,
+  DeleteUserRequest,
+  EnableOrDisableRequest,
+  EnableOrDisableResponse,
   FollowerProfileStateResponse,
   FollowProfileRequest,
   FollowProfileResponse,
-  FollowProfileStateResponse,
+  FollowProfileStateResponse, GetPaginatedUsersResponse,
   GetPaginedNftsByUsernameResponse,
-  IgnoreProfileRequest, MintCommentRequest, MintNftRequest, PaginatedCommentsResponse,
-  GetPaginedUsersResponse,
   IgnoreProfileRequest,
+  MintCommentRequest,
+  MintNftRequest,
+  PaginatedCommentsResponse,
   PaginatedFollowerProfileResponse,
   PaginatedFollowProfileResponse,
   PaginatedRequestersFollowProfileResponse,
@@ -20,7 +25,9 @@ import {
   TwoFactorAuthenticatorTypeRequest,
   TwoFactorAuthenticatorTypeResponse,
   UnfollowProfileRequest,
-  UnfollowProfileResponse, UnmintCommentRequest, UnmintNftRequest,
+  UnfollowProfileResponse,
+  UnmintCommentRequest,
+  UnmintNftRequest,
   VerifyExistUsernameResponse,
   VerifyPasswordRequest,
   VerifyTotpCodeRequest
@@ -588,7 +595,7 @@ export async function getPaginatedUsers(page: number) {
   })
 
   if (res.status === StatusCodes.OK) {
-    return GetPaginedUsersResponse.parse(await res.json())
+    return GetPaginatedUsersResponse.parse(await res.json())
   }
 
   const errorCode = getErrorCodeFromProblem(await res.json())
