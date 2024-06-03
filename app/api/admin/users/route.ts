@@ -8,6 +8,7 @@ import {
 } from "@/http/problem"
 import {userService} from "@/services"
 import {auth, getSession} from "@/auth"
+import {GetPaginatedUsersResponse} from "@/http/rest/types"
 
 export const GET = auth(async (req) => {
   const url = req.nextUrl.clone()
@@ -44,23 +45,8 @@ export const GET = auth(async (req) => {
   }
 
   if (myUser && myUser.role === "admin") {
-    const result = await userService.findUsersPaginatedAndSorted(parsedPage)
-    const response = mapUsersToResponse(result)
+    const result: GetPaginatedUsersResponse  = await userService.findUsersPaginatedAndSorted(parsedPage)
 
-    return NextResponse.json(response)
+    return NextResponse.json(result)
   }
 })
-
-function mapUsersToResponse(users: {
-  id: number,
-  email: string,
-  isActivated: boolean,
-  role: "user" | "admin"
-}[]) {
-  return users.map(({id, email, isActivated, role}) => ({
-    id,
-    email,
-    isActivated,
-    role
-  }))
-}

@@ -358,12 +358,26 @@ export async function up(knex) {
       "expireAt"       TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
       "isVerified"     BOOLEAN                        NOT NULL
     );
+
+    CREATE TABLE "MintComment"
+    (
+      "commentId" INTEGER                       NOT NULL
+        CONSTRAINT "mintCommentCommentFk"
+          REFERENCES "Comment" ("id")
+          ON DELETE CASCADE,
+      "profileId" INTEGER                       NOT NULL
+        CONSTRAINT "mintCommentProfileFk"
+          REFERENCES "Profile" ("id")
+          ON DELETE CASCADE,
+      "mintAt"    TIMESTAMP(3) WITHOUT TIME ZONE NOT NULL,
+      PRIMARY KEY ("commentId", "profileId")
+    );
   `)
 }
 
 export async function down(knex) {
   await knex.raw(`
-    DROP TABLE "Profile", "User", "TeaBag", "Nft", "Mint", "HashtagNft", "Comment", "ReportComment", "ReportNft", "ReportProfile", "Whitelist", "ViewProfile", "ScheduleDeletionUser", "DraftNft", "WhitelistUser", "ViewNft", "UserTeaBag", "PrivateMessage", "Follow", "PasswordReset", "RequestFollow", "EmailVerification";
+    DROP TABLE "Profile", "User", "TeaBag", "MintComment", "Nft", "Mint", "HashtagNft", "Comment", "ReportComment", "ReportNft", "ReportProfile", "Whitelist", "ViewProfile", "ScheduleDeletionUser", "DraftNft", "WhitelistUser", "ViewNft", "UserTeaBag", "PrivateMessage", "Follow", "PasswordReset", "RequestFollow", "EmailVerification";
     DROP TYPE "LanguageType", "UserRole", "ProfileVisibilityType", "CurrencyType", "UserTeaBagRole", "NotificationType", "NftType";
     DROP FUNCTION check_hashtags;
     DROP EXTENSION "uuid-ossp";

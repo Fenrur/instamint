@@ -59,6 +59,9 @@ export const profileRelations = relations(ProfileTable, ({ many }) => ({
   requesters: many(RequestFollowTable, {
     relationName: "requesterUserFk"
   }),
+  showOnNfts: many(NftTable, {
+    relationName: "nftShowOnProfileFk"
+  }),
 }))
 
 export const UserTable = pgTable("User", {
@@ -102,8 +105,12 @@ export const NftTable = pgTable("Nft", {
   type: NftTypeEnum("type").notNull(),
 })
 
-export const nftRelations = relations(NftTable, ({many}) => ({
+export const nftRelations = relations(NftTable, ({many, one}) => ({
   mints: many(MintTable),
+  profile: one(ProfileTable, {
+    fields: [NftTable.showOnProfileId],
+    references: [ProfileTable.id],
+  }),
 }))
 
 export const MintTable = pgTable("Mint", {
@@ -132,6 +139,13 @@ export const CommentTable = pgTable("Comment", {
   commentary: varchar("commentary", {length: 1000}).notNull(),
   replyCommentId: integer("replyCommentId")
 })
+
+export const commentRelations = relations(CommentTable, ({one}) => ({
+  nft: one(NftTable, {
+    fields: [CommentTable.nftId],
+    references: [NftTable.id],
+  }),
+}))
 
 export const ReportCommentTable = pgTable("ReportComment", {
   reporterProfileId: integer("reporterProfileId").notNull().references(() => ProfileTable.id, {onDelete: "cascade"}).primaryKey(),
@@ -263,3 +277,9 @@ export const requestFollowRelations = relations(RequestFollowTable, ({one}) => (
     references: [ProfileTable.id],
   }),
 }))
+
+export const MintCommentTable = pgTable("MintComment", {
+  commentId: integer("commentId").notNull().references(() => CommentTable.id, {onDelete: "cascade"}),
+  profileId: integer("profileId").notNull().references(() => ProfileTable.id, {onDelete: "cascade"}),
+  mintAt: timestamp("mintAt", {withTimezone: false, mode: "string", precision: 3}).notNull(),
+})

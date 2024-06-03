@@ -356,9 +356,7 @@ export function GenericFollowsProfilePage({type, username}: GenericFollowsProfil
         hasMore={hasMore}
         loader={
           <div className="grid justify-center">
-            {
-              <BackgroundLoadingDots size={50}/>
-            }
+            <BackgroundLoadingDots size={50}/>
           </div>
         }
         dataLength={follows.length}
