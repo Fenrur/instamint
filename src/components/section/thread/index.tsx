@@ -16,15 +16,15 @@ import {
   useUnmintNft
 } from "@/repository/hooks"
 import {Drawer, DrawerContent, DrawerTrigger} from "@/components/ui/drawer"
-import {Separator} from "@/components/ui/separator";
-import {Button} from "@/components/ui/button";
-import {Textarea} from "@/components/ui/textarea";
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import {ScrollArea} from "@/components/ui/scroll-area";
-import {PaginatedCommentElement, type PaginatedCommentsResponse} from "@/http/rest/types";
-import {commentNftSize} from "@/services/constants";
-import Link from "next/link";
-import {Badge} from "@/components/ui/badge";
+import {Separator} from "@/components/ui/separator"
+import {Button} from "@/components/ui/button"
+import {Textarea} from "@/components/ui/textarea"
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
+import {ScrollArea} from "@/components/ui/scroll-area"
+import {PaginatedCommentElement, type PaginatedCommentsResponse} from "@/http/rest/types"
+import {commentNftSize} from "@/services/constants"
+import Link from "next/link"
+import {Badge} from "@/components/ui/badge"
 
 function ReplyCommentRow(props: CommentRowProps) {
   const [mint, setMint] = useState(props.minted)
@@ -117,12 +117,10 @@ function CommentRow(props: CommentRowProps) {
   const {mintComment, isFetchingMint} = useMintComment(props.commentId)
   const {unmintComment, isFetchingUnmint} = useUnmintComment(props.commentId)
   const [mintCommentCount, setMintCommentCount] = useState(props.mintCommentCount)
-  const [replyCount, setReplyCount] = useState(props.replyCount)
   const [comments, setComments] = useState<PaginatedCommentsResponse>([])
   const [hasMore, setHasMore] = useState(props.replyCount > 0)
   const [page, setPage] = useState(1)
   const [hideThread, setHideThread] = useState(false)
-
   const {getPaginatedReplyComments, isFetchingReplyComments} = useGetPaginatedReplyComments(props.commentId)
   const handleMintClick = async () => {
     if (!isFetchingMint && !isFetchingUnmint) {
@@ -349,6 +347,7 @@ export function ThreadElement(props: ThreadElementProps) {
       setCommentState("close")
     }
   }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadNextPage = async () => {
     if (!hasMore || isFetchingComments) {
       return
@@ -371,6 +370,7 @@ export function ThreadElement(props: ThreadElementProps) {
   }
   const replyComment = (data: ReplyCommentData | null) => {
     setReplyCommentData(data)
+
     if (commentAreaRef.current) {
       commentAreaRef.current.focus()
     }
@@ -379,16 +379,21 @@ export function ThreadElement(props: ThreadElementProps) {
     setReplyCommentData(null)
   }
   const handleSendCommentClick = () => {
+    // eslint-disable-next-line no-empty
     if (commentAreaRef.current && commentAreaRef.current.value) {
-      console.log(commentAreaRef.current.value)
+      // TODO later
     }
   }
 
   useEffect(() => {
-    if (commentState === "open" && page == 1) {
-      loadNextPage()
+    if (commentState === "open" && page === 1) {
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      setTimeout(async () => {
+        await loadNextPage()
+      })
     }
-  }, [commentState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [commentState, page])
 
   return (
     <section className="h-15 max-w-[470px]">

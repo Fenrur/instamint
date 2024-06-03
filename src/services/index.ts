@@ -19,8 +19,8 @@ import {
   searchRequesterProfileSize
 } from "@/services/constants"
 import {DefaultMintService} from "@/mint/service"
-import {DefaultCommentService} from "@/comment/service";
-import {DefaultMintCommentService} from "@/mint-comment/service";
+import {DefaultCommentService} from "@/comment/service"
+import {DefaultMintCommentService} from "@/mint-comment/service"
 
 export const userService = new DefaultUserService(pgClient, env.PEPPER_PASSWORD_SECRET, env.TOTP_ENCRYPTION_KEY)
 

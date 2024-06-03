@@ -1,7 +1,7 @@
 import {PgClient} from "@/db/db-client"
-import {DateTime} from "luxon";
-import {MintCommentTable} from "@/db/schema";
-import {and, count, eq} from "drizzle-orm";
+import {DateTime} from "luxon"
+import {MintCommentTable} from "@/db/schema"
+import {and, count, eq} from "drizzle-orm"
 
 export class MintCommentPgRepository {
   private readonly pgClient: PgClient

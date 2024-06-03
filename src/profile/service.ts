@@ -94,8 +94,9 @@ export class DefaultProfileService {
 
     if (result) {
       return result.nft.profile
-    } else {
-      return "no_profile"
     }
+ 
+      
+return "no_profile"
   }
 }

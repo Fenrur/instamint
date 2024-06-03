@@ -1,8 +1,8 @@
 import {CommentPgRepository} from "@/comment/repository"
 import {DateTime} from "luxon"
 import {PgClient} from "@/db/db-client"
-import {sql} from "drizzle-orm";
-import {NftPgRepository} from "@/nft/repository";
+import {sql} from "drizzle-orm"
+import {NftPgRepository} from "@/nft/repository"
 
 export class DefaultCommentService {
   private readonly commentRepository: CommentPgRepository
@@ -107,6 +107,7 @@ export class DefaultCommentService {
 
   public async createComment(nftId: number, profileId: number, commentedAt: DateTime<true>, commentary: string) {
     const nft = await this.nftRepository.exists(nftId)
+
     if (!nft) {
       return "nft_not_found"
     }
@@ -116,6 +117,7 @@ export class DefaultCommentService {
 
   public async createReplyComment(nftId: number, profileId: number, commentedAt: DateTime<true>, commentary: string, replyCommentId: number) {
     const comment = await this.commentRepository.findComment(profileId, nftId, replyCommentId)
+
     if (!comment) {
       return "comment_not_found"
     }
