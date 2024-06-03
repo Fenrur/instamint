@@ -9,6 +9,9 @@ export const dynamic = "force-dynamic"
 
 interface ProfilePageProps {
   children: React.ReactNode,
+  params: {
+    slug: string
+  }
 }
 
 export default async function ProfileLayout(props: ProfilePageProps) {
@@ -19,7 +22,7 @@ export default async function ProfileLayout(props: ProfilePageProps) {
     }
 
 
-return null
+    return null
   }
   const userAndProfile = await getUserAndProfile()
   const username = userAndProfile?.profile.username || ""

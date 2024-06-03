@@ -297,9 +297,7 @@ export function FollowRequestPageContent() {
         hasMore={sectionRequestersMode === "viewing" ? hasMoreRequester : false}
         loader={
           <div className="grid justify-center">
-            {
-              <BackgroundLoadingDots size={50}/>
-            }
+            <BackgroundLoadingDots size={50}/>
           </div>
         }
         dataLength={requesters.length}
@@ -360,9 +358,7 @@ export function FollowRequestPageContent() {
         hasMore={sectionIgnoredRequestersMode === "viewing" ? hasMoreIgnoredRequester : false}
         loader={
           <div className="grid justify-center">
-            {
-              <BackgroundLoadingDots size={50}/>
-            }
+            <BackgroundLoadingDots size={50}/>
           </div>
         }
         dataLength={ignoredRequesters.length}
