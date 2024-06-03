@@ -36,7 +36,6 @@ import {
 import {getErrorCodeFromProblem} from "@/http/problem"
 import {ErrorCode} from "@/http/error-code"
 import {StatusCodes} from "http-status-codes"
-import {ProfileData} from "@/components/Profile/ProfileList"
 
 export async function myProfile() {
   const res = await fetch("/api/profile/me", {
@@ -891,7 +890,6 @@ export async function getProfileData() {
   const res = await fetch("/api/profile/me")
 
   if (res.status === StatusCodes.CREATED) {
-
     return await res.json()
   }
 
