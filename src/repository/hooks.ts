@@ -1,17 +1,25 @@
 import {
   acceptAllRequestFollowProfile,
   acceptRequestFollowProfile,
+  createComment,
   deleteFollowerProfile,
+  deleteUser,
+  enableOrDisableUser,
   fetchProfileData,
-  deleteUser, enableOrDisableUser,
   followProfile,
+  getPaginatedComments,
+  getPaginatedReplyComments,
   ignoreAllRequestFollowProfile,
   ignoreRequestFollowProfile,
+  mintComment,
+  mintNft,
   registerUser,
   searchFollowersProfile,
   searchRequesterProfile,
   twoFactorAuthenticatorUserType,
   unfollowProfile,
+  unmintComment,
+  unmintNft,
   verifyExistUsername,
   verifyTwoFactorAuthenticatorTotpCode,
   verifyUserPassword
@@ -25,6 +33,134 @@ import {
 } from "@/http/rest/types"
 import {useRef} from "react"
 import useSWR from "swr"
+
+export function useCreateComment(nftId: number) {
+  const createCommentFetcher = (_: any, {arg}: {
+    arg: { commentary: string }
+  }) => createComment({
+    nftId,
+    type: "comment_nft",
+    commentary: arg.commentary
+  })
+  const {trigger, data, error, isMutating} = useSWRMutation(`CreateComment/${nftId}`, createCommentFetcher)
+
+  return {
+    createComment: (commentary: string) => trigger({commentary}),
+    dataCreate: data,
+    errorCreate: error,
+    isFetchingCreate: isMutating
+  }
+}
+
+export function useCreateReplyComment(nftId: number, commentId: number) {
+  const createReplyCommentFetcher = (_: any, {arg}: {
+    arg: { commentary: string }
+  }) => createComment({
+    nftId,
+    type: "reply_comment",
+    commentary: arg.commentary,
+    commentId
+  })
+  const {
+    trigger,
+    data,
+    error,
+    isMutating
+  } = useSWRMutation(`CreateReplyComment/${nftId}/${commentId}`, createReplyCommentFetcher)
+
+  return {
+    createReplyComment: (commentary: string) => trigger({commentary}),
+    dataCreateReply: data,
+    errorCreateReply: error,
+    isFetchingCreateReply: isMutating
+  }
+}
+
+export function useGetPaginatedComments(nftId: number) {
+  const getPaginatedCommentsFetcher = (_: any, {arg}: {
+    arg: { page: number }
+  }) => getPaginatedComments(nftId, arg.page)
+  const {
+    trigger,
+    data,
+    error,
+    isMutating
+  } = useSWRMutation(`GetPaginatedComments/${nftId}`, getPaginatedCommentsFetcher)
+
+  return {
+    getPaginatedComments: (page: number) => trigger({page}),
+    dataComments: data,
+    errorComments: error,
+    isFetchingComments: isMutating
+  }
+}
+
+export function useGetPaginatedReplyComments(commentId: number) {
+  const getPaginatedReplyCommentsFetcher = (_: any, {arg}: {
+    arg: { page: number }
+  }) => getPaginatedReplyComments(commentId, arg.page)
+  const {
+    trigger,
+    data,
+    error,
+    isMutating
+  } = useSWRMutation(`GetPaginatedReplyComments/${commentId}`, getPaginatedReplyCommentsFetcher)
+
+  return {
+    getPaginatedReplyComments: (page: number) => trigger({page}),
+    dataReplyComments: data,
+    errorReplyComments: error,
+    isFetchingReplyComments: isMutating
+  }
+}
+
+export function useMintComment(commentId: number) {
+  const mintCommentFetcher = () => mintComment({commentId})
+  const {trigger, data, error, isMutating} = useSWRMutation(`MintComment/${commentId}`, mintCommentFetcher)
+
+  return {
+    mintComment: () => trigger(),
+    dataMint: data,
+    errorMint: error,
+    isFetchingMint: isMutating
+  }
+}
+
+export function useUnmintComment(commentId: number) {
+  const unmintCommentFetcher = () => unmintComment({commentId})
+  const {trigger, data, error, isMutating} = useSWRMutation(`UnmintComment/${commentId}`, unmintCommentFetcher)
+
+  return {
+    unmintComment: () => trigger(),
+    dataUnmint: data,
+    errorUnmint: error,
+    isFetchingUnmint: isMutating
+  }
+}
+
+export function useMintNft(nftId: number) {
+  const mintNftFetcher = () => mintNft({nftId})
+  const {trigger, data, error, isMutating} = useSWRMutation(`MintNft/${nftId}`, mintNftFetcher)
+
+  return {
+    mintNft: () => trigger(),
+    dataMint: data,
+    errorMint: error,
+    isFetchingMint: isMutating
+  }
+}
+
+export function useUnmintNft(nftId: number) {
+  const unmintNftFetcher = () => unmintNft({nftId})
+  const {trigger, data, error, isMutating} = useSWRMutation(`UnmintNft/${nftId}`, unmintNftFetcher)
+
+  return {
+    unmintNft: () => trigger(),
+    dataUnmint: data,
+    errorUnmint: error,
+    isFetchingUnmint: isMutating
+  }
+}
 
 export function useFollowProfile(username: string) {
   const followProfileFetcher = () => followProfile({username})
@@ -365,7 +501,7 @@ export function useRegisterUser() {
 
 export function useFetchProfileData() {
   const fetchProfileDataFetcher = () => fetchProfileData()
-  const { data, error, mutate} = useSWR("useFetchProfileData", fetchProfileDataFetcher)
+  const {data, error, mutate} = useSWR("useFetchProfileData", fetchProfileDataFetcher)
 
   return {
     profileData: data,
@@ -373,7 +509,6 @@ export function useFetchProfileData() {
     errorProfileData: error,
   }
 }
-
 
 
 export function useEnableOrDisable(id: number) {

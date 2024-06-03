@@ -80,6 +80,42 @@ export const cantDeleteFollowerYourselfProblem = {title: "Can't delete follower 
 
 export const linkAlreadyUsedProblem = {title: "unique link is already in use", errorCode: ErrorCode.LINK_ALREADY_USED, status: StatusCodes.BAD_REQUEST}
 
+export const alreadyMintedNftProblem = {
+  title: "Already minted NFT",
+  errorCode: ErrorCode.ALREADY_MINTED_NFT,
+  status: StatusCodes.CONFLICT
+}
+
+export const notMintedNftProblem = {
+  title: "Not minted NFT",
+  errorCode: ErrorCode.NOT_MINTED_NFT,
+  status: StatusCodes.NOT_FOUND
+}
+
+export const nftNotFoundProblem = {
+  title: "NFT not found",
+  errorCode: ErrorCode.NFT_NOT_FOUND,
+  status: StatusCodes.NOT_FOUND
+}
+
+export const commentNotFoundProblem = {
+  title: "Comment not found",
+  errorCode: ErrorCode.COMMENT_NOT_FOUND,
+  status: StatusCodes.NOT_FOUND
+}
+
+export const alreadyMintedCommentProblem = {
+  title: "Already minted comment",
+  errorCode: ErrorCode.ALREADY_MINTED_COMMENT,
+  status: StatusCodes.CONFLICT
+}
+
+export const notMintedCommentProblem = {
+  title: "Not minted comment",
+  errorCode: ErrorCode.NOT_MINTED_COMMENT,
+  status: StatusCodes.NOT_FOUND
+}
+
 const GetCode = z.object({
   errorCode: z.number().int().positive()
 })

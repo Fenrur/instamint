@@ -27,6 +27,15 @@ export class NftPgRepository {
     this.pgClient = pqClient
   }
 
+  public async exists(nftId: number) {
+    const result = await this.pgClient
+      .select({count: count()})
+      .from(NftTable)
+      .where(eq(NftTable.id, nftId))
+
+    return result[0].count > 0
+  }
+
   public async countNftsByProfileId(profileId: number) {
     const result = await this.pgClient
       .select({count: count()})

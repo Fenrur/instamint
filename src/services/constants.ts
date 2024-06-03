@@ -19,3 +19,5 @@ export const searchFollowsProfileSize = 10
 export const searchFollowersProfileSize = 10
 
 export const durationExpireOffset = {days: 1}
+
+export const commentNftSize = 10
