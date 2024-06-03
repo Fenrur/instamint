@@ -5,10 +5,10 @@ import {
   deleteFollowerProfile,
   deleteUser,
   enableOrDisableUser,
-  fetchProfileData,
   followProfile,
   getPaginatedComments,
   getPaginatedReplyComments,
+  getProfileData,
   ignoreAllRequestFollowProfile,
   ignoreRequestFollowProfile,
   mintComment,
@@ -20,6 +20,7 @@ import {
   unfollowProfile,
   unmintComment,
   unmintNft,
+  updateProfile,
   verifyExistUsername,
   verifyTwoFactorAuthenticatorTotpCode,
   verifyUserPassword
@@ -499,9 +500,23 @@ export function useRegisterUser() {
   }
 }
 
-export function useFetchProfileData() {
-  const fetchProfileDataFetcher = () => fetchProfileData()
-  const {data, error, mutate} = useSWR("useFetchProfileData", fetchProfileDataFetcher)
+export function useUpdateProfile() {
+  const updateProfileFetcher = (_: any, {arg}: {
+    arg: FormData
+  }) => updateProfile(arg)
+  const {trigger, data, error, isMutating} = useSWRMutation("updateProfileFetcher", updateProfileFetcher)
+
+  return {
+    updateProfile: (req: FormData) => trigger(req),
+    dataUpdateProfile: data,
+    errorUpdateProfile: error,
+    isFetchingUpdateProfile: isMutating
+  }
+}
+
+export function useGetProfileData() {
+  const getProfileDataFetcher = () => getProfileData()
+  const {data, error, mutate} = useSWR("useFetchProfileData", getProfileDataFetcher)
 
   return {
     profileData: data,
