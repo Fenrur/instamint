@@ -36,3 +36,5 @@ Jira is a popular tool for planning, tracking, and managing Agile projects.
 ### Conclusion
 
 Agile work, with its structured roles, iterative sprints, user-centered stories, and tools like Jira, enhances flexibility, collaboration, and customer satisfaction. By adopting Agile principles, organizations can improve efficiency, adaptability, and product quality.
+
+Antoine de Mareschal
