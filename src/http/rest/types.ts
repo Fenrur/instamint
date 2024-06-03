@@ -1,7 +1,7 @@
 import {z} from "zod"
 import {zfd} from "zod-form-data"
 import {passwordRegex, usernameRegex} from "@/utils/validator"
-import {nftTypeArray, profileVisibilityTypeArray} from "@/domain/types"
+import {nftTypeArray, profileVisibilityTypeArray, userRoleArray} from "@/domain/types"
 import {datetimeIso} from "@/utils/zod"
 
 export const FollowUnfollowProfileRequest = z.object({
@@ -21,6 +21,12 @@ export const SignupCredentials = zfd.formData({
 })
 
 export type SignupCredentials = z.infer<typeof SignupCredentials>
+
+export const UserUpdate = zfd.formData({
+  isActivated: zfd.checkbox()
+})
+
+export type UserUpdate = z.infer<typeof UserUpdate>
 
 export const VerifyPasswordRequest = z.object({
   email: z.string().email("VerifyPasswordRequest.email must be an email."),
@@ -98,6 +104,15 @@ export const RegisterUserResponse = z.object({
 })
 
 export type RegisterUserResponse = z.infer<typeof RegisterUserResponse>
+
+export const GetPaginedUsersResponse = z.array(
+  z.object({
+    id: z.number().int().positive(),
+    email: z.string(),
+    isActivated: z.boolean(),
+    role: z.enum(userRoleArray),
+  })
+)
 
 export const VerifyExistUsernameResponse = z.object({
   exist: z.boolean()
@@ -275,3 +290,27 @@ export const SearchFollowsProfileResponse = z.array(z.object({
 }))
 
 export type SearchFollowsProfileResponse = z.infer<typeof SearchFollowsProfileResponse>
+
+export const EnableOrDisableRequest = z.object({
+  id: z.number().int().positive()
+})
+
+export type EnableOrDisableRequest = z.infer<typeof EnableOrDisableRequest>
+
+export const EnableOrDisableResponse = z.object({
+  type: z.enum(["enabled", "disabled"])
+})
+
+export type EnableOrDisableResponse = z.infer<typeof EnableOrDisableResponse>
+
+export const  DeleteUserRequest = z.object({
+  id: z.number().int().positive()
+})
+
+export type DeleteUserRequest = z.infer<typeof DeleteUserRequest>
+
+export const DeleteUserResponse = z.object({
+  deleted: z.boolean()
+})
+
+export type DeleteUserResponse = z.infer<typeof DeleteUserResponse>
