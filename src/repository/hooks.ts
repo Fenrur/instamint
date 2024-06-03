@@ -381,7 +381,7 @@ export function useSearchFollowsProfile(username: string) {
       throw new Error("AbortController.signal is undefined")
     }
 
-    return searchFollowsProfile(signal, username, arg.searchedUsername)
+    return searchFollowersProfile(signal, arg.searchedUsername, username)
   }
   const {
     trigger,
@@ -488,5 +488,29 @@ export function useRegisterUser() {
     dataRegister: data,
     errorRegister: error,
     isFetchingRegister: isMutating
+  }
+}
+
+export function useEnableOrDisable(id: number) {
+  const enableOrDisableFetcher = () => enableOrDisableUser({id})
+  const {trigger, data, error, isMutating} = useSWRMutation(`EnableOrDisable/${id}`, enableOrDisableFetcher)
+
+  return {
+    enableOrDisable: () => trigger(),
+    dataEnableOrDisable: data,
+    errorEnableOrDisable: error,
+    isFetchingEnableOrDisable: isMutating
+  }
+}
+
+export function useDeleteUser(id: number) {
+  const deleteUserFetcher = () => deleteUser({id})
+  const {trigger, data, error, isMutating} = useSWRMutation(`DeleteUser/${id}`, deleteUserFetcher)
+
+  return {
+    deleteUser: () => trigger(),
+    dataDeleteUser: data,
+    errorDeleteUser: error,
+    isFetchingDeleteUser: isMutating
   }
 }

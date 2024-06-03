@@ -1,8 +1,9 @@
 import {PgClient} from "@/db/db-client"
 import {env} from "@/env"
 import {UserTable} from "@/db/schema"
-import {eq} from "drizzle-orm"
+import {desc, eq} from "drizzle-orm"
 import {symmetricEncrypt} from "@/utils/crypto"
+
 
 export class UserPgRepository {
   private readonly pgClient: PgClient
@@ -80,6 +81,24 @@ export class UserPgRepository {
       .where(eq(UserTable.uid, uid))
   }
 
+  public async enable(id: number) {
+    return this.pgClient
+      .update(UserTable)
+      .set({
+        isActivated: true
+      })
+      .where(eq(UserTable.id, id))
+  }
+
+  public async disable(id: number) {
+    return this.pgClient
+      .update(UserTable)
+      .set({
+        isActivated: false
+      })
+      .where(eq(UserTable.id, id))
+  }
+
   public async setTwoFactorSecret(uid: string, secret: string) {
     return this.pgClient
       .update(UserTable)
@@ -98,6 +117,12 @@ export class UserPgRepository {
       .where(eq(UserTable.uid, uid))
   }
 
+  public async deleteUser(uid: string) {
+    return this.pgClient
+      .delete(UserTable)
+      .where(eq(UserTable.uid, uid))
+  }
+
   public async create(email: string, hashedPassword: string, profileId: number) {
     const createdUser = await this.pgClient
       .insert(UserTable)
@@ -109,5 +134,21 @@ export class UserPgRepository {
       .returning({uid: UserTable.uid})
 
     return createdUser[0]
+  }
+
+  public findUsersPaginatedAndSorted(offset: number, limit: number) {
+    return this.pgClient.query
+      .UserTable
+      .findMany({
+        columns: {
+          id: true,
+          email: true,
+          isActivated: true,
+          role: true
+        },
+        offset,
+        limit,
+        orderBy: desc(UserTable.email)
+      })
   }
 }

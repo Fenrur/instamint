@@ -14,6 +14,7 @@ import {
   followRequestPageSize,
   followsPageSize,
   nftsPageSize,
+  usersPageSize,
   searchFollowersProfileSize,
   searchFollowsProfileSize,
   searchRequesterProfileSize
@@ -22,7 +23,7 @@ import {DefaultMintService} from "@/mint/service"
 import {DefaultCommentService} from "@/comment/service"
 import {DefaultMintCommentService} from "@/mint-comment/service"
 
-export const userService = new DefaultUserService(pgClient, env.PEPPER_PASSWORD_SECRET, env.TOTP_ENCRYPTION_KEY)
+export const userService = new DefaultUserService(pgClient, env.PEPPER_PASSWORD_SECRET, env.TOTP_ENCRYPTION_KEY, usersPageSize)
 
 export const emailVerificationService = new DefaultEmailVerificationService(pgClient, durationExpireOffset)
 
