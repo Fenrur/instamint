@@ -1,7 +1,7 @@
 import {z} from "zod"
 import {zfd} from "zod-form-data"
 import {passwordRegex, usernameRegex} from "@/utils/validator"
-import {nftTypeArray, profileVisibilityTypeArray} from "@/domain/types"
+import {nftTypeArray, profileVisibilityTypeArray, userRoleArray} from "@/domain/types"
 import {datetimeIso} from "@/utils/zod"
 
 export const FollowUnfollowProfileRequest = z.object({

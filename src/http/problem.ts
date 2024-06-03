@@ -56,8 +56,6 @@ export const profileNotFoundProblem = {title: "Profile not found", errorCode: Er
 
 export const userNotFoundProblem = {title: "User not found", errorCode: ErrorCode.USER_NOT_FOUND, status: StatusCodes.NOT_FOUND}
 
-export const nftNotFoundProblem = {title: "Nft not found", errorCode: ErrorCode.USER_NOT_FOUND, status: StatusCodes.NOT_FOUND}
-
 export const dontFollowProfileProblem = {title: "Don't follow profile", errorCode: ErrorCode.DONT_FOLLOW_PROFILE, status: StatusCodes.FORBIDDEN}
 
 export const badSessionProblem = {title: "Bad session", errorCode: ErrorCode.BAD_SESSION, status: StatusCodes.UNAUTHORIZED}

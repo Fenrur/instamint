@@ -1,17 +1,17 @@
 "use client"
 
-import { AdminTable } from "./admin-table"
-import React, { useEffect, useState, useCallback } from "react"
+import {AdminTable} from "./admin-table"
+import React, {useEffect, useState, useCallback} from "react"
 import {nftsPageSize} from "@/services/constants"
 import {getPaginatedAdminNfts} from "@/repository"
-import { useRouter } from "next/navigation"
-import { BackgroundLoadingDots } from "@/components/ui/loading-dots"
+import {useRouter} from "next/navigation"
+import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
 
 export function NftsRow() {
   const [page, setPage] = useState(1)
   const [nfts, setNfts] = useState<{
-    id: number,
-    title: string,
+    id:number,
+    title: string
   }[]>([])
   const router = useRouter()
   const [hasMore, setHasMore] = useState(true)

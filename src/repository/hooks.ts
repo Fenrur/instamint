@@ -1,11 +1,10 @@
 import {
   acceptAllRequestFollowProfile,
   acceptRequestFollowProfile,
-  deleteFollowerProfile, deleteUser,
+  deleteUser,
   deleteNft,
   createComment,
   deleteFollowerProfile,
-  deleteUser,
   enableOrDisableUser,
   followProfile,
   getPaginatedComments,

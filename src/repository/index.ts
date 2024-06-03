@@ -1,8 +1,6 @@
 import {
   AcceptAllFollowProfileRequest,
   AcceptFollowProfileRequest,
-  DeleteFollowerProfileRequest,
-  DeleteUserRequest,
   DeleteNftRequest,
   CommentNftRequest,
   DeleteFollowerProfileRequest,
@@ -14,7 +12,6 @@ import {
   FollowProfileResponse,
   FollowProfileStateResponse, GetPaginatedUsersResponse,
   GetPaginedNftsByUsernameResponse,
-  GetPaginedUsersResponse,
   GetPaginedNftsResponse,
   IgnoreProfileRequest,
   MintCommentRequest,
@@ -162,6 +159,9 @@ export async function getPaginatedFollowers(username: string, page: number) {
 
     case ErrorCode.DONT_FOLLOW_PROFILE:
       return "dont_follow_profile"
+
+    case ErrorCode.NOT_ACTIVATED:
+      return "not_activated"
   }
 
   throw new Error("Undefined error code from server")

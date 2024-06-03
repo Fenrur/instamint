@@ -143,7 +143,7 @@ export function AdminTable({nfts}:NftsSectionProps) {
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="grid grid-cols-2">
+              <TableRow key={headerGroup.id} className="grid grid-cols-3">
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} className="flex justify-center items-center">
@@ -163,7 +163,7 @@ export function AdminTable({nfts}:NftsSectionProps) {
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
-                  className="grid grid-cols-2"
+                  className="grid grid-cols-3"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
