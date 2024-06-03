@@ -1,7 +1,7 @@
 import {PgClient} from "@/db/db-client"
-import { MintPgRepository } from "./repository"
+import {MintPgRepository} from "./repository"
 import {DateTime} from "luxon"
-import { NftPgRepository } from "@/nft/repository"
+import {NftPgRepository} from "@/nft/repository"
 
 export class DefaultMintService {
   private readonly mintRepository: MintPgRepository

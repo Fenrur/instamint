@@ -112,7 +112,7 @@ export class UserPgRepository {
     return this.pgClient
       .update(UserTable)
       .set({
-         hashedPassword
+        hashedPassword
       })
       .where(eq(UserTable.uid, uid))
   }

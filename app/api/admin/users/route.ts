@@ -2,9 +2,9 @@ import {NextResponse} from "next/server"
 import {
   badSessionProblem,
   invalidQueryParameterProblem,
+  notActivatedProblem,
   notAuthenticatedProblem,
-  problem,
-  notActivatedProblem
+  problem
 } from "@/http/problem"
 import {userService} from "@/services"
 import {auth, getSession} from "@/auth"
@@ -45,7 +45,7 @@ export const GET = auth(async (req) => {
   }
 
   if (myUser && myUser.role === "admin") {
-    const result: GetPaginatedUsersResponse  = await userService.findUsersPaginatedAndSorted(parsedPage)
+    const result: GetPaginatedUsersResponse = await userService.findUsersPaginatedAndSorted(parsedPage)
 
     return NextResponse.json(result)
   }

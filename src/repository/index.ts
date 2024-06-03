@@ -9,7 +9,8 @@ import {
   FollowerProfileStateResponse,
   FollowProfileRequest,
   FollowProfileResponse,
-  FollowProfileStateResponse, GetPaginatedUsersResponse,
+  FollowProfileStateResponse,
+  GetPaginatedUsersResponse,
   GetPaginedNftsByUsernameResponse,
   IgnoreProfileRequest,
   MintCommentRequest,
@@ -35,6 +36,7 @@ import {
 import {getErrorCodeFromProblem} from "@/http/problem"
 import {ErrorCode} from "@/http/error-code"
 import {StatusCodes} from "http-status-codes"
+import {ProfileData} from "@/components/Profile/ProfileList"
 
 export async function myProfile() {
   const res = await fetch("/api/profile/me", {
@@ -827,6 +829,39 @@ export async function registerUser(req: RegisterUserRequest) {
   }
 
   throw new Error(`Undefined error code from server ${errorCode}`)
+}
+
+export async function getPaginatedNftsWithSearch(query: string, location: string, priceRange: number[], page: number) {
+  const queryParams = new URLSearchParams({
+    query,
+    minPrice: priceRange[0].toString(),
+    maxPrice: priceRange[1].toString(),
+    location,
+    page: page.toString()
+  })
+
+  return await fetch(`/api/nft/search?${queryParams.toString()}`)
+}
+
+export async function getPaginatedUsersWithSearch(query: string, location: string, page: number) {
+  const queryParams = new URLSearchParams({
+    query,
+    location,
+    page: page.toString()
+  })
+
+  return await fetch(`/api/profile/search?${queryParams.toString()}`)
+}
+
+
+export async function fetchProfileData(): Promise<ProfileData> {
+  const res = await fetch("/api/profile/me")
+
+  if (res.status === StatusCodes.CREATED) {
+    return await res.json() as ProfileData
+  }
+
+  return {id: 0, avatarUrl: "", bio: "", link: "", username: ""}
 }
 
 export async function mintNft(req: MintNftRequest) {

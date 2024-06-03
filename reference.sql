@@ -362,11 +362,11 @@ CREATE TABLE "EmailVerification"
 
 CREATE TABLE "MintComment"
 (
-  "commentId" INTEGER                       NOT NULL
+  "commentId" INTEGER NOT NULL
     CONSTRAINT "mintCommentCommentFk"
       REFERENCES "Comment" ("id")
       ON DELETE CASCADE,
-  "profileId" INTEGER                       NOT NULL
+  "profileId" INTEGER NOT NULL
     CONSTRAINT "mintCommentProfileFk"
       REFERENCES "Profile" ("id")
       ON DELETE CASCADE,

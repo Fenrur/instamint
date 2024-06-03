@@ -58,9 +58,9 @@ export class CommentPgRepository {
       if (comment.length > 0) {
         return comment[0]
       }
- 
-        
-return null
+
+
+      return null
     }
 
     const comment = await this.pgClient
@@ -75,8 +75,8 @@ return null
     if (comment.length > 0) {
       return comment[0]
     }
- 
-      
-return null
+
+
+    return null
   }
 }

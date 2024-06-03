@@ -1,4 +1,4 @@
-import { PgClient } from "@/db/db-client"
+import {PgClient} from "@/db/db-client"
 import {MintTable} from "@/db/schema"
 import {and, count, eq} from "drizzle-orm"
 import {DateTime} from "luxon"

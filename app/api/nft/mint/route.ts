@@ -2,13 +2,15 @@ import {auth, getSession} from "@/auth"
 import {isContentType} from "@/http/content-type"
 import {
   alreadyMintedNftProblem,
-  badSessionProblem, dontFollowProfileProblem,
+  badSessionProblem,
+  dontFollowProfileProblem,
   invalidBodyProblem,
   invalidContentTypeProblem,
   nftNotFoundProblem,
   notAuthenticatedProblem,
   notMintedNftProblem,
-  problem, profileNotFoundProblem
+  problem,
+  profileNotFoundProblem
 } from "@/http/problem"
 import {MintNftRequest, UnmintNftRequest} from "@/http/rest/types"
 import {followService, mintNftService, profileService} from "@/services"
