@@ -33,12 +33,14 @@ interface NftsSectionProps {
   nfts: {
     title: string,
     id: number,
+    owner: string
   }[]
 }
 
 type AdminNftsType = {
   id: number
-  title: string
+  title: string,
+  owner: string
 }
 
 export function generateColumns(onDelete: (id: number) => void): ColumnDef<AdminNftsType>[] {
@@ -57,6 +59,21 @@ export function generateColumns(onDelete: (id: number) => void): ColumnDef<Admin
         )
       },
       cell: ({ row }) => <div className="lowercase">{row.getValue("title")}</div>,
+    },
+    {
+      accessorKey: "owner",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {column.toggleSorting(column.getIsSorted() === "asc")}}
+          >
+            Owner
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className="lowercase">{row.getValue("owner")}</div>,
     },
     {
       id: "actions",
@@ -136,7 +153,16 @@ export function AdminTable({nfts}:NftsSectionProps) {
           }
 
           }
-          className="max-w-sm"
+          className="max-w-sm"/>
+        <Input
+        placeholder="Filter owners..."
+        value={(table.getColumn("owner")?.getFilterValue() as string) ?? ""}
+        onChange={(event) => {
+        table.getColumn("owner")?.setFilterValue(event.target.value)
+        }
+
+        }
+        className="max-w-sm"
         />
       </div>
       <div className="rounded-md border">
@@ -195,7 +221,9 @@ export function AdminTable({nfts}:NftsSectionProps) {
           <Button
             variant="default"
             size="sm"
-            onClick={() => {table.previousPage()}}
+            onClick={() => {
+              table.previousPage()
+            }}
             disabled={!table.getCanPreviousPage()}
           >
             Previous
@@ -203,7 +231,9 @@ export function AdminTable({nfts}:NftsSectionProps) {
           <Button
             variant="default"
             size="sm"
-            onClick={() => {table.nextPage()}}
+            onClick={() => {
+              table.nextPage()
+            }}
             disabled={!table.getCanNextPage()}
           >
             Next

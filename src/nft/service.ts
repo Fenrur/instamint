@@ -67,12 +67,4 @@ export class DefaultNftService {
   public findById(id: string) {
     return this.nftPgRepository.findById(id)
   }
-
-  public findAdminNftsPaginatedAndSorted(page: number) {
-    return this.nftPgRepository
-      .findAdminNftsPaginatedAndSorted(
-        this.nftsPageSize * (page - 1),
-        this.nftsPageSize
-      )
-  }
 }

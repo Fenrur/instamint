@@ -53,10 +53,12 @@ export const GET = auth(async (req) => {
 
 function mapNftsToResponse(nfts: {
   id: number,
-  title: string
+  title: string,
+  owner: string
 }[]) {
-  return nfts.map(({id, title}) => ({
+  return nfts.map(({id, title, owner}) => ({
     id,
-    title
+    title,
+    owner
   }))
 }

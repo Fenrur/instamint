@@ -24,7 +24,8 @@ export class NftPgRepository {
   }))
   private readonly FindAdminNftsPaginated = z.array(z.object({
     id: z.number().int().positive(),
-    title: z.string()
+    title: z.string(),
+    owner: z.string(),
   }))
 
   constructor(pqClient: PgClient) {
@@ -77,17 +78,18 @@ export class NftPgRepository {
   }
 
   public async findAdminNftsPaginatedAndSorted(offset: number, limit: number) {
-    return this.pgClient.query
-      .NftTable
-      .findMany({
-        columns: {
-          id: true,
-          title: true,
-        },
-        offset,
-        limit,
-        orderBy: desc(NftTable.title)
-      })
+    const result = await this.pgClient.select({
+      id: NftTable.id,
+      title: NftTable.title,
+      owner: UserTable.email
+    })
+      .from(NftTable)
+      .leftJoin(UserTable, eq(NftTable.ownerUserId, UserTable.id))
+      .orderBy(desc(NftTable.title))
+      .offset(offset)
+      .limit(limit)
+
+    return this.FindAdminNftsPaginated.parse(result)
   }
 
   public async deleteNft(id: number) {

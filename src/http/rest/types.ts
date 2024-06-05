@@ -118,6 +118,7 @@ export const GetPaginedNftsResponse = z.array(
   z.object({
     id: z.number().int().positive(),
     title: z.string(),
+    owner: z.string()
   })
 )
 

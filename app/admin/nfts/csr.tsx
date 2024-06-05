@@ -11,7 +11,8 @@ export function NftsRow() {
   const [page, setPage] = useState(1)
   const [nfts, setNfts] = useState<{
     id:number,
-    title: string
+    title: string,
+    owner: string
   }[]>([])
   const router = useRouter()
   const [hasMore, setHasMore] = useState(true)

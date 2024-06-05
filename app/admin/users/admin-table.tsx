@@ -1,7 +1,7 @@
 "use client"
 
 import {useEffect, useState} from "react"
-import DropDownEnableCheckbox from "@/components/section/admin/drop-down-enable-checkbox"
+import DropDownEnableCheckbox from "./drop-down-enable-checkbox"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -45,7 +45,9 @@ type AdminUsersType = {
   email: string
 }
 
-export function generateColumns(onDelete: (id: number) => void): ColumnDef<AdminUsersType>[] {
+export function generateColumns(onDelete: (id: number) => void,
+                                changeActivateToFalse: (id: number) => void,
+                                changeActivateToTrue: (id: number) => void): ColumnDef<AdminUsersType>[] {
   return [
     {
       accessorKey: "isActivated",
@@ -54,7 +56,13 @@ export function generateColumns(onDelete: (id: number) => void): ColumnDef<Admin
         const user = row.original
         const props = {
           id: user.id,
-          activate: user.isActivated
+          activate: user.isActivated,
+          changeActivateToFalse: () => {
+            changeActivateToFalse(user.id)
+          },
+          changeActivateToTrue: () => {
+            changeActivateToTrue(user.id)
+          },
         }
 
         return (
@@ -114,10 +122,38 @@ export function AdminTable({users}:UsersSectionProps) {
   })
   const columns = generateColumns(id => {
     setData(prevState =>
-      prevState
-        .filter(value => value.id !== id)
+    {
+      return prevState
+        .filter(value => {
+          return value.id !== id
+        })
+    }
     )
-  })
+  },
+    id => {
+    setData(prevState => {
+      return prevState.map(value => {
+        if (value.id === id) {
+          value.isActivated = false
+        }
+
+        return value
+      })
+    }
+    )
+  },
+    id => {
+      setData(prevState => {
+          return prevState.map(value => {
+            if (value.id === id) {
+              value.isActivated = true
+            }
+
+            return value
+          })
+        }
+      )
+    } )
 
   useEffect(() => {
     setData(users)
