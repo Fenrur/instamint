@@ -3,6 +3,7 @@ import {
   acceptRequestFollowProfile,
   deleteUser,
   deleteNft,
+  deleteComment,
   createComment,
   deleteFollowerProfile,
   enableOrDisableUser,
@@ -545,6 +546,18 @@ export function useDeleteNft(id: number) {
     dataDeleteNft: data,
     errorDeleteNft: error,
     isFetchingDeleteNft: isMutating
+  }
+}
+
+export function useDeleteComment(id: number) {
+  const deleteCommentFetcher = () => deleteComment({id})
+  const {trigger, data, error, isMutating} = useSWRMutation(`DeleteComment/${id}`, deleteCommentFetcher)
+
+  return {
+    deleteComment: () => trigger(),
+    dataDeleteComment: data,
+    errorDeleteComment: error,
+    isFetchingDeleteComment: isMutating
   }
 }
 
