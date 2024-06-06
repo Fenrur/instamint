@@ -7,7 +7,7 @@ import {DefaultFollowService} from "@/follow/service"
 import {DefaultPasswordResetService} from "@/password-reset/service"
 import {env} from "@/env"
 import {
-  commentNftSize,
+  commentNftSize, commentsPageSize,
   durationExpireOffset,
   followersPageSize,
   followRequestIgnoredPageSize,
@@ -47,6 +47,6 @@ export const followService = new DefaultFollowService(
 
 export const mintNftService = new DefaultMintService(pgClient)
 
-export const commentService = new DefaultCommentService(pgClient, commentNftSize)
+export const commentService = new DefaultCommentService(pgClient, commentNftSize, commentsPageSize)
 
 export const mintCommentService = new DefaultMintCommentService(pgClient)
