@@ -44,7 +44,7 @@ export class DefaultNftService {
       )
   }
 
-  public async getAll(){
+  public async getAll() {
       return this.nftPgRepository.getAll()
   }
 }

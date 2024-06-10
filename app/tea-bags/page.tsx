@@ -15,7 +15,7 @@ import {
 
 import {DateTime} from "luxon"
 import {toast} from "sonner"
-import {useFetchNFTs, useFetchUsers, useReportProfile} from "@/repository/hooks"
+import {useFetchUsers, useReportProfile} from "@/repository/hooks"
 import React, {useCallback, useEffect, useState} from "react"
 import {TeaBagList} from "@/components/Profile/ProfileList"
 import InfiniteScroll from "react-infinite-scroll-component"
@@ -122,9 +122,8 @@ export default function TeaBagPage(props: SignupPageProps) {
     reason: ""
   })
   const [teabagsList, setTeabagsList] = useState<TeaBag[]>([])
-  const {usersData, usersDataMutate} = useFetchUsers()
-  const {nftsData, nftsDataMutate} = useFetchNFTs()
-  const {isFetchingReport, reportProfile, errorReport, dataReport} = useReportProfile()
+  const {usersData} = useFetchUsers()
+  const {reportProfile} = useReportProfile()
   const [isOpenCreate, setIsOpenCreate] = useState(false)
   const [isOpenReport, setIsOpenReport] = useState(false)
   const [isOpenDelete, setIsOpenDelete] = useState(false)
@@ -372,11 +371,11 @@ export default function TeaBagPage(props: SignupPageProps) {
                       {usersData &&
                         <MultiSelect style={{height: 100, overflowY: "scroll",}} name={"whitelistUserIds"}
                                      onValueChange={(values) => {
-                          setFormData(prevState => ({
-                            ...prevState,
-                            whitelistUserIds: values.map(item => Number(item))
-                          }))
-                        }}
+                                       setFormData(prevState => ({
+                                         ...prevState,
+                                         whitelistUserIds: values.map(item => Number(item))
+                                       }))
+                                     }}
                                      options={usersData.map(item => ({
                                        value: item.value.toString(),
                                        label: item.label

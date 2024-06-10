@@ -758,7 +758,6 @@ export async function fetchProfileData(): Promise<ProfileData> {
 
 
 export async function fetchTeaBags({page}: { page: number }) {
-
   const response = await fetch(`/api/tea-bag?page=${page}`)
 
   if (response.ok) {
@@ -806,8 +805,11 @@ export async function reportProfile(req: ReportProfileRequest): Promise<boolean>
     },
     body: JSON.stringify(req)
   })
+
   if (resp.ok) {
     return await resp.json() as Promise<boolean>
   }
+
+
   return false
 }

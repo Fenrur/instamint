@@ -77,9 +77,7 @@ export default function SignupPage() {
     }
 
     setPage(page + 1)
-  }, [isNfts, page, query, location, priceRange, nftsList, profilesList])
-
-  const [init, setInit] = useState(true)
+  }, [isNfts, page, query, location, priceRange, nftsList, profilesList])  const [init, setInit] = useState(true)
   useEffect(() => {
     if (init) {
       setInit(false)

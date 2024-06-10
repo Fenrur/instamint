@@ -1,4 +1,5 @@
 import {auth, getSession} from "@/auth"
+// @ts-expect-error TODO fix library not found
 import {NextAuthRequest} from "next-auth/lib"
 import {notAuthenticatedProblem, problem} from "@/http/problem"
 import {nftService} from "@/services"
