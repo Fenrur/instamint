@@ -2,17 +2,17 @@
 
 import {AdminTable} from "./admin-table"
 import React, {useEffect, useState, useCallback} from "react"
-import {usersPageSize} from "@/services/constants"
-import {getPaginatedAdminUsers} from "@/repository"
+import {nftsPageSize} from "@/services/constants"
+import {getPaginatedAdminNfts} from "@/repository"
 import {useRouter} from "next/navigation"
 import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
 
-export function UsersRow() {
+export function NftsRow() {
   const [page, setPage] = useState(1)
-  const [users, setUsers] = useState<{
+  const [nfts, setNfts] = useState<{
     id:number,
-    email : string,
-    isActivated : boolean,
+    title: string,
+    owner: string
   }[]>([])
   const router = useRouter()
   const [hasMore, setHasMore] = useState(true)
@@ -20,12 +20,12 @@ export function UsersRow() {
   const loadNextPage = useCallback(() => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     setTimeout(async () => {
-      const paginatedUsers = await getPaginatedAdminUsers(page)
+      const paginatedNfts = await getPaginatedAdminNfts(page)
 
-      if (typeof paginatedUsers === "string") {
+      if (typeof paginatedNfts === "string") {
         setHasMore(false)
 
-        switch (paginatedUsers) {
+        switch (paginatedNfts) {
           case "not_authenticated":
             router.push(`/login`)
 
@@ -36,14 +36,14 @@ export function UsersRow() {
         }
       }
 
-      if (paginatedUsers.length < usersPageSize) {
+      if (paginatedNfts.length < nftsPageSize) {
         setHasMore(false)
       }
 
-      setUsers([...users, ...paginatedUsers])
+      setNfts([...nfts, ...paginatedNfts])
       setPage(page + 1)
     })
-  }, [page, router, users])
+  }, [page, router, nfts])
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -57,7 +57,7 @@ export function UsersRow() {
 
   return (
     <>
-      <AdminTable users={users}/>
+      <AdminTable nfts={nfts}/>
       {hasMore && (
         <div className="grid justify-center">
           <BackgroundLoadingDots size={50} />

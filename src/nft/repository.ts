@@ -1,6 +1,6 @@
 import {PgClient} from "@/db/db-client"
+import {count, desc, eq, sql} from "drizzle-orm"
 import {CommentTable, HashtagNftTable, MintTable, NftTable, ProfileTable, UserTable} from "@/db/schema"
-import {count, eq, sql} from "drizzle-orm"
 import {z} from "zod"
 import {nftTypeArray} from "@/domain/types"
 import {datetimeSql} from "@/utils/zod"
@@ -21,6 +21,11 @@ export class NftPgRepository {
       .transform(str => parseInt(str, 10))
       .refine((num) => !isNaN(num) && Number.isInteger(num), {message: "mintCount must be an integer"}),
     type: z.enum(nftTypeArray)
+  }))
+  private readonly FindAdminNftsPaginated = z.array(z.object({
+    id: z.number().int().positive(),
+    title: z.string(),
+    owner: z.string(),
   }))
 
   constructor(pqClient: PgClient) {
@@ -72,6 +77,33 @@ export class NftPgRepository {
     return this.FindNftsPaginatedByProfileIdWithMintCountCommentCountSchema.parse(result)
   }
 
+  public async findAdminNftsPaginatedAndSorted(offset: number, limit: number) {
+    const result = await this.pgClient.select({
+      id: NftTable.id,
+      title: NftTable.title,
+      owner: UserTable.email
+    })
+      .from(NftTable)
+      .leftJoin(UserTable, eq(NftTable.ownerUserId, UserTable.id))
+      .orderBy(desc(NftTable.title))
+      .offset(offset)
+      .limit(limit)
+
+    return this.FindAdminNftsPaginated.parse(result)
+  }
+
+  public async deleteNft(id: number) {
+    return this.pgClient
+      .delete(NftTable)
+      .where(eq(NftTable.id, id))
+  }
+
+  public findById(id: string) {
+    return this.pgClient.query.NftTable
+      .findFirst({
+        where: (nft, {eq}) => (eq(nft.id, Number(id))),
+      })
+  }
   public async findNftsPaginatedByProfileIdWithMintCountAndCommentCount(profileId: number, offset: number, limit: number) {
     const query = sql`
       SELECT ${NftTable.id},

@@ -3,8 +3,10 @@ import {useState} from "react"
 import {useEnableOrDisable} from "@/repository/hooks"
 
 interface IdSectionProps {
-    activate: boolean,
-    id: number
+  activate: boolean
+  id: number
+  changeActivateToFalse: () => void
+  changeActivateToTrue: () => void
 }
 
 const DropDownEnableCheckbox = ({...props} : IdSectionProps) => {
@@ -14,9 +16,11 @@ const DropDownEnableCheckbox = ({...props} : IdSectionProps) => {
     const result = await enableOrDisable()
 
     if (result === "disabled") {
+      props.changeActivateToFalse()
       setActivated(false)
     }
     else if (result === "enabled") {
+      props.changeActivateToTrue()
       setActivated(true)
     }
   }

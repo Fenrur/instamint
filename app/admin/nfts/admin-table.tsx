@@ -1,7 +1,6 @@
 "use client"
 
 import {useEffect, useState} from "react"
-import DropDownEnableCheckbox from "./drop-down-enable-checkbox"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -25,77 +24,68 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
 import {AdminDropDownMenu, AdminDropDownMenuProps} from "./admin-dropdown-menu"
 
 const defaultPagination: number = 0
 const maxPagination: number = 50
 
-interface UsersSectionProps {
-  users: {
-    isActivated: boolean,
-    email: string,
+interface NftsSectionProps {
+  nfts: {
+    title: string,
     id: number,
+    owner: string
   }[]
 }
 
-type AdminUsersType = {
+type AdminNftsType = {
   id: number
-  isActivated: boolean
-  email: string
+  title: string,
+  owner: string
 }
 
-export function generateColumns(onDelete: (id: number) => void,
-                                changeActivateToFalse: (id: number) => void,
-                                changeActivateToTrue: (id: number) => void): ColumnDef<AdminUsersType>[] {
+export function generateColumns(onDelete: (id: number) => void): ColumnDef<AdminNftsType>[] {
   return [
     {
-      accessorKey: "isActivated",
-      header: "enabled",
-      cell: ({ row }) => {
-        const user = row.original
-        const props = {
-          id: user.id,
-          activate: user.isActivated,
-          changeActivateToFalse: () => {
-            changeActivateToFalse(user.id)
-          },
-          changeActivateToTrue: () => {
-            changeActivateToTrue(user.id)
-          },
-        }
-
-        return (
-          <DropDownEnableCheckbox {...props} />
-        )},
-    },
-    {
-      accessorKey: "email",
+      accessorKey: "title",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => {column.toggleSorting(column.getIsSorted() === "asc")}}
           >
-            Email
+            Title
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
       },
-      cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+      cell: ({ row }) => <div className="lowercase">{row.getValue("title")}</div>,
+    },
+    {
+      accessorKey: "owner",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {column.toggleSorting(column.getIsSorted() === "asc")}}
+          >
+            Owner
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className="lowercase">{row.getValue("owner")}</div>,
     },
     {
       id: "actions",
       header: "Actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const user = row.original
+        const nft = row.original
         const props: AdminDropDownMenuProps = {
           enable: true,
-          id:user.id,
+          id:nft.id,
           onDelete: () => {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            onDelete(user.id)
+            onDelete(nft.id)
           }
         }
 
@@ -107,8 +97,8 @@ export function generateColumns(onDelete: (id: number) => void,
   ]
 }
 
-export function AdminTable({users}:UsersSectionProps) {
-  const [data, setData] = useState<AdminUsersType[]>([])
+export function AdminTable({nfts}:NftsSectionProps) {
+  const [data, setData] = useState<AdminNftsType[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
@@ -122,42 +112,14 @@ export function AdminTable({users}:UsersSectionProps) {
   })
   const columns = generateColumns(id => {
     setData(prevState =>
-    {
-      return prevState
-        .filter(value => {
-          return value.id !== id
-        })
-    }
+      prevState
+        .filter(value => value.id !== id)
     )
-  },
-    id => {
-    setData(prevState => {
-      return prevState.map(value => {
-        if (value.id === id) {
-          value.isActivated = false
-        }
-
-        return value
-      })
-    }
-    )
-  },
-    id => {
-      setData(prevState => {
-          return prevState.map(value => {
-            if (value.id === id) {
-              value.isActivated = true
-            }
-
-            return value
-          })
-        }
-      )
-    } )
+  })
 
   useEffect(() => {
-    setData(users)
-  }, [users])
+    setData(nfts)
+  }, [nfts])
   const table = useReactTable({
     data,
     columns,
@@ -184,14 +146,23 @@ export function AdminTable({users}:UsersSectionProps) {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter titles..."
+          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) => {
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("title")?.setFilterValue(event.target.value)
           }
 
           }
-          className="max-w-sm"
+          className="max-w-sm"/>
+        <Input
+        placeholder="Filter owners..."
+        value={(table.getColumn("owner")?.getFilterValue() as string) ?? ""}
+        onChange={(event) => {
+        table.getColumn("owner")?.setFilterValue(event.target.value)
+        }
+
+        }
+        className="max-w-sm"
         />
       </div>
       <div className="rounded-md border">
@@ -250,7 +221,9 @@ export function AdminTable({users}:UsersSectionProps) {
           <Button
             variant="default"
             size="sm"
-            onClick={() => {table.previousPage()}}
+            onClick={() => {
+              table.previousPage()
+            }}
             disabled={!table.getCanPreviousPage()}
           >
             Previous
@@ -258,7 +231,9 @@ export function AdminTable({users}:UsersSectionProps) {
           <Button
             variant="default"
             size="sm"
-            onClick={() => {table.nextPage()}}
+            onClick={() => {
+              table.nextPage()
+            }}
             disabled={!table.getCanNextPage()}
           >
             Next

@@ -43,4 +43,28 @@ export class DefaultNftService {
         this.nftsPageSize
       )
   }
+
+  public findAdminNftsPaginatedAndSorted(page: number) {
+    return this.nftPgRepository
+      .findAdminNftsPaginatedAndSorted(
+        this.nftsPageSize * (page - 1),
+        this.nftsPageSize
+      )
+  }
+
+  public async deleteNftById(id: string) {
+    const nft = await this.findById(id)
+
+    if (!nft) {
+      return "nft_not_found"
+    }
+
+    await this.nftPgRepository.deleteNft(nft.id)
+
+    return "deleted"
+  }
+
+  public findById(id: string) {
+    return this.nftPgRepository.findById(id)
+  }
 }

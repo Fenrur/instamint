@@ -1,7 +1,7 @@
 import {z} from "zod"
 import {zfd} from "zod-form-data"
 import {passwordRegex, usernameRegex} from "@/utils/validator"
-import {nftTypeArray, profileVisibilityTypeArray} from "@/domain/types"
+import {nftTypeArray, profileVisibilityTypeArray, userRoleArray} from "@/domain/types"
 import {datetimeIso} from "@/utils/zod"
 
 export const FollowUnfollowProfileRequest = z.object({
@@ -104,6 +104,23 @@ export const RegisterUserResponse = z.object({
 })
 
 export type RegisterUserResponse = z.infer<typeof RegisterUserResponse>
+
+export const GetPaginedUsersResponse = z.array(
+  z.object({
+    id: z.number().int().positive(),
+    email: z.string(),
+    isActivated: z.boolean(),
+    role: z.enum(userRoleArray),
+  })
+)
+
+export const GetPaginedNftsResponse = z.array(
+  z.object({
+    id: z.number().int().positive(),
+    title: z.string(),
+    owner: z.string()
+  })
+)
 
 export const VerifyExistUsernameResponse = z.object({
   exist: z.boolean()
@@ -305,6 +322,18 @@ export const DeleteUserResponse = z.object({
 })
 
 export type DeleteUserResponse = z.infer<typeof DeleteUserResponse>
+
+export const  DeleteNftRequest = z.object({
+  id: z.number().int().positive()
+})
+
+export type DeleteNftRequest = z.infer<typeof DeleteNftRequest>
+
+export const DeleteNftResponse = z.object({
+  deleted: z.boolean()
+})
+
+export type DeleteNftResponse = z.infer<typeof DeleteNftResponse>
 
 export const MintNftRequest = z.object({
   nftId: z.number(),
