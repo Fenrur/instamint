@@ -294,7 +294,7 @@ export default function TeaBagPage(props: SignupPageProps) {
 
             <Dialog open={isOpenCreate} onOpenChange={setIsOpenCreate}>
               <DialogTrigger asChild>
-                <Button className="Button violet">Create tea-bag</Button>
+                <Button className="Button violet w-52">Create tea-bag</Button>
               </DialogTrigger>
 
               <DialogPortal>
@@ -370,7 +370,8 @@ export default function TeaBagPage(props: SignupPageProps) {
                              className={error ? "text-destructive" : ""}>Whitelist
                         Users</Label>
                       {usersData &&
-                        <MultiSelect name={"whitelistUserIds"} onValueChange={(values) => {
+                        <MultiSelect style={{height: 100, overflowY: "scroll",}} name={"whitelistUserIds"}
+                                     onValueChange={(values) => {
                           setFormData(prevState => ({
                             ...prevState,
                             whitelistUserIds: values.map(item => Number(item))
