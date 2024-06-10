@@ -9,12 +9,14 @@ export class DefaultCommentService {
   private readonly nftRepository: NftPgRepository
   private readonly pgClient: PgClient
   private readonly commentNftSize: number
+  private readonly commentsPageSize: number
 
-  constructor(pgClient: PgClient, commentNftSize: number) {
+  constructor(pgClient: PgClient, commentNftSize: number, commentsPageSize: number) {
     this.commentRepository = new CommentPgRepository(pgClient)
     this.nftRepository = new NftPgRepository(pgClient)
     this.pgClient = pgClient
     this.commentNftSize = commentNftSize
+    this.commentsPageSize = commentsPageSize
   }
 
   public async create(nftId: number, profileId: number, commentedAt: DateTime<true>, commentary: string, replyCommentId?: number) {
@@ -123,6 +125,30 @@ export class DefaultCommentService {
     }
 
     return this.commentRepository.create(nftId, profileId, commentedAt, commentary, replyCommentId)
+  }
+
+  public findAdminCommentsPaginatedAndSorted(page: number) {
+    return this.commentRepository
+      .findAdminCommentsPaginatedAndSorted(
+        this.commentsPageSize * (page - 1),
+        this.commentsPageSize
+      )
+  }
+
+  public async deleteCommentById(id: string) {
+    const comment = await this.findById(id)
+
+    if (!comment) {
+      return "comment_not_found"
+    }
+
+    await this.commentRepository.deleteComment(comment.id)
+
+    return "deleted"
+  }
+
+  public findById(id: string) {
+    return this.commentRepository.findById(id)
   }
 }
 

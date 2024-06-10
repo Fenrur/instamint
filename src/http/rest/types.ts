@@ -122,6 +122,15 @@ export const GetPaginedNftsResponse = z.array(
   })
 )
 
+export const GetPaginedCommentsResponse = z.array(
+  z.object({
+    id: z.number().int().positive(),
+    commentary: z.string(),
+    ownerUsername: z.string(),
+    ownerEmail: z.string()
+  })
+)
+
 export const VerifyExistUsernameResponse = z.object({
   exist: z.boolean()
 })
@@ -323,7 +332,7 @@ export const DeleteUserResponse = z.object({
 
 export type DeleteUserResponse = z.infer<typeof DeleteUserResponse>
 
-export const  DeleteNftRequest = z.object({
+export const DeleteNftRequest = z.object({
   id: z.number().int().positive()
 })
 
@@ -334,6 +343,18 @@ export const DeleteNftResponse = z.object({
 })
 
 export type DeleteNftResponse = z.infer<typeof DeleteNftResponse>
+
+export const DeleteCommentRequest = z.object({
+  id: z.number().int().positive()
+})
+
+export type DeleteCommentRequest = z.infer<typeof DeleteNftRequest>
+
+export const DeleteCommentResponse = z.object({
+  deleted: z.boolean()
+})
+
+export type DeleteCommentResponse = z.infer<typeof DeleteNftResponse>
 
 export const MintNftRequest = z.object({
   nftId: z.number(),

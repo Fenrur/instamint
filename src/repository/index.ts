@@ -2,6 +2,7 @@ import {
   AcceptAllFollowProfileRequest,
   AcceptFollowProfileRequest,
   DeleteNftRequest,
+  DeleteCommentRequest,
   CommentNftRequest,
   DeleteFollowerProfileRequest,
   DeleteUserRequest,
@@ -14,6 +15,7 @@ import {
   GetPaginatedUsersResponse,
   GetPaginedNftsByUsernameResponse,
   GetPaginedNftsResponse,
+  GetPaginedCommentsResponse,
   IgnoreProfileRequest,
   MintCommentRequest,
   MintNftRequest,
@@ -380,6 +382,44 @@ export async function deleteNft(req: DeleteNftRequest) {
   }
 }
 
+export async function deleteComment(req: DeleteCommentRequest) {
+  const url = encodeURI(`/api/comment/delete`)
+  const res = await fetch(url, {
+    method: "DELETE",
+    body: JSON.stringify(req),
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return "deleted"
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.NOT_ACTIVATED:
+      return "not_activated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.INVALID_CONTENT_TYPE:
+      return "invalid_content-type"
+  }
+}
+
 export async function acceptRequestFollowProfile(req: AcceptFollowProfileRequest) {
   const res = await fetch("/api/profile/follow/request/accept", {
     method: "POST",
@@ -669,6 +709,35 @@ export async function getPaginatedAdminNfts(page: number) {
 
   if (res.status === StatusCodes.OK) {
     return GetPaginedNftsResponse.parse(await res.json())
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  throw new Error("Undefined error code from server")
+}
+
+export async function getPaginatedAdminComments(page: number) {
+  const url = encodeURI(`/api/admin/comments?page=${page}`)
+  const res = await fetch(url, {
+    method: "GET"
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return GetPaginedCommentsResponse.parse(await res.json())
   }
 
   const errorCode = getErrorCodeFromProblem(await res.json())
