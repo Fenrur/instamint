@@ -119,6 +119,14 @@ export function AdminTable({reports}:ReportsSectionProps) {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
+          placeholder="Filter types..."
+          value={(table.getColumn("type")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => {
+            table.getColumn("type")?.setFilterValue(event.target.value)
+          }
+          }
+          className="max-w-sm"/>
+        <Input
           placeholder="Filter elements..."
           value={(table.getColumn("element")?.getFilterValue() as string) ?? ""}
           onChange={(event) => {
