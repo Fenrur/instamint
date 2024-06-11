@@ -1,10 +1,10 @@
 import {
   AcceptAllFollowProfileRequest,
   AcceptFollowProfileRequest,
-  DeleteNftRequest,
-  DeleteCommentRequest,
   CommentNftRequest,
+  DeleteCommentRequest,
   DeleteFollowerProfileRequest,
+  DeleteNftRequest,
   DeleteUserRequest,
   EnableOrDisableRequest,
   EnableOrDisableResponse,
@@ -13,9 +13,9 @@ import {
   FollowProfileResponse,
   FollowProfileStateResponse,
   GetPaginatedUsersResponse,
+  GetPaginedCommentsResponse,
   GetPaginedNftsByUsernameResponse,
   GetPaginedNftsResponse,
-  GetPaginedCommentsResponse,
   IgnoreProfileRequest,
   MintCommentRequest,
   MintNftRequest,
@@ -41,8 +41,6 @@ import {
 import {getErrorCodeFromProblem} from "@/http/problem"
 import {ErrorCode} from "@/http/error-code"
 import {StatusCodes} from "http-status-codes"
-import {ProfileData} from "@/components/Profile/ProfileList"
-import {NFTData} from "@/components/NFT/NFTList"
 import {TeaBag, ValueLabel} from "../../app/tea-bags/page"
 
 export async function myProfile() {
@@ -1034,7 +1032,7 @@ export async function getPaginatedUsersWithSearch(query: string, location: strin
 export async function getProfileData() {
   const res = await fetch("/api/profile/me")
 
-  if (res.status === StatusCodes.CREATED) {
+  if (res.status === StatusCodes.OK) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await res.json()
   }
@@ -1049,7 +1047,7 @@ export async function getProfileData() {
       return "bad_session"
   }
 
-  return {id: 0, avatarUrl: "", bio: "", link: "", username: ""}
+  throw new Error(`Undefined error code from server ${errorCode}`)
 }
 
 
@@ -1060,37 +1058,77 @@ export async function fetchTeaBags({page}: { page: number }) {
     return await response.json() as TeaBag[]
   }
 
-  throw new Error("Network response was not ok")
+  const errorCode = getErrorCodeFromProblem(await response.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
 }
 
-export async function fetchTeaBag(id: number): Promise<TeaBag> {
+export async function fetchTeaBag(id: number) {
   const response = await fetch(`/api/tea-bag/${id}`)
 
   if (response.ok) {
     return await response.json() as Promise<TeaBag>
   }
 
-  throw new Error("Network response was not ok")
+  const errorCode = getErrorCodeFromProblem(await response.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
 }
 
-export async function fetchUsers(): Promise<ValueLabel[]> {
+export async function fetchUsers() {
   const response = await fetch("/api/user")
 
   if (response.ok) {
     return await response.json() as Promise<ValueLabel[]>
   }
 
-  throw new Error("Network response was not ok")
+  const errorCode = getErrorCodeFromProblem(await response.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
 }
 
-export async function fetchNFTs(): Promise<ValueLabel[]> {
+export async function fetchNFTs() {
   const response = await fetch("/api/tea-bag/nft")
 
   if (response.ok) {
     return await response.json() as Promise<ValueLabel[]>
   }
 
-  throw new Error("Network response was not ok")
+  const errorCode = getErrorCodeFromProblem(await response.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
 }
 
 export async function reportProfile(req: ReportProfileRequest): Promise<boolean> {
@@ -1105,7 +1143,6 @@ export async function reportProfile(req: ReportProfileRequest): Promise<boolean>
   if (resp.ok) {
     return await resp.json() as Promise<boolean>
   }
-
 
   return false
 }

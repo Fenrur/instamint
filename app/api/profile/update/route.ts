@@ -77,6 +77,6 @@ export const POST = auth(async (req: NextAuthRequest) => {
 
   const result = await profileService.updateProfileByUid(session.uid, username, bio, link, imageBuffer, imageType)
 
-  return NextResponse.json(result)
+  return NextResponse.json(result[0].id)
 })
 

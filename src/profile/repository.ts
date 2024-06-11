@@ -78,7 +78,7 @@ export class ProfilePgRepository {
         link,
         avatarUrl
       })
-      .where(eq(ProfileTable.id, profileId))
+      .where(eq(ProfileTable.id, profileId)).returning()
   }
 
   public async updateById(id: number, username: string, bio: string, link: string, avatarUrl: string) {

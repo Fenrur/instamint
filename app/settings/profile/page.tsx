@@ -29,7 +29,6 @@ export default function MePage() {
   })
   const {profileData, profileDataMutate, errorProfileData} = useGetProfileData()
   const {updateProfile, dataUpdateProfile} = useUpdateProfile()
-
   void profileDataMutate()
 
 
@@ -82,7 +81,6 @@ export default function MePage() {
   }
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
     // Assume profileImage is already in base64 format if it's included in formData
     const formDataWithImage = new FormData()
     formDataWithImage.append("username", formData.username)
