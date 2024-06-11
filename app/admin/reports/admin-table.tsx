@@ -10,7 +10,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable,
+  useReactTable, ColumnDef,
 } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -43,7 +43,7 @@ type AdminReportsType = {
   user: string,
 }
 
-export function generateColumns() {
+export function generateColumns(): ColumnDef<AdminReportsType>[] {
   return [
     {
       accessorKey: "type",
