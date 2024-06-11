@@ -5,6 +5,9 @@ import {DefaultProfileService} from "@/profile/service"
 import {DefaultNftService} from "@/nft/service"
 import {DefaultFollowService} from "@/follow/service"
 import {DefaultPasswordResetService} from "@/password-reset/service"
+import {DefaultReportCommentService} from "@/report-comment/service"
+import {DefaultReportNftService} from "@/report-nft/service"
+import {DefaultReportProfileService} from "@/report-profile/service"
 import {env} from "@/env"
 import {
   commentNftSize, commentsPageSize,
@@ -18,7 +21,8 @@ import {
   searchFollowersProfileSize,
   searchFollowsProfileSize,
   searchRequesterProfileSize,
-  usersPageSize
+  usersPageSize,
+  reportsPageSize
 } from "@/services/constants"
 import {DefaultMintService} from "@/mint/service"
 import {DefaultCommentService} from "@/comment/service"
@@ -50,3 +54,9 @@ export const mintNftService = new DefaultMintService(pgClient)
 export const commentService = new DefaultCommentService(pgClient, commentNftSize, commentsPageSize)
 
 export const mintCommentService = new DefaultMintCommentService(pgClient)
+
+export const reportCommentService = new DefaultReportCommentService(pgClient, reportsPageSize)
+
+export const reportNftService = new DefaultReportNftService(pgClient, reportsPageSize)
+
+export const reportProfileService = new DefaultReportProfileService(pgClient, reportsPageSize)
