@@ -8,7 +8,8 @@ import {
   invalidContentTypeProblem,
   notAuthenticatedProblem,
   problem,
-  profileNotFoundProblem
+  profileNotFoundProblem,
+  notActivatedProblem
 } from "@/http/problem"
 import {AcceptFollowProfileRequest} from "@/http/rest/types"
 import {followService, profileService} from "@/services"
@@ -40,6 +41,10 @@ export const POST = auth(async (req) => {
 
   if (!myUserAndProfile) {
     return problem({...badSessionProblem, detail: "your profile not found from your uid in session"})
+  }
+
+  if (!myUserAndProfile.isActivated) {
+    return problem({...notActivatedProblem, detail: "your are not enable to access the app"})
   }
 
   const targetProfile = await profileService.findByUsername(body.username)

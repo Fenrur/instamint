@@ -1,13 +1,25 @@
 import {
   AcceptAllFollowProfileRequest,
   AcceptFollowProfileRequest,
+  DeleteNftRequest,
+  DeleteCommentRequest,
+  CommentNftRequest,
   DeleteFollowerProfileRequest,
+  DeleteUserRequest,
+  EnableOrDisableRequest,
+  EnableOrDisableResponse,
   FollowerProfileStateResponse,
   FollowProfileRequest,
   FollowProfileResponse,
   FollowProfileStateResponse,
+  GetPaginatedUsersResponse,
   GetPaginedNftsByUsernameResponse,
+  GetPaginedNftsResponse,
+  GetPaginedCommentsResponse,
   IgnoreProfileRequest,
+  MintCommentRequest,
+  MintNftRequest,
+  PaginatedCommentsResponse,
   PaginatedFollowerProfileResponse,
   PaginatedFollowProfileResponse,
   PaginatedRequestersFollowProfileResponse,
@@ -20,6 +32,8 @@ import {
   TwoFactorAuthenticatorTypeResponse,
   UnfollowProfileRequest,
   UnfollowProfileResponse,
+  UnmintCommentRequest,
+  UnmintNftRequest,
   VerifyExistUsernameResponse,
   VerifyPasswordRequest,
   VerifyTotpCodeRequest
@@ -152,6 +166,9 @@ export async function getPaginatedFollowers(username: string, page: number) {
 
     case ErrorCode.DONT_FOLLOW_PROFILE:
       return "dont_follow_profile"
+
+    case ErrorCode.NOT_ACTIVATED:
+      return "not_activated"
   }
 
   throw new Error("Undefined error code from server")
@@ -290,6 +307,120 @@ export async function deleteFollowerProfile(req: DeleteFollowerProfileRequest) {
 
     case ErrorCode.DONT_FOLLOW_PROFILE:
       return "dont_follow_profile"
+  }
+}
+
+export async function deleteUser(req: DeleteUserRequest) {
+  const url = encodeURI(`/api/user/delete`)
+  const res = await fetch(url, {
+    method: "DELETE",
+    body: JSON.stringify(req),
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return "deleted"
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.NOT_ACTIVATED:
+      return "not_activated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.INVALID_CONTENT_TYPE:
+      return "invalid_content-type"
+  }
+}
+
+export async function deleteNft(req: DeleteNftRequest) {
+  const url = encodeURI(`/api/nft/delete`)
+  const res = await fetch(url, {
+    method: "DELETE",
+    body: JSON.stringify(req),
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return "deleted"
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.NOT_ACTIVATED:
+      return "not_activated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.INVALID_CONTENT_TYPE:
+      return "invalid_content-type"
+  }
+}
+
+export async function deleteComment(req: DeleteCommentRequest) {
+  const url = encodeURI(`/api/comment/delete`)
+  const res = await fetch(url, {
+    method: "DELETE",
+    body: JSON.stringify(req),
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return "deleted"
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.NOT_ACTIVATED:
+      return "not_activated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.INVALID_CONTENT_TYPE:
+      return "invalid_content-type"
   }
 }
 
@@ -545,6 +676,134 @@ export async function searchFollowersProfile(signal: AbortSignal, username: stri
   throw new Error("Undefined error code from server")
 }
 
+export async function getPaginatedAdminUsers(page: number) {
+  const url = encodeURI(`/api/admin/users?page=${page}`)
+  const res = await fetch(url, {
+    method: "GET"
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return GetPaginatedUsersResponse.parse(await res.json())
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  throw new Error("Undefined error code from server")
+}
+
+export async function getPaginatedAdminNfts(page: number) {
+  const url = encodeURI(`/api/admin/nfts?page=${page}`)
+  const res = await fetch(url, {
+    method: "GET"
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return GetPaginedNftsResponse.parse(await res.json())
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  throw new Error("Undefined error code from server")
+}
+
+export async function getPaginatedAdminComments(page: number) {
+  const url = encodeURI(`/api/admin/comments?page=${page}`)
+  const res = await fetch(url, {
+    method: "GET"
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return GetPaginedCommentsResponse.parse(await res.json())
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  throw new Error("Undefined error code from server")
+}
+
+export async function enableOrDisableUser(req: EnableOrDisableRequest) {
+  const url = encodeURI(`/api/user/enable-or-disable`)
+  const res = await fetch(url, {
+    method: "PATCH",
+    body: JSON.stringify(req),
+    headers: {
+      "Content-Type": "application/json"
+    },
+  })
+
+  if (res.status === StatusCodes.OK) {
+    const response = EnableOrDisableResponse.parse(await res.json())
+
+    return response.type
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.NOT_ACTIVATED:
+      return "not_activated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.INVALID_CONTENT_TYPE:
+      return "invalid_content-type"
+  }
+
+  throw new Error("Undefined error code from server")
+}
+
 export async function getPaginatedNfts(username: string, page: number) {
   const url = encodeURI(`/api/profile/nft?username=${username}&page=${page}`)
   const res = await fetch(url, {
@@ -572,6 +831,9 @@ export async function getPaginatedNfts(username: string, page: number) {
 
     case ErrorCode.DONT_FOLLOW_PROFILE:
       return "dont_follow_profile"
+
+    case ErrorCode.NOT_ACTIVATED:
+      return "not_activated"
   }
 
   throw new Error("Undefined error code from server")
@@ -713,6 +975,39 @@ export async function registerUser(req: RegisterUserRequest) {
   throw new Error(`Undefined error code from server ${errorCode}`)
 }
 
+export async function updateProfile(req: FormData) {
+  const res = await fetch("/api/profile/update", {
+    method: "POST",
+    body: JSON.stringify(req)
+    // No Content-Type header needed, browser will set the correct multipart/form-data boundary
+  })
+
+  if (res.status === StatusCodes.CREATED) {
+    return RegisterUserResponse.parse(await res.json())
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_params"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.LINK_ALREADY_USED:
+      return "link_already_used"
+
+    case ErrorCode.USERNAME_ALREADY_USED:
+      return "username_already_used"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
+}
+
 export async function getPaginatedNftsWithSearch(query: string, location: string, priceRange: number[], page: number) {
   const queryParams = new URLSearchParams({
     query,
@@ -721,13 +1016,8 @@ export async function getPaginatedNftsWithSearch(query: string, location: string
     location,
     page: page.toString()
   })
-  const response = await fetch(`/api/nft/search?${queryParams.toString()}`)
 
-  if (response.status === StatusCodes.OK) {
-    return await response.json() as NFTData[]
-  }
-
-  throw new Error("Undefined error code from server")
+  return await fetch(`/api/nft/search?${queryParams.toString()}`)
 }
 
 export async function getPaginatedUsersWithSearch(query: string, location: string, page: number) {
@@ -736,21 +1026,27 @@ export async function getPaginatedUsersWithSearch(query: string, location: strin
     location,
     page: page.toString()
   })
-  const response = await fetch(`/api/profile/search?${queryParams.toString()}`)
 
-  if (response.status === StatusCodes.OK) {
-    return await response.json() as ProfileData[]
-  }
-
-  throw new Error("Undefined error code from server")
+  return await fetch(`/api/profile/search?${queryParams.toString()}`)
 }
 
 
-export async function fetchProfileData(): Promise<ProfileData> {
+export async function getProfileData() {
   const res = await fetch("/api/profile/me")
 
   if (res.status === StatusCodes.CREATED) {
-    return await res.json() as ProfileData
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return await res.json()
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
   }
 
   return {id: 0, avatarUrl: "", bio: "", link: "", username: ""}
@@ -812,4 +1108,255 @@ export async function reportProfile(req: ReportProfileRequest): Promise<boolean>
 
 
   return false
+}
+
+export async function mintNft(req: MintNftRequest) {
+  const res = await fetch("/api/nft/mint", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(req)
+  })
+
+  if (res.status === StatusCodes.CREATED) {
+    return "minted"
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.ALREADY_MINTED_NFT:
+      return "already_minted"
+
+    case ErrorCode.NFT_NOT_FOUND:
+      return "nft_not_found"
+
+    case ErrorCode.DONT_FOLLOW_PROFILE:
+      return "dont_follow_profile"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
+}
+
+export async function unmintNft(req: UnmintNftRequest) {
+  const res = await fetch("/api/nft/mint", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(req)
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return "unminted"
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.NOT_MINTED_NFT:
+      return "not_minted"
+
+    case ErrorCode.NFT_NOT_FOUND:
+      return "nft_not_found"
+
+    case ErrorCode.DONT_FOLLOW_PROFILE:
+      return "dont_follow_profile"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
+}
+
+export async function mintComment(req: MintCommentRequest) {
+  const res = await fetch("/api/nft/comment/mint", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(req)
+  })
+
+  if (res.status === StatusCodes.CREATED) {
+    return "minted"
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.ALREADY_MINTED_COMMENT:
+      return "already_minted"
+
+    case ErrorCode.COMMENT_NOT_FOUND:
+      return "nft_not_found"
+
+    case ErrorCode.DONT_FOLLOW_PROFILE:
+      return "dont_follow_profile"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
+}
+
+export async function unmintComment(req: UnmintCommentRequest) {
+  const res = await fetch("/api/nft/comment/mint", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(req)
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return "unminted"
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.NOT_MINTED_COMMENT:
+      return "not_minted"
+
+    case ErrorCode.COMMENT_NOT_FOUND:
+      return "nft_not_found"
+
+    case ErrorCode.DONT_FOLLOW_PROFILE:
+      return "dont_follow_profile"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
+}
+
+export async function getPaginatedComments(nftId: number, page: number) {
+  const url = encodeURI(`/api/nft/comment?nftId=${nftId}&page=${page}`)
+  const res = await fetch(url, {
+    method: "GET"
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return PaginatedCommentsResponse.parse(await res.json())
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NFT_NOT_FOUND:
+      return "nft_not_found"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.DONT_FOLLOW_PROFILE:
+      return "dont_follow_profile"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
+}
+
+export async function getPaginatedReplyComments(commentId: number, page: number) {
+  const url = encodeURI(`/api/nft/comment?commentId=${commentId}&page=${page}`)
+  const res = await fetch(url, {
+    method: "GET"
+  })
+
+  if (res.status === StatusCodes.OK) {
+    return PaginatedCommentsResponse.parse(await res.json())
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.COMMENT_NOT_FOUND:
+      return "comment_not_found"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.DONT_FOLLOW_PROFILE:
+      return "dont_follow_profile"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
+}
+
+export async function createComment(req: CommentNftRequest) {
+  const res = await fetch("/api/nft/comment", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(req)
+  })
+
+  if (res.status === StatusCodes.CREATED) {
+    return "created"
+  }
+
+  const errorCode = getErrorCodeFromProblem(await res.json())
+
+  switch (errorCode) {
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.INVALID_BODY:
+      return "invalid_body"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+
+    case ErrorCode.COMMENT_NOT_FOUND:
+      return "comment_not_found"
+
+    case ErrorCode.NFT_NOT_FOUND:
+      return "nft_not_found"
+  }
+
+  throw new Error(`Undefined error code from server ${errorCode}`)
 }

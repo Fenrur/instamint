@@ -13,7 +13,8 @@ import {DateTime} from "luxon"
 import {
   useDeleteFollowerProfile,
   useFollowProfile,
-  useSearchFollowersProfile, useSearchFollowsProfile,
+  useSearchFollowersProfile,
+  useSearchFollowsProfile,
   useUnfollowProfile
 } from "@/repository/hooks"
 import Link from "next/link"
@@ -356,9 +357,7 @@ export function GenericFollowsProfilePage({type, username}: GenericFollowsProfil
         hasMore={hasMore}
         loader={
           <div className="grid justify-center">
-            {
-              <BackgroundLoadingDots size={50}/>
-            }
+            <BackgroundLoadingDots size={50}/>
           </div>
         }
         dataLength={follows.length}

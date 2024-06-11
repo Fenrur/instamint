@@ -19,15 +19,21 @@ export class DefaultUserService {
   private readonly pgClient: PgClient
   private readonly pepperPasswordSecret: string
   private readonly totpEncryptionKey: string
+  private readonly usersPageSize: number
   private readonly userPgRepository: UserPgRepository
   private readonly profilePgRepository: ProfilePgRepository
 
-  constructor(pgClient: PgClient, pepperPasswordSecret: string, totpEncryptionKey: string) {
+  constructor(pgClient: PgClient, pepperPasswordSecret: string, totpEncryptionKey: string, usersPageSize: number) {
     this.pgClient = pgClient
     this.pepperPasswordSecret = pepperPasswordSecret
     this.totpEncryptionKey = totpEncryptionKey
     this.userPgRepository = new UserPgRepository(this.pgClient)
     this.profilePgRepository = new ProfilePgRepository(this.pgClient)
+  this.usersPageSize = usersPageSize
+  }
+
+  public findById(uid: string) {
+    return this.userPgRepository.findById(uid)
   }
 
   public findByEmail(email: string) {
@@ -42,8 +48,30 @@ export class DefaultUserService {
     return this.userPgRepository.findByUid(uid)
   }
 
-  public findById(uid: string) {
-    return this.userPgRepository.findById(uid)
+  public async enableOrDisable(id: number) {
+    const user = await this.findById(String(id))
+
+    if (!user) {
+    return "user_not_found"
+    }
+
+    if (user.isActivated) {
+      await this.userPgRepository.disable(id)
+
+      return "disabled"
+    }
+
+    await this.userPgRepository.enable(id)
+
+    return "enabled"
+  }
+
+  public enableIsActivated(id: number) {
+    return this.userPgRepository.enable(id)
+  }
+
+  public disableIsActivated(id: number) {
+    return this.userPgRepository.disable(id)
   }
 
   public existUsername(username: string) {
@@ -225,7 +253,13 @@ export class DefaultUserService {
     return await this.userPgRepository.updatePassword(user.uid, hashedPassword)
   }
 
-  public async updateUserById(userId: string, password: string) {
+public findUsersPaginatedAndSorted(page: number) {
+    return this.userPgRepository
+      .findUsersPaginatedAndSorted(
+        this.usersPageSize * (page - 1),
+        this.usersPageSize
+      )
+  }  public async updateUserById(userId: string, password: string) {
     const user = await this.findById(userId)
 
     if (!user) {
@@ -234,5 +268,17 @@ export class DefaultUserService {
 
     const hashedPassword = await hashPassword(password, this.pepperPasswordSecret)
     await this.userPgRepository.updatePassword(user.uid, hashedPassword)
+  }
+
+  public async deleteUserById(id: string) {
+    const user = await this.findById(id)
+
+    if (!user) {
+      return "user_not_found"
+    }
+
+    await this.userPgRepository.deleteUser(user.uid)
+
+    return "deleted"
   }
 }

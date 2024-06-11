@@ -5,27 +5,40 @@ import {Label} from "@/components/ui/label"
 import React, {useCallback, useEffect, useState} from "react"
 import {RightPanel} from "./right-panel"
 import {NFTData, NFTList} from "@/components/NFT/NFTList"
-import {Slider} from "@/components/ui/slider"
 import {debounce} from "next/dist/server/utils"
 import {TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import {Tabs} from "@radix-ui/react-tabs"
 import {ProfileData, ProfileList} from "@/components/Profile/ProfileList"
 import {getPaginatedNftsWithSearch, getPaginatedUsersWithSearch} from "@/repository"
 import {nftsPageSize, profilePageSize} from "@/services/constants"
-import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
+import {Slider} from "@/components/ui/slider"
+import {redirect} from "next/navigation"
+import {createRedirectQueryParam} from "@/utils/url"
+import {useSession} from "@/auth/session"
+import {getMaxPrice} from "@/actions"
 import InfiniteScroll from "react-infinite-scroll-component"
+import {BackgroundLoadingDots} from "@/components/ui/loading-dots"
+import {StatusCodes} from "http-status-codes"
+import {toast} from "sonner"
 
 const debounceTime = 300
 
 export default function SignupPage() {
   const [query, setQuery] = useState("")
   const [location, setLocation] = useState("")
-  const [priceRange, setPriceRange] = React.useState<number[]>([1, 100])
+  const [priceRange, setPriceRange] = React.useState<number[]>([0, 100])
   const [nftsList, setNftsList] = useState<NFTData[]>(new Array<NFTData>())
   const [profilesList, setProfilesList] = useState<ProfileData[]>(new Array<ProfileData>())
-  const [isNfts, setIsNfts] = useState<boolean>(true)
+  const [isNfts, setIsNfts] = useState(false)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
+  const {status} = useSession()
+  const [maxPrice, setMaxPrice] = useState<number>()
+
+  if (status === "unauthenticated") {
+    redirect(`/login${createRedirectQueryParam("/search")}`)
+  }
+
   const handleQueryChange = debounce((event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
     fetchData(event.target.value, location, priceRange, page)
@@ -38,95 +51,135 @@ export default function SignupPage() {
     setPriceRange([newValue[0], newValue[1]])
     fetchData(query, location, newValue, page)
   }, debounceTime)
-  const fetchData = (query: string, location: string, priceRange: number[], page: number) => {
-    if (isNfts) {
+  const fetchData = (query: string, location: string, priceRange: number[], page: number, nftPanel = isNfts) => {
+    if (nftPanel) {
       void fetchNftsData(query, location, priceRange, page).then(res => {
-        setNftsList([...res])
+        if (res) {
+          setNftsList([...res])
+        }
       })
     } else {
       void fetchUsersData(query, location, page).then(res => {
-        setProfilesList([...res])
+        if (res) {
+          setProfilesList([...res])
+        }
       })
     }
 
     setPage(1)
   }
   const fetchUsersData = async (query: string, location: string, page: number) => {
-    return await getPaginatedUsersWithSearch(query, location, page)
+    const resp = await getPaginatedUsersWithSearch(query, location, page)
+
+    if (resp.status === StatusCodes.OK) {
+      return await resp.json() as ProfileData[]
+    }
+
+    toast.error("Error", {description: resp.json()})
   }
   const fetchNftsData = async (query: string, location: string, priceRange: number[], page: number) => {
-    return await getPaginatedNftsWithSearch(query, location, priceRange, page)
+    const resp = await getPaginatedNftsWithSearch(query, location, priceRange, page)
+
+    if (resp.status === StatusCodes.OK) {
+      return await resp.json() as NFTData[]
+    }
+
+    toast.error("Error", {description: resp.json()})
   }
   const loadNextPage = useCallback(async () => {
     if (isNfts) {
       const paginatedNfts = await fetchNftsData(query, location, priceRange, page)
 
-      if (paginatedNfts.length < nftsPageSize) {
-        setHasMore(false)
-      }
+      if (paginatedNfts) {
+        if (paginatedNfts.length < nftsPageSize) {
+          setHasMore(false)
+        }
 
-      setNftsList([...nftsList, ...paginatedNfts])
+        setNftsList([...nftsList, ...paginatedNfts])
+      }
     } else {
       const paginatedUsers = await fetchUsersData(query, location, page)
 
-      if (paginatedUsers.length < profilePageSize) {
-        setHasMore(false)
-      }
+      if (paginatedUsers) {
+        if (paginatedUsers.length < profilePageSize) {
+          setHasMore(false)
+        }
 
-      setProfilesList([...profilesList, ...paginatedUsers])
+        setProfilesList([...profilesList, ...paginatedUsers])
+      }
     }
 
     setPage(page + 1)
-  }, [isNfts, page, query, location, priceRange, nftsList, profilesList])  const [init, setInit] = useState(true)
+  }, [isNfts, page, query, location, priceRange, nftsList, profilesList])
+  const [init, setInit] = useState(true)
   useEffect(() => {
     if (init) {
+      void getMaxPrice().then(res => {
+        setMaxPrice(res)
+        setPriceRange([0, res])
+      })
       setInit(false)
       void loadNextPage()
-
-      const nftSection = document.getElementById("nfts-section-ssr")
-
-      if (nftSection) {
-        nftSection.classList.add("hidden")
-      }
     }
   }, [init, loadNextPage])
 
   function onTabChange(value: string) {
-    const x = value === "nfts"
-    setIsNfts(x)
-    fetchData(query, location, priceRange, page)
+    const isNftPanel = value === "nfts"
+    setIsNfts(isNftPanel)
     setPage(1)
     setHasMore(true)
+    fetchData(query, location, priceRange, page, isNftPanel)
+  }
+
+  const [showAdvanced, setShowAdvanced] = useState(false)
+  const toggleAdvancedOptions = () => {
+    setShowAdvanced(!showAdvanced)
   }
 
   return (
-    <RightPanel title="Search" text="you can search what you want" width="w-full">
-      <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
-        <div className="container max-w-screen-lg mx-auto">
-          <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
-            <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
-              <div className="text-gray-600">
-                <p className="font-medium text-lg">Search Parameters</p>
-                <p>Fill out the fields below to search.</p>
+    <RightPanel title="Search" width="w-full" className="mt-4">
+      <div className="flex items-center justify-center px-20">
+        <Tabs defaultValue="profiles" className="flex flex-col max-w-[940px] justify-center w-full"
+              onValueChange={value => {
+                onTabChange(value)
+              }}>
+          <div className="md:grid lg:grid-cols-4 md:grid-cols-1 gap-2 items-center justify-center align-middle">
+            <div className="lg:col-span-3">
+              <Input
+                name="query"
+                placeholder="recherche"
+                id="query"
+                type="text"
+                className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                onChange={handleQueryChange}
+              />
+            </div>
+            <TabsList className="h-10 mt-1 px-4 w-full">
+              <TabsTrigger className="w-1/2 text-center"
+                           value="profiles">
+
+                Users
+              </TabsTrigger>
+
+              <TabsTrigger className="w-1/2 text-center"
+                           value="nfts">
+                NFTs
+              </TabsTrigger>
+            </TabsList>
+
+            <div className="text-center col-span-4">
+              <div className="text-end">
+                <button onClick={toggleAdvancedOptions} className="mt-4">
+                  {showAdvanced ? "▲" : "▼"} Advanced Options
+                </button>
               </div>
 
-              <div className="lg:col-span-2">
-                <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-2">
-                  <div className="md:col-span-1">
-                    <Label htmlFor="query">Query</Label>
-                    <Input
-                      name="query"
-                      id="query"
-                      type="text"
-                      className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                      onChange={handleQueryChange}
-                    />
-                  </div>
-
-                  <div className="md:col-span-1">
-                    <Label htmlFor="location">Location</Label>
+              {showAdvanced && (
+                <div className="flex flex-col lg:flex-row text-start justify-center gap-2">
+                  <div className="w-full lg:w-1/2">
                     <Input
                       name="location"
+                      placeholder="location"
                       id="location"
                       type="text"
                       className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
@@ -134,69 +187,56 @@ export default function SignupPage() {
                     />
                   </div>
 
-                  <div className="md:col-span-2">
-                    <Label htmlFor="price">Price</Label>
+                  {isNfts && <div className="w-full lg:w-1/2 mt-5 flex flex-col gap-2">
+                    <Label htmlFor="price">Price range : [{priceRange[0]} - {priceRange[1]}]</Label>
                     <Slider
+                      max={maxPrice}
+                      min={0}
                       defaultValue={priceRange}
                       onValueChange={handlePriceChange}
                     />
-                  </div>
+                  </div>}
                 </div>
-              </div>
+              )}
             </div>
 
-            <div className="mt-6">
-              <Tabs defaultValue="nfts" onValueChange={value => { onTabChange(value) }}>
-                <TabsList className="flex w-full">
-                  <TabsTrigger className="w-1/2 text-center"
-                               value="nfts">
-                    NFTs
-                  </TabsTrigger>
-                  <TabsTrigger className="w-1/2 text-center"
-                               value="profiles">
-
-                    Users
-                  </TabsTrigger>
-                </TabsList>
-
-                <div className="mt-4">
-                  <TabsContent value="nfts">
-                    <InfiniteScroll
-                      dataLength={nftsList.length}
-                      next={loadNextPage}
-                      hasMore={hasMore}
-                      loader={
-                        <div className="grid justify-center">
-                          {
-                            <BackgroundLoadingDots size={50}/>
-                          }
-                        </div>
-                      }
-                    >
-                      <NFTList data={nftsList}/>
-                    </InfiniteScroll>
-                  </TabsContent>
-                  <TabsContent value="profiles">
-                    <InfiniteScroll
-                      dataLength={profilesList.length}
-                      next={loadNextPage}
-                      hasMore={hasMore}
-                      loader={
-                        <div className="grid justify-center">
-                          {
-                            <BackgroundLoadingDots size={50}/>
-                          }
-                        </div>
-                      }
-                    >
-                      <ProfileList data={profilesList}/>
-                    </InfiniteScroll>
-                  </TabsContent>
-                </div>
-              </Tabs>
-            </div>
           </div>
-        </div>
+
+          <div className="mt-4 justify-center text-center">
+            <TabsContent value="nfts">
+              <InfiniteScroll
+                dataLength={nftsList.length}
+                next={loadNextPage}
+                hasMore={hasMore}
+                loader={
+                  <div className="grid justify-center">
+                    {
+                      <BackgroundLoadingDots size={50}/>
+                    }
+                  </div>
+                }
+              >
+                <NFTList data={nftsList}/>
+              </InfiniteScroll>
+            </TabsContent>
+            <TabsContent value="profiles">
+              <InfiniteScroll
+                dataLength={profilesList.length}
+                next={loadNextPage}
+                hasMore={hasMore}
+                loader={
+                  <div className="grid justify-center">
+                    {
+                      <BackgroundLoadingDots size={50}/>
+                    }
+                  </div>
+                }
+              >
+                <ProfileList data={profilesList}/>
+              </InfiniteScroll>
+            </TabsContent>
+          </div>
+        </Tabs>
       </div>
     </RightPanel>
   )

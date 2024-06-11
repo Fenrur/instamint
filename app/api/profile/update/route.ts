@@ -71,7 +71,6 @@ export const POST = auth(async (req: NextAuthRequest) => {
       return problem({...invalidQueryParameterProblem, detail: "Invalid image format"})
     }
 
-    // Convert imageFile to binary data
     const data = (imageFile).replace(/^data:image\/\w+;base64,/, "")
     imageBuffer = Buffer.from(data, "base64")
   }

@@ -1,0 +1,125 @@
+# Sprint report
+
+## Planning
+
+
+
+## Sprint `[Start: 21 May 2024 and Finish: 03 June 2024]`
+
+During this sprint the team has worked more on the admin page and on the nft threads.
+
+### Positive reviews
+
+- Review 1
+  - Description: `Admin can delete and enable/disable a minter.`
+  - Commitment:
+    - Who: `Eric VIGLA`
+    - What: `admin privilege on minters`
+    - When: `03 June 2024`
+- Review 2
+  - Description: `Add the quality process file`
+  - Commitment:
+    - Who: `Eric VIGLA`
+    - What: `Add a quality process file supposed to be used for the developpement.`
+    - When: `03 June 2024`
+- Review 3
+  - Description: `Add the green it file.`
+  - Commitment:
+    - Who: `Anoine DE MARESCHAL`
+    - What: `Add a file that supposed to ecological risks`
+    - When: `03 June 2024`
+- Review 4
+  - Description: `Real Planning`
+  - Commitment:
+    - Who: `Antoine DE MARESCHAL`
+    - What: `The real planning of the project developpement`
+    - When: `03 June 2024`
+- Review 5
+  - Description: `Minter can like or dislike an NFT`
+  - Commitment:
+    - Who: `Livio TINNIRELLO`
+    - What: `user can like or dislike NFT`
+    - When: `03 June 2024`
+- Review 6
+  - Description: `Minter can comment on an nft and fold/unfold comment threads`
+  - Commitment:
+    - Who: `Livio TINNIRELLO`
+    - What: `minter can comment and fold/unfold threads`
+    - When: `03 June 2024`
+
+- Review 7
+  - Description: `Minter can load more comment in a row`
+  - Commitment:
+    - Who: `Livio TINNIRELLO`
+    - What: `minter load comments`
+    - When: `03 June 2024`
+- Review 8
+  - Description: `user can change its username if not already taken by another`
+  - Commitment:
+    - Who: `Ouafae MARHROUF`
+    - What: `update user username`
+    - When: `21 May 2024`
+- Review 9
+  - Description: `user can change its profile picture`
+  - Commitment:
+    - Who: `Ouafae MARHROUF`
+    - What: `update user profile`
+    - When: `21 May 2024`
+
+- Review 10
+  - Description: `user can change its profile bio`
+  - Commitment:
+    - Who: `Ouafae MARHROUF`
+    - What: `update user bio`
+    - When: `21 May 2024`
+
+- Review 11
+  - Description: `user can change its personnal link`
+  - Commitment:
+    - Who: `Ouafae MARHROUF`
+    - What: `update user link`
+    - When: `21 May 2024`
+- Review 12
+  - Description: `Search NFTs and users`
+  - Commitment:
+    - Who: `Ouafae MARHROUF`
+    - What: `Search NFTs and users`
+    - When: `24 May 2024`
+
+### Negative reviews
+
+
+- Review 1
+  - Description: `add setting page to change app parameters`
+  - Commitment:
+    - Who: `Ouafae MARHROUF`
+    - What: `add settings page`
+    - When: `21 May 2024`
+
+- Review 2
+  - Description: `add admin page taht let admin modify/delete users, it can perform research on users too`
+  - Commitment:
+    - Who: `Eric VIGLA`
+    - What: `add admin users page`
+    - When: `21 May 2024`
+- Review 3
+  - Description: `Admin can delete an NFT.`
+  - Commitment:
+    - Who: `Eric VIGLA`
+    - What: `admin privilege on nfts`
+    - When: `03 June 2024`
+- Review 4
+  - Description: `Admin can delete an NFT.`
+  - Commitment:
+    - Who: `Eric VIGLA`
+    - What: `admin privilege on nfts`
+    - When: `03 June 2024`
+
+
+
+### Participants
+
+- `Livio TINNIRELLO`
+- `Antoine DE MARESCHAL`
+- `Ouafae MARHROUF`
+- `Eric VIGLA`
