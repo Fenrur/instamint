@@ -510,12 +510,12 @@ export function useRegisterUser() {
 
 export function useUpdateProfile() {
   const updateProfileFetcher = (_: any, {arg}: {
-    arg: FormData
+    arg: any
   }) => updateProfile(arg)
   const {trigger, data, error, isMutating} = useSWRMutation("updateProfileFetcher", updateProfileFetcher)
 
   return {
-    updateProfile: (req: FormData) => trigger(req),
+    updateProfile: (req: any) => trigger(req),
     dataUpdateProfile: data,
     errorUpdateProfile: error,
     isFetchingUpdateProfile: isMutating

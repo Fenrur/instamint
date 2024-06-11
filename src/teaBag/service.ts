@@ -71,9 +71,14 @@ export class DefaultTeaBagService {
      await this.pgClient.transaction(async (tx) => {
       async function followUsers(whitelistUserIds: number[], profileId: number) {
         if (whitelistUserIds) {
-          const followPromises = whitelistUserIds.map(userId =>
-            followService.followOrRequest(userId, profileId, DateTime.utc())
-          )
+          const followPromises = whitelistUserIds.map(async userId => {
+            try {
+              await followService.followOrRequest(userId, profileId, DateTime.utc())
+            } catch (error) {
+              console.error(`An error occurred while trying to follow or request user ${userId}:`, error)
+              // Handle the error for this specific userId as needed
+            }
+          })
 
           await Promise.all(followPromises)
         }

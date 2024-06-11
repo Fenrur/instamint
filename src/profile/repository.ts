@@ -70,13 +70,24 @@ export class ProfilePgRepository {
       .where(eq(UserTable.uid, uid))
     const profileId = users[0].profileId
 
+    if (avatarUrl) {
+      return this.pgClient
+        .update(ProfileTable)
+        .set({
+          username,
+          bio,
+          link,
+          avatarUrl
+        })
+        .where(eq(ProfileTable.id, profileId)).returning()
+    }
+
     return this.pgClient
       .update(ProfileTable)
       .set({
         username,
         bio,
         link,
-        avatarUrl
       })
       .where(eq(ProfileTable.id, profileId)).returning()
   }

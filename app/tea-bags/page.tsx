@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import MultiSelect from "@/components/ui/multi-select"
 import {teaBagsPageSize} from "@/services/constants"
-import {ErrorCode} from "@/http/error-code"
 import {cn} from "@/lib/utils"
 import {Textarea} from "@/components/ui/textarea"
 
@@ -159,27 +158,30 @@ export default function TeaBagPage(props: SignupPageProps) {
       body: formDataWithImage
     })
 
+    function isMyInterface(obj: any): obj is TeaBag[] {
+      return "property" in obj
+    }
+
     if (response.ok) {
       toast.success("Successfully created", {description: "Your Tea Bag has been created."})
       const res = await fetchTeaBags({page: 1})
 
-      if (res) {
+      if (typeof res !== "string") {
         setErrors({
           username: "",
           link: ""
         })
         setTeabagsList([...res])
         setPage(1)
+      } else {
+        toast.error("Error", {description: res === "not_authenticated" ? "not authentificated" : "bad session"})
       }
 
       setIsOpenCreate(false)
     } else {
       const error = await response.json()
-      setErrors({
-        username: error.errorCode === ErrorCode.USERNAME_ALREADY_USED ? error.title : "",
-        link: error.errorCode === ErrorCode.LINK_ALREADY_USED ? error.title : ""
-      })
-      toast.error("Error", {description: "Failed to create Tea Bag"})
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      toast.error(error.title, {description: error.detail})
     }
   }
   const handleReportFormOnChange = (e: React.ChangeEvent<HTMLFormElement>) => {

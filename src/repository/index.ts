@@ -973,14 +973,14 @@ export async function registerUser(req: RegisterUserRequest) {
   throw new Error(`Undefined error code from server ${errorCode}`)
 }
 
-export async function updateProfile(req: FormData) {
+export async function updateProfile(req: any) {
   const res = await fetch("/api/profile/update", {
     method: "POST",
-    body: JSON.stringify(req)
-    // No Content-Type header needed, browser will set the correct multipart/form-data boundary
+    body: JSON.stringify(req),
+    headers: new Headers({"content-type": "multipart/form-data"}),
   })
 
-  if (res.status === StatusCodes.CREATED) {
+  if (res.status === StatusCodes.OK) {
     return RegisterUserResponse.parse(await res.json())
   }
 
