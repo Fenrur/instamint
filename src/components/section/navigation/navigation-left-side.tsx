@@ -1,5 +1,5 @@
 import {Button} from "@/components/ui/button"
-import {BellIcon, HomeIcon, MenuIcon, PlusIcon, SearchIcon, SendIcon} from "lucide-react"
+import {BellIcon, HomeIcon, MenuIcon, PlusIcon, SearchIcon, SendIcon, UserIcon} from "lucide-react"
 import {cn} from "@/lib/utils"
 import {Separator} from "@/components/ui/separator"
 import React from "react"
@@ -7,6 +7,8 @@ import {SelectedNavigation} from "@/components/section/navigation/index"
 import Link from "next/link"
 import {MintIcon} from "@/components/ui/icons"
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip"
+import {getServerSession} from "@/auth"
+import {profileService} from "@/services"
 
 interface NavigationLeftSideProps {
   className?: string,
@@ -15,12 +17,39 @@ interface NavigationLeftSideProps {
   avatarUrl: string,
 }
 
-export function NavigationLeftSide({className, selectedNavigation, username, avatarUrl}: NavigationLeftSideProps) {
+export async function NavigationLeftSide({className, selectedNavigation, username, avatarUrl}: NavigationLeftSideProps) {
+  const session = await getServerSession()
+  let admin = <></>
+
+  if (session) {
+    const userAndProfile = await profileService.findByUserUid(session.uid)
+
+    if (userAndProfile && userAndProfile.role === "admin") {
+      admin = <TooltipProvider delayDuration={300}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button className="size-12" variant="ghost" asChild>
+              <Link href="/admin/home">
+                <UserIcon className={cn("absolute", selectedNavigation === "home" && "text-primary")} size={26}/>
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right" asChild>
+            <div>Admin page</div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    }
+  }
+
   return (
     <section className={className}>
       <header className="flex h-screen">
         <div className="w-20 flex flex-col items-center justify-between py-8">
           <div className="flex flex-col items-center gap-2">
+
+            {admin}
+
             <TooltipProvider delayDuration={300}>
               <Tooltip>
                 <TooltipTrigger asChild>
