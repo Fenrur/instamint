@@ -44,22 +44,6 @@ import {getErrorCodeFromProblem} from "@/http/problem"
 import {ErrorCode} from "@/http/error-code"
 import {StatusCodes} from "http-status-codes"
 
-function adminErrors(errorCode: ErrorCode) {
-  switch (errorCode) {
-    case ErrorCode.INVALID_QUERY_PARAMETER:
-      return "invalid_query_parameter"
-
-    case ErrorCode.NOT_AUTHENTICATED:
-      return "not_authenticated"
-
-    case ErrorCode.USER_NOT_FOUND:
-      return "my_user_not_found"
-
-    case ErrorCode.BAD_SESSION:
-      return "bad_session"
-  }
-}
-
 export async function myProfile() {
   const res = await fetch("/api/profile/me", {
     method: "GET"
@@ -703,8 +687,18 @@ export async function getPaginatedAdminUsers(page: number) {
 
   const errorCode = getErrorCodeFromProblem(await res.json())
 
-  if (adminErrors(errorCode)) {
-    return adminErrors(errorCode)
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
   }
 
   throw new Error("Undefined error code from server")
@@ -757,16 +751,46 @@ export async function getPaginatedAdminReports(page: number) {
   const errorCodeNft = getErrorCodeFromProblem(await resReportNft.json())
   const errorCodeProfile = getErrorCodeFromProblem(await resReportProfile.json())
 
-  if (adminErrors(errorCodeComment)) {
-    return adminErrors(errorCodeComment)
+  switch (errorCodeComment) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
   }
 
-  if (adminErrors(errorCodeNft)) {
-    return adminErrors(errorCodeNft)
+  switch (errorCodeNft) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
   }
 
-  if (adminErrors(errorCodeProfile)) {
-    return adminErrors(errorCodeProfile)
+  switch (errorCodeProfile) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
   }
 
   throw new Error("Undefined error code from server")
@@ -784,8 +808,18 @@ export async function getPaginatedAdminNfts(page: number) {
 
   const errorCode = getErrorCodeFromProblem(await res.json())
 
-  if (adminErrors(errorCode)) {
-    return adminErrors(errorCode)
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
   }
 
   throw new Error("Undefined error code from server")
@@ -803,8 +837,18 @@ export async function getPaginatedAdminComments(page: number) {
 
   const errorCode = getErrorCodeFromProblem(await res.json())
 
-  if (adminErrors(errorCode)) {
-    return adminErrors(errorCode)
+  switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
   }
 
   throw new Error("Undefined error code from server")
