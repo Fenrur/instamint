@@ -28,7 +28,7 @@ export default function MePage() {
     avatarUrl: ""
   })
   const {profileData, profileDataMutate, errorProfileData} = useGetProfileData()
-  const {updateProfile, dataUpdateProfile, errorUpdateProfile} = useUpdateProfile()
+  const {updateProfile, dataUpdateProfile} = useUpdateProfile()
   void profileDataMutate()
 
 

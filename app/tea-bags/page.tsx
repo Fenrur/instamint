@@ -158,10 +158,6 @@ export default function TeaBagPage(props: SignupPageProps) {
       body: formDataWithImage
     })
 
-    function isMyInterface(obj: any): obj is TeaBag[] {
-      return "property" in obj
-    }
-
     if (response.ok) {
       toast.success("Successfully created", {description: "Your Tea Bag has been created."})
       const res = await fetchTeaBags({page: 1})
@@ -206,13 +202,15 @@ export default function TeaBagPage(props: SignupPageProps) {
   const loadNextPage = useCallback(async () => {
     const res = await fetchTeaBags({page})
 
-    if (res) {
+    if (typeof res !== "string") {
       if (res.length < teaBagsPageSize) {
         setHasMore(false)
       }
 
       setTeabagsList([...teabagsList, ...res])
       setPage(page + 1)
+    } else {
+      toast.error("Error", {description: res === "not_authenticated" ? "not authentificated" : "bad session"})
     }
   }, [page, teabagsList])
   const [init, setInit] = useState(true)
@@ -295,7 +293,7 @@ export default function TeaBagPage(props: SignupPageProps) {
 
             <Dialog open={isOpenCreate} onOpenChange={setIsOpenCreate}>
               <DialogTrigger asChild>
-                <Button className="Button violet w-52">Create tea-bag</Button>
+                <Button className="Button violet w-[200px]">Create tea-bag</Button>
               </DialogTrigger>
 
               <DialogPortal>
@@ -378,10 +376,10 @@ export default function TeaBagPage(props: SignupPageProps) {
                                          whitelistUserIds: values.map(item => Number(item))
                                        }))
                                      }}
-                                     options={usersData.map(item => ({
+                                     options={(typeof usersData !== "string") ? usersData.map(item => ({
                                        value: item.value.toString(),
                                        label: item.label
-                                     }))}
+                                     })) : []}
                                      defaultValue={formData.whitelistUserIds?.filter(item => item).map(item => item.toString())}
                                      placeholder="Users"/>}
                     </div>

@@ -75,7 +75,6 @@ export class DefaultTeaBagService {
             try {
               await followService.followOrRequest(userId, profileId, DateTime.utc())
             } catch (error) {
-              console.error(`An error occurred while trying to follow or request user ${userId}:`, error)
               // Handle the error for this specific userId as needed
             }
           })

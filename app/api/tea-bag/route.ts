@@ -93,7 +93,6 @@ export const POST = auth(async (req: NextAuthRequest) => {
 
   let imageBuffer = null
   let imageType = null
-  console.log(imageFile)
 
   if (imageFile && imageFile !== "null") {
     imageType = (imageFile).split(";")[0].split(":")[1].split("/")[1]

@@ -39,7 +39,7 @@ export const TeaBagList = ({data, onDelete, onReport, onUpdate}: {
   onUpdate: any
 }) => {
   return (
-    <section className={"grid grid-cols-3 gap-0.5"}>
+    <section className={"grid xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0.5 justify-center"}>
       {
         data.map((nft) => {
           return (

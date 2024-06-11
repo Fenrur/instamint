@@ -119,7 +119,7 @@ export function TeaBagContainer({
                                   onUpdate
                                 }: TeaBag) {
   return (
-    <div className="relative pb-1 cursor-pointer h-200">
+    <div className="relative pb-1 cursor-pointer h-200 w-[220px]">
 
       <div className="rounded overflow-hidden">
         <a href={link}>
@@ -153,7 +153,7 @@ export function TeaBagContainer({
         </a>
       </div>
       <div
-        className="bg-blue-600 text-white flex flex-row justify-around items-center h-10 px-5">
+        className="bg-blue-600 text-white w-[220px] flex flex-row justify-around items-center h-10 px-5">
         <div onClick={() => {
           onUpdate(id as number)
         }}>
