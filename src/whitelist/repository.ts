@@ -11,10 +11,8 @@ export class WhitelistPgRepository {
   }
 
   public async create(startAt: DateTime<true>, endAt: DateTime<true>, teaBagId: number, whitelistUserIds: number[]) {
-    // Parse the string into a JavaScript Date object
     const sqlFormattedDateStartAt = new Date(startAt.toString()).toISOString().slice(0, 19).replace("T", " ")
     const sqlFormattedDateEndAt = new Date(endAt.toString()).toISOString().slice(0, 19).replace("T", " ")
-    // Insert data into the Whitelist table
     const createdWhitelist = await this.pgClient
       .insert(WhitelistTable)
       .values({
@@ -26,7 +24,6 @@ export class WhitelistPgRepository {
     const whitelistId = createdWhitelist[0].id
 
     if (whitelistUserIds) {
-      // Insert data into the WhitelistUser table for each whitelisted user
       const whitelistUserInserts = whitelistUserIds.map((userId: number) => {
         return this.pgClient
           .insert(WhitelistUserTable)
@@ -45,7 +42,6 @@ export class WhitelistPgRepository {
     endAt: DateTime<true>,
     whitelistUserIds: number[]
   ) {
-    // Parse the string into a JavaScript Date object
     const sqlFormattedDateStartAt = new Date(startAt.toString()).toISOString().slice(0, 19).replace("T", " ")
     const sqlFormattedDateEndAt = new Date(endAt.toString()).toISOString().slice(0, 19).replace("T", " ")
     const sqlQuery = sql`SELECT ${WhitelistTable.id}
@@ -56,7 +52,6 @@ export class WhitelistPgRepository {
     const whitelistId = result[0].id as number
 
     await pgClient.transaction(async (tx) => {
-      // Update data in the Whitelist table
       await tx.update(WhitelistTable)
         .set({
           startAt: sqlFormattedDateStartAt,
@@ -64,7 +59,6 @@ export class WhitelistPgRepository {
         })
         .where(eq(WhitelistTable.id, whitelistId))
 
-      // Delete existing entries in the WhitelistUser table for the given whitelistId
       await tx.delete(WhitelistUserTable)
         .where(eq(WhitelistUserTable.whitelistId, whitelistId))
 
@@ -83,9 +77,7 @@ export class WhitelistPgRepository {
   }
 
 
-  // Function to fetch whitelist data with associated users
   public async fetchByIdWithUsers(profileId: number) {
-    // Fetch whitelist data
     const sqlQuery = sql`
       SELECT ${WhitelistTable.teaBagId},
              ${WhitelistTable.startAt},
