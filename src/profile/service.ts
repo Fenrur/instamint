@@ -4,15 +4,18 @@ import {ProfilePgRepository} from "@/profile/repository"
 import {AvatarProfileS3Repository} from "@/profile/avatar/repository"
 import {DateTime} from "luxon"
 import {env} from "@/env"
+import {WhitelistPgRepository} from "@/whitelist/repository"
 
 export class DefaultProfileService {
   private readonly profilePgRepository: ProfilePgRepository
+  private readonly whitelistPgRepository: WhitelistPgRepository
   private readonly avatarProfileS3Repository: AvatarProfileS3Repository
   private readonly pageSize: number
   private readonly pgClient: PgClient
 
   constructor(pgClient: PgClient, s3client: S3Client, s3Bucket: string, pageSize: number) {
     this.profilePgRepository = new ProfilePgRepository(pgClient)
+    this.whitelistPgRepository = new WhitelistPgRepository(pgClient)
     this.avatarProfileS3Repository = new AvatarProfileS3Repository(s3client, s3Bucket)
     this.pgClient = pgClient
     this.pageSize = pageSize
@@ -20,6 +23,10 @@ export class DefaultProfileService {
 
   public findByUsername(username: string) {
     return this.profilePgRepository.findByUsername(username)
+  }
+
+  public async deleteProfile(id: number) {
+    return await this.profilePgRepository.deleteProfile(id)
   }
 
   public async findByUserUid(uid: string) {
@@ -43,6 +50,9 @@ export class DefaultProfileService {
 
     return result
   }
+  public async findByProfileId(id: number) {
+    return await this.profilePgRepository.findByProfileId(id)
+  }
 
   public existUsername(username: string) {
     return this.profilePgRepository.existUsername(username)
@@ -58,6 +68,23 @@ export class DefaultProfileService {
 
     return this.profilePgRepository.updateProfileByUserUid(userId, username, bio, link, avatarKey)
   }
+
+  public async findTeaBagWithChildDataByProfileId(profileId: number) {
+    const profile = await this.profilePgRepository.findByProfileId(profileId)
+    const whitelist = await this.whitelistPgRepository.fetchByIdWithUsers(profileId)
+
+    return {
+      username: profile?.username,
+      bio: profile?.bio,
+      link: profile?.link,
+      avatarUrl: profile?.avatarUrl,
+      nftIds: [],
+      whitelistUserIds: whitelist.map(item => item.whitelistedUserId),
+      whitelistStart: whitelist[0]?.startAt,
+      whitelistEnd: whitelist[0]?.endAt,
+    }
+  }
+
 
   public findUsersOrTeaPaginatedByUsernameOrLocation(username: string, location: string, page: number) {
     return this.profilePgRepository.findUsersOrTeaPaginatedByUsernameOrLocation(username, location, this.pageSize * (page - 1), this.pageSize)

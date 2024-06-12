@@ -1,12 +1,16 @@
 import {
   acceptAllRequestFollowProfile,
   acceptRequestFollowProfile,
-  deleteUser,
-  deleteNft,
-  deleteComment,
   createComment,
+  deleteComment,
   deleteFollowerProfile,
+  deleteNft,
+  deleteUser,
   enableOrDisableUser,
+  fetchNFTs,
+  fetchTeaBag,
+  fetchTeaBags,
+  fetchUsers,
   followProfile,
   getPaginatedComments,
   getPaginatedReplyComments,
@@ -16,6 +20,7 @@ import {
   mintComment,
   mintNft,
   registerUser,
+  reportProfile,
   searchFollowersProfile,
   searchRequesterProfile,
   twoFactorAuthenticatorUserType,
@@ -30,6 +35,7 @@ import {
 import useSWRMutation from "swr/mutation"
 import {
   RegisterUserRequest,
+  ReportProfileRequest,
   TwoFactorAuthenticatorTypeRequest,
   VerifyPasswordRequest,
   VerifyTotpCodeRequest
@@ -504,12 +510,12 @@ export function useRegisterUser() {
 
 export function useUpdateProfile() {
   const updateProfileFetcher = (_: any, {arg}: {
-    arg: FormData
+    arg: any
   }) => updateProfile(arg)
   const {trigger, data, error, isMutating} = useSWRMutation("updateProfileFetcher", updateProfileFetcher)
 
   return {
-    updateProfile: (req: FormData) => trigger(req),
+    updateProfile: (req: any) => trigger(req),
     dataUpdateProfile: data,
     errorUpdateProfile: error,
     isFetchingUpdateProfile: isMutating
@@ -527,6 +533,50 @@ export function useGetProfileData() {
   }
 }
 
+export function useFetchTeaBags() {
+  const fetchTeaBagsFetcher = (_: any, {arg}: { arg: { page: number } }) => fetchTeaBags(arg)
+  const {trigger, data, error, isMutating} = useSWRMutation(`useFetchTeaBags`, fetchTeaBagsFetcher)
+
+  return {
+    fetchTeaBags: (req: { page: number }) => trigger(req),
+    teaBagsData: data,
+    isFetchingTeaBagsData: isMutating,
+    errorTeaBagsData: error,
+  }
+}
+
+export function useFetchTeaBag(id: number) {
+  const fetchTeaBagFetcher = () => fetchTeaBag(id)
+  const {data, error, mutate} = useSWR(`useFetchTeaBag-${id}`, fetchTeaBagFetcher)
+
+  return {
+    teaBagData: data,
+    teaBagDataMutate: mutate,
+    errorTeaBagData: error,
+  }
+}
+
+export function useFetchUsers() {
+  const fetchUsersFetcher = () => fetchUsers()
+  const {data, error, mutate} = useSWR("useFetchUsers", fetchUsersFetcher)
+
+  return {
+    usersData: data,
+    usersDataMutate: mutate,
+    errorUsersData: error,
+  }
+}
+
+export function useFetchNFTs() {
+  const fetchNFTsFetcher = () => fetchNFTs()
+  const {data, error, mutate} = useSWR("useFetchNFTs", fetchNFTsFetcher)
+
+  return {
+    nftsData: data,
+    nftsDataMutate: mutate,
+    errorNFTsData: error,
+  }
+}
 
 export function useEnableOrDisable(id: number) {
   const enableOrDisableFetcher = () => enableOrDisableUser({id})
@@ -576,3 +626,14 @@ export function useDeleteComment(id: number) {
   }
 }
 
+export function useReportProfile() {
+  const reportProfileFetcher = (_: any, {arg}: { arg: ReportProfileRequest }) => reportProfile(arg)
+  const {trigger, data, error, isMutating} = useSWRMutation("reportProfile", reportProfileFetcher)
+
+  return {
+    reportProfile: (req: ReportProfileRequest) => trigger(req),
+    dataReport: data,
+    errorReport: error,
+    isFetchingReport: isMutating
+  }
+}

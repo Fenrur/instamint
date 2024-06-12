@@ -29,7 +29,7 @@ export class DefaultUserService {
     this.totpEncryptionKey = totpEncryptionKey
     this.userPgRepository = new UserPgRepository(this.pgClient)
     this.profilePgRepository = new ProfilePgRepository(this.pgClient)
-    this.usersPageSize = usersPageSize
+  this.usersPageSize = usersPageSize
   }
 
   public findById(uid: string) {
@@ -40,6 +40,10 @@ export class DefaultUserService {
     return this.userPgRepository.findByEmail(email)
   }
 
+  public getAll() {
+    return this.userPgRepository.getAll()
+  }
+
   public findByUid(uid: string) {
     return this.userPgRepository.findByUid(uid)
   }
@@ -48,7 +52,7 @@ export class DefaultUserService {
     const user = await this.findById(String(id))
 
     if (!user) {
-      return "user_not_found"
+    return "user_not_found"
     }
 
     if (user.isActivated) {
@@ -249,16 +253,13 @@ export class DefaultUserService {
     return await this.userPgRepository.updatePassword(user.uid, hashedPassword)
   }
 
-
-  public findUsersPaginatedAndSorted(page: number) {
+public findUsersPaginatedAndSorted(page: number) {
     return this.userPgRepository
       .findUsersPaginatedAndSorted(
         this.usersPageSize * (page - 1),
         this.usersPageSize
       )
-  }
-
-  public async updateUserById(userId: string, password: string) {
+  }  public async updateUserById(userId: string, password: string) {
     const user = await this.findById(userId)
 
     if (!user) {
