@@ -1,5 +1,13 @@
 import {AudioLinesIcon, ImageIcon, MapPin, SquarePlayIcon} from "lucide-react"
-import {CommentFilledIcon, MintFilledIcon} from "@/components/ui/icons"
+import {
+  CommentFilledIcon,
+  CooksIcon,
+  EditIcon,
+  MintFilledIcon,
+  MintIcon,
+  ReportIcon,
+  TrashIcon
+} from "@/components/ui/icons"
 import React from "react"
 import {NftType} from "@/domain/types"
 import {Button} from "@/components/ui/button"
@@ -10,6 +18,7 @@ import Link from "next/link"
 import {createRedirectQueryParam} from "@/utils/url"
 import {Separator} from "@/components/ui/separator"
 import {FollowUnfollowTextButton, ProfileStatisticsSectionSubAccess, ViewerUserType} from "../types"
+import {TeaBag} from "../../tea-bags/page"
 
 export const dynamic = "force-dynamic"
 
@@ -94,6 +103,76 @@ export function ProfileContainer({link, avatarUrl, username}: ProfileContainerPr
         </div>
       </div>
     </a>
+  )
+}
+
+export function TeaBagContainer({
+                                  id,
+                                  link,
+                                  avatarUrl,
+                                  username,
+                                  followers_count,
+                                  followed_count,
+                                  cooks_count,
+                                  onReport,
+                                  onDelete,
+                                  onUpdate
+                                }: TeaBag) {
+  return (
+    <div className="relative pb-1 cursor-pointer h-200 w-[220px]">
+
+      <div className="rounded overflow-hidden">
+        <a href={link}>
+          <img className="w-full"
+               style={{height: 220, width: 220}}
+               src={avatarUrl} alt="avatar image"/>
+
+
+          <div
+            className="absolute inset-0 h-5/6 bg-black
+            opacity-0 hover:opacity-50 transition-opacity
+             duration-200 text-white flex gap-2
+             justify-center items-center">
+            <div>
+              <MintFilledIcon className="size-6 fill-white"/>
+              <MintIcon className="size-6 mt-2 fill-white"/>
+              <CooksIcon className="size-6 mt-2"/>
+            </div>
+            <div>
+              {/* eslint-disable-next-line camelcase */}
+              <div className="font-extrabold">{followers_count}</div>
+              {/* eslint-disable-next-line camelcase */}
+              <div className="font-extrabold mt-2">{followed_count}</div>
+              {/* eslint-disable-next-line camelcase */}
+              <div className="font-extrabold mt-2">{cooks_count}</div>
+            </div>
+          </div>
+          <div className="px-6 text-center">
+            <div className="font-bold text-sm">{username}</div>
+          </div>
+        </a>
+      </div>
+      <div
+        className="bg-blue-600 text-white w-[220px] flex flex-row justify-around items-center h-10 px-5">
+        <div onClick={() => {
+          onUpdate(id as number)
+        }}>
+          <EditIcon className="size-6" color={"green"}/>
+        </div>
+
+        <div onClick={() => {
+          onReport(id as number)
+        }}>
+          <ReportIcon className="size-6" color="red"/>
+        </div>
+
+        <div onClick={() => {
+          onDelete(id as number)
+        }}>
+          <TrashIcon className="size-6" color="red"/>
+        </div>
+      </div>
+    </div>
   )
 }
 

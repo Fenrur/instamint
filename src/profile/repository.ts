@@ -44,6 +44,17 @@ export class ProfilePgRepository {
     return rows.length > 0
   }
 
+  public async findByProfileId(profileId: number) {
+    return await this.pgClient.query.ProfileTable
+      .findFirst({
+        where: (profile, {eq}) => eq(profile.id, profileId)
+      })
+  }
+
+  public async deleteProfile(profileId: number) {
+    return await this.pgClient.delete(ProfileTable).where(eq(ProfileTable.id, profileId)).returning()
+  }
+
   public updateAvatarUrl(username: string, avatarUrl: string) {
     return this.pgClient
       .update(ProfileTable)
@@ -59,6 +70,29 @@ export class ProfilePgRepository {
       .where(eq(UserTable.uid, uid))
     const profileId = users[0].profileId
 
+    if (avatarUrl) {
+      return this.pgClient
+        .update(ProfileTable)
+        .set({
+          username,
+          bio,
+          link,
+          avatarUrl
+        })
+        .where(eq(ProfileTable.id, profileId)).returning()
+    }
+
+    return this.pgClient
+      .update(ProfileTable)
+      .set({
+        username,
+        bio,
+        link,
+      })
+      .where(eq(ProfileTable.id, profileId)).returning()
+  }
+
+  public async updateById(id: number, username: string, bio: string, link: string, avatarUrl: string) {
     return this.pgClient
       .update(ProfileTable)
       .set({
@@ -67,7 +101,7 @@ export class ProfilePgRepository {
         link,
         avatarUrl
       })
-      .where(eq(ProfileTable.id, profileId))
+      .where(eq(ProfileTable.id, id)).returning()
   }
 
   public async create(username: string, createdAt: DateTime<true>, avatarUrl: string) {
@@ -78,6 +112,22 @@ export class ProfilePgRepository {
         createdAt: createdAt.toSQL({includeZone: false, includeOffset: false}),
         avatarUrl,
         displayName: username,
+      })
+      .returning({id: ProfileTable.id})
+
+    return createdProfile[0]
+  }
+
+  public async createTeaBagProfile(username: string, link: string, bio: string, avatarUrl: string) {
+    const createdProfile = await this.pgClient
+      .insert(ProfileTable)
+      .values({
+        username,
+        displayName: username,
+        link,
+        bio,
+        avatarUrl,
+        createdAt: DateTime.now().toSQL({includeZone: false, includeOffset: false}),
       })
       .returning({id: ProfileTable.id})
 
@@ -110,7 +160,6 @@ export class ProfilePgRepository {
         where: (profile, {eq}) => eq(profile.id, followedProfileId)
       })
   }
-
 
   public async findUsersOrTeaPaginatedByUsernameOrLocation(username: string, location: string, offset: number, limit: number) {
     const sqlQuery = sql`

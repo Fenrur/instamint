@@ -67,4 +67,8 @@ export class DefaultNftService {
   public findById(id: string) {
     return this.nftPgRepository.findById(id)
   }
+
+  public async getAll() {
+      return this.nftPgRepository.getAll()
+  }
 }

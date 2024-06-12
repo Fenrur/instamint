@@ -5,6 +5,7 @@ import {useSession} from "@/auth/session"
 import {useRouter} from "next/navigation"
 import {signOut} from "next-auth/react"
 
+
 export default function Home() {
   const {status, session} = useSession()
   const router = useRouter()

@@ -61,7 +61,6 @@ export class DefaultFollowService {
     if (followedProfile.visibilityType === "private") {
       await this.requestFollowPgRepository.create(followerProfileId, followedProfileId, followAt, false)
 
-
       return "requested_follow"
     }
 

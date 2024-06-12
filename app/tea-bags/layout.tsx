@@ -1,17 +1,22 @@
 import React from "react"
 import {LoggedLayout} from "@/components/layout/logged-layout"
 import {getServerSession} from "@/auth"
-import {Separator} from "@/components/ui/separator"
 import {profileService} from "@/services"
-import {ConnectionHeader} from "../../profile/[slug]/ssr"
+import {ConnectionHeader} from "../profile/[slug]/ssr"
+import {Separator} from "@/components/ui/separator"
 
 export const dynamic = "force-dynamic"
 
-interface ProfilePageProps {
+
+interface SearchPageProps {
   children: React.ReactNode,
+  params: {
+    slug: string
+  }
 }
 
-export default async function ProfileLayout(props: ProfilePageProps) {
+export default async function LayoutSearchPage(props: SearchPageProps) {
+  const username = props.params.slug
   const session = await getServerSession()
   const getUserAndProfile = async () => {
     if (session) {
@@ -21,23 +26,21 @@ export default async function ProfileLayout(props: ProfilePageProps) {
     return null
   }
   const userAndProfile = await getUserAndProfile()
-  const username = userAndProfile?.profile.username || ""
-  const avatarUrl = userAndProfile?.profile.avatarUrl || ""
 
   return (
     <>
       {
         session
           ? <LoggedLayout
-            avatarUrl={avatarUrl}
+            avatarUrl={userAndProfile ? userAndProfile.profile.avatarUrl : ""}
             headerText={username}
-            selectedNavigation="own_profile"
-            username={username}
-            navigationHeader={false}
+            selectedNavigation="settings"
+            username={userAndProfile ? userAndProfile.profile.username : ""}
+            navigationHeader={true}
           >
-              {
-                props.children
-              }
+            {
+              props.children
+            }
           </LoggedLayout>
           : <>
             <div className="flex justify-center">

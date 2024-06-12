@@ -29,7 +29,6 @@ export default function MePage() {
   })
   const {profileData, profileDataMutate, errorProfileData} = useGetProfileData()
   const {updateProfile, dataUpdateProfile} = useUpdateProfile()
-
   void profileDataMutate()
 
 
@@ -82,13 +81,12 @@ export default function MePage() {
   }
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
     // Assume profileImage is already in base64 format if it's included in formData
-    const formDataWithImage = new FormData()
-    formDataWithImage.append("username", formData.username)
-    formDataWithImage.append("bio", formData.bio)
-    formDataWithImage.append("link", formData.link)
-    formDataWithImage.append("avatar", profileImage as string)
+
+    const formDataWithImage = {
+      ...formData,
+      "avatar": profileImage as string
+    }
     await updateProfile(formDataWithImage)
   }
 
@@ -121,7 +119,7 @@ export default function MePage() {
           break
 
         default:
-          toast.error("An unknown error occurred", {description: "Something went wrong. Please try again later."})
+          toast.success("Updated", {description: "your profile updated successfully "})
 
           break
       }

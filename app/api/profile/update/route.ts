@@ -14,12 +14,12 @@ import {NextResponse} from "next/server"
 
 
 export const POST = auth(async (req: NextAuthRequest) => {
-  const formData = await req.formData()
-  const username = formData.get("username") as string
-  const bio = formData.get("bio") as string
-  const link = formData.get("link") as string
-  const imageFile = formData.get("avatar") as string
-
+  //Const formData = await req.formData()
+  const formData = await req.json()
+  const username = formData.username as string
+  const bio = formData.bio as string
+  const link = formData.link as string
+  const imageFile = formData.avatar as string
 
   if (!username) {
     return problem({...invalidQueryParameterProblem, detail: "username is required"})
@@ -77,6 +77,6 @@ export const POST = auth(async (req: NextAuthRequest) => {
 
   const result = await profileService.updateProfileByUid(session.uid, username, bio, link, imageBuffer, imageType)
 
-  return NextResponse.json(result)
+  return NextResponse.json({uid: result[0].id.toString()})
 })
 
