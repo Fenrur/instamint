@@ -7,7 +7,6 @@ import {DefaultFollowService} from "@/follow/service"
 import {DefaultPasswordResetService} from "@/password-reset/service"
 import {DefaultReportCommentService} from "@/report-comment/service"
 import {DefaultReportNftService} from "@/report-nft/service"
-import {DefaultReportProfileService} from "@/report-profile/service"
 import {env} from "@/env"
 import {
   commentNftSize, commentsPageSize,
@@ -21,12 +20,12 @@ import {
   searchFollowersProfileSize,
   searchFollowsProfileSize,
   searchRequesterProfileSize,
-  reportsPageSize
+  reportsPageSize,
   teaBagsPageSize,
   usersPageSize
 } from "@/services/constants"
 import {DefaultTeaBagService} from "@/teaBag/service"
-import {DefaultReportProfileService} from "@/Report-profile/service"
+import {DefaultReportProfileService} from "@/report-profile/service"
 import {DefaultMintService} from "@/mint/service"
 import {DefaultCommentService} from "@/comment/service"
 import {DefaultMintCommentService} from "@/mint-comment/service"
@@ -42,8 +41,6 @@ export const profileService = new DefaultProfileService(pgClient, s3client, env.
 export const nftService = new DefaultNftService(pgClient, nftsPageSize)
 
 export const teaBagService = new DefaultTeaBagService(pgClient, s3client, env.S3_BUCKET_NAME, teaBagsPageSize)
-
-export const reportProfileService = new DefaultReportProfileService(pgClient)
 
 export const followService = new DefaultFollowService(
   pgClient,
