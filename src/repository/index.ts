@@ -16,6 +16,9 @@ import {
   GetPaginedCommentsResponse,
   GetPaginedNftsByUsernameResponse,
   GetPaginedNftsResponse,
+  GetPaginatedReportNftsResponse,
+  GetPaginatedReportCommentsResponse,
+  GetPaginatedReportProfilesResponse,
   IgnoreProfileRequest,
   MintCommentRequest,
   MintNftRequest,
@@ -687,6 +690,98 @@ export async function getPaginatedAdminUsers(page: number) {
   const errorCode = getErrorCodeFromProblem(await res.json())
 
   switch (errorCode) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  throw new Error("Undefined error code from server")
+}
+
+export async function getPaginatedAdminReports(page: number) {
+  const urlReportComment = encodeURI(`/api/admin/report/comments?page=${page}`)
+  const urlReportNft = encodeURI(`/api/admin/report/nfts?page=${page}`)
+  const urlReportProfile = encodeURI(`/api/admin/report/profiles?page=${page}`)
+  const res = async(url: string) => {
+    return await fetch(url, {
+      method: "GET"
+    })
+  }
+  const resReportComment = await res(urlReportComment)
+  const resReportNft = await res(urlReportNft)
+  const resReportProfile = await res(urlReportProfile)
+
+  if (resReportComment.status === StatusCodes.OK && resReportNft.status === StatusCodes.OK && resReportProfile.status === StatusCodes.OK) {
+    const reports: {type: string, element: string, reason: string, user: string}[] = []
+    const reportComment = GetPaginatedReportCommentsResponse.parse(await resReportComment.json())
+    const reportNft = GetPaginatedReportNftsResponse.parse(await resReportNft.json())
+    const reportProfile = GetPaginatedReportProfilesResponse.parse(await resReportProfile.json())
+    reportComment.map(report =>
+      reports.push({
+        type: "commentary",
+        element: report.commentary,
+        reason: report.reason,
+        user: report.user
+      }))
+    reportNft.map(report =>
+    reports.push({
+      type: "nft",
+      element: report.title,
+      reason: report.reason,
+      user: report.user
+    }))
+    reportProfile.map(report =>
+    reports.push({
+      type: "profile",
+      element: report.username,
+      reason: report.reason,
+      user:report.user
+    }))
+
+    return reports
+  }
+
+  const errorCodeComment = getErrorCodeFromProblem(await resReportComment.json())
+  const errorCodeNft = getErrorCodeFromProblem(await resReportNft.json())
+  const errorCodeProfile = getErrorCodeFromProblem(await resReportProfile.json())
+
+  switch (errorCodeComment) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  switch (errorCodeNft) {
+    case ErrorCode.INVALID_QUERY_PARAMETER:
+      return "invalid_query_parameter"
+
+    case ErrorCode.NOT_AUTHENTICATED:
+      return "not_authenticated"
+
+    case ErrorCode.USER_NOT_FOUND:
+      return "my_user_not_found"
+
+    case ErrorCode.BAD_SESSION:
+      return "bad_session"
+  }
+
+  switch (errorCodeProfile) {
     case ErrorCode.INVALID_QUERY_PARAMETER:
       return "invalid_query_parameter"
 

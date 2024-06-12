@@ -426,3 +426,27 @@ export const GetPaginatedUsersResponse = z.array(z.object({
 }))
 
 export type GetPaginatedUsersResponse = z.infer<typeof GetPaginatedUsersResponse>
+
+export const GetPaginatedReportCommentsResponse = z.array(z.object({
+  commentary: z.string(),
+  reason: z.string(),
+  user: z.string()
+}))
+
+export type GetPaginatedReportCommentsResponse = z.infer<typeof GetPaginatedReportCommentsResponse>
+
+export const GetPaginatedReportNftsResponse = z.array(z.object({
+  title: z.string(),
+  reason: z.string(),
+  user: z.string()
+}))
+
+export type GetPaginatedReportNftsResponse = z.infer<typeof GetPaginatedReportNftsResponse>
+
+export const GetPaginatedReportProfilesResponse = z.array(z.object({
+  username: z.string(),
+  reason: z.string(),
+  user: z.string()
+}))
+
+export type GetPaginatedReportProfilesResponse = z.infer<typeof GetPaginatedReportProfilesResponse>
