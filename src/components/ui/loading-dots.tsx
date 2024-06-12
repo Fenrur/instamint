@@ -18,7 +18,7 @@ export function DefaultLoadingDots({visible = true, size = 50}: {visible?: boole
 
 export function BackgroundLoadingDots({visible = true, size = 50}: {visible?: boolean, size?: number}) {
   return (
-    <LoadingDots size={size} visible={visible} lightThemeColor={"fill-black"} darkThemeColor={"fill-white"}/>
+    <LoadingDots size={size} visible={visible} lightThemeColor={"fill-white"} darkThemeColor={"fill-white"}/>
   )
 }
 

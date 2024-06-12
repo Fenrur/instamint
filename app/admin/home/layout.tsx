@@ -7,7 +7,7 @@ import {profileService} from "@/services"
 
 export const dynamic = "force-dynamic"
 
-export default async function LayoutAdminUserPage({
+export default async function LayoutAdminHomePage({
                                                     children
                                                   }: Readonly<{
   children: React.ReactNode;
@@ -15,13 +15,13 @@ export default async function LayoutAdminUserPage({
   const session = await getServerSession()
 
   if (!session) {
-    redirect(`/login${createRedirectQueryParam(`/admin/users`)}`)
+    redirect(`/login${createRedirectQueryParam(`/admin/home`)}`)
   }
 
   const userAndProfile = await profileService.findByUserUid(session.uid)
 
   if (!userAndProfile) {
-    redirect(`/login${createRedirectQueryParam(`/admin/users`)}`)
+    redirect(`/login${createRedirectQueryParam(`/admin/home`)}`)
   }
 
   if (userAndProfile.role !== "admin") {
@@ -32,7 +32,7 @@ export default async function LayoutAdminUserPage({
     <>
       <AdminLayout>
         <h3 className="w-5/6 mx-auto text-center font-bold text-3xl mt-20">
-          Users
+          Admin Page
           <div className="w-5/6 mt-12 mx-auto">
             {children}
           </div>

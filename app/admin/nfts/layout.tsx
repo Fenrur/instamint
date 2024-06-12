@@ -7,7 +7,7 @@ import {profileService} from "@/services"
 
 export const dynamic = "force-dynamic"
 
-export default async function LayoutAdminUserPage({
+export default async function LayoutAdminNftPage({
                                                     children
                                                   }: Readonly<{
   children: React.ReactNode;
@@ -15,17 +15,17 @@ export default async function LayoutAdminUserPage({
   const session = await getServerSession()
 
   if (!session) {
-    redirect(`/login${createRedirectQueryParam(`/admin/users`)}`)
+    redirect(`/login${createRedirectQueryParam(`/admin/nfts`)}`)
   }
 
   const userAndProfile = await profileService.findByUserUid(session.uid)
 
   if (!userAndProfile) {
-    redirect(`/login${createRedirectQueryParam(`/admin/users`)}`)
+    redirect(`/login${createRedirectQueryParam(`/admin/nfts`)}`)
   }
 
   if (userAndProfile.role !== "admin") {
-    redirect(`/`)
+    redirect(`/me`)
   }
 
   return (
