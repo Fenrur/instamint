@@ -1,0 +1,66 @@
+name: Build
+
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      S3_ACCESS_KEY_ID: "a"
+      S3_SECRET_ACCESS_KEY: "a"
+      S3_REGION: "eu-west"
+      S3_ENDPOINT: "http://127.0.0.1:9000"
+      S3_BUCKET_NAME: "instamint"
+      DATABASE_URL: "postgresql://instamint:instamint@localhost:5432/instamint"
+      GMAIL_EMAIL: "instamint.noreply@gmail.com"
+      GMAIL_PASS: "a"
+      NEXT_PUBLIC_PUBLISHABLE_KEY: "a"
+      PEPPER_PASSWORD_SECRET: "a"
+      NEXT_PUBLIC_TEST_DATA: "a"
+      NEXT_AUTH_SECRET: "a"
+      SECURE_AUTH_COOKIES: "false"
+      TOTP_ENCRYPTION_KEY: "a"
+      TRUST_HOST: "false"
+      BASE_URL: "http://localhost:3000"
+      CONTACT_EMAIL: instamint.contact@gmail.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/iron
+
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+            
+      - name: Restore cache next build
+        uses: actions/cache@v3
+        with:
+          path: |
+            .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build

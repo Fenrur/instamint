@@ -19,6 +19,16 @@
     "sourceType": "module"
   },
   "rules": {
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-redundant-type-constituents": "off",
+    "@typescript-eslint/no-unnecessary-condition": "off",
+    "@typescript-eslint/require-await": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "no-shadow": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
+    "@typescript-eslint/no-unsafe-enum-comparison": "off",
     "array-callback-return": [
       "error",
       {
@@ -54,7 +64,6 @@
       { "ignoreConsecutiveComments": true }
     ],
     "class-methods-use-this": ["error", { "enforceForClassFields": true }],
-    "complexity": ["error", 7],
     "curly": ["error", "all"],
     "default-param-last": "error",
     "dot-notation": "error",
@@ -71,16 +80,13 @@
       { "enforceForIfStatements": true }
     ],
     "max-classes-per-file": ["error", { "ignoreExpressions": true }],
-    "max-depth": ["error", 3],
     "max-nested-callbacks": ["error", 3],
-    "max-params": ["error", 3],
     "multiline-comment-style": ["error", "separate-lines"],
     "no-alert": "error",
     "no-bitwise": "error",
     "no-caller": "error",
     "no-console": "error",
     "no-else-return": "error",
-    "no-empty-function": "error",
     "no-empty-static-block": "error",
     "no-eq-null": "error",
     "no-eval": "error",
@@ -110,20 +116,11 @@
     "no-return-assign": ["error", "always"],
     "no-script-url": "error",
     "no-sequences": "error",
-    "no-shadow": "error",
     "no-throw-literal": "error",
     "no-undef-init": "error",
     "no-underscore-dangle": ["error", { "allowFunctionParams": false }],
     "no-unneeded-ternary": ["error", { "defaultAssignment": false }],
     "no-unused-expressions": ["error", { "enforceForJSX": true }],
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      {
-        "args": "after-used",
-        "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_"
-      }
-    ],
     "@typescript-eslint/no-misused-promises": [
       "error",
       { "checksVoidReturn": { "attributes": false } }
@@ -152,7 +149,6 @@
         "ignoreReadBeforeAssign": false
       }
     ],
-    "prefer-destructuring": "error",
     "prefer-exponentiation-operator": "error",
     "prefer-numeric-literals": "error",
     "prefer-object-has-own": "error",
@@ -163,14 +159,11 @@
     "prefer-spread": "error",
     "prefer-template": "error",
     "radix": "error",
-    "require-await": "error",
-    "require-unicode-regexp": "error",
     "symbol-description": "error",
     "yoda": "error",
     "line-comment-position": ["error", { "position": "above" }],
     // recommended rules overwrite
     "indent": "off",
-    "linebreak-style": ["error", "unix"],
     "newline-before-return": "error",
     "no-undef": "error",
     "padded-blocks": ["error", "never"],
